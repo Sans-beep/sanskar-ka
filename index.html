@@ -9,7 +9,7 @@
 :root{--ink:#f4eee7;--muted:#aaa099;--pink:#e8b8bb;--paper:#e9ddd1;--bg:#100f0e}
 *{box-sizing:border-box} body{margin:0;background:#080807;color:var(--ink);font-family:"DM Sans",sans-serif}
 body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.07;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
-.shell{min-height:100svh;display:grid;place-items:center;padding:16px}.card{width:min(100%,430px);height:min(100svh - 32px,760px);min-height:0;max-height:calc(100svh - 32px);position:relative;overflow:hidden;background:
+.shell{min-height:100svh;display:grid;place-items:center;padding:16px}.card{width:min(100%,430px);height:min(calc(100svh - 32px),760px);min-height:0;max-height:calc(100svh - 32px);position:relative;overflow:hidden;background:
 radial-gradient(circle at 16% 18%,rgba(232,184,187,.10),transparent 23%),
 radial-gradient(circle at 88% 72%,rgba(233,221,209,.07),transparent 24%),var(--bg);
 border:1px solid #302b28;border-radius:28px;box-shadow:0 30px 100px #000}
