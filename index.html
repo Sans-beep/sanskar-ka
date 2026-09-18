@@ -118,15 +118,33 @@ function go(n){
   // Start the old page's exit while it is still active.
   // Removing .active first caused a one-frame hide, followed by the exit animation
   // restarting from opacity:1 — which looked like Page 2 appeared twice.
-  pages.forEach(p=>p.style.pointerEvents='none');
-  next.classList.remove('active','exit-left','exit-right','enter-left','enter-right');
-  old.classList.remove('exit-left','exit-right','enter-left','enter-right');
+  pages.forEach(p=>{
+    p.style.pointerEvents='none';
+    p.classList.remove('active','exit-left','exit-right','enter-left','enter-right');
+    p.style.animation='none';
+  });
+  // Run each incoming animation directly once. Using both .active and .enter-*
+  // classes was causing the browser to restart the incoming animation.
+  const incoming={
+    '0-1':'cardInRight .72s cubic-bezier(.18,.82,.2,1) both',
+    '1-2':'cardInRight .72s cubic-bezier(.18,.82,.2,1) both',
+    '2-3':'photoIn .78s cubic-bezier(.18,.86,.2,1) both',
+    '3-4':'liftIn .82s cubic-bezier(.2,.85,.18,1) both',
+    '4-5':'softPushIn .72s cubic-bezier(.2,.82,.2,1) both',
+    '5-6':'paperIn .86s cubic-bezier(.18,.86,.18,1) both',
+    '6-7':'pullIn .8s cubic-bezier(.2,.84,.18,1) both'
+  };
+  const outgoing=forward
+    ? 'cardOutLeft .58s cubic-bezier(.55,.08,.72,.35) both'
+    : 'cardOutRight .58s cubic-bezier(.55,.08,.72,.35) both';
   old.classList.add(forward?'exit-left':'exit-right');
-  void old.offsetWidth;
-  // Add the enter class first, force a single animation start, then activate it.
-  next.classList.add(forward ? 'enter-right' : 'enter-left');
-  void next.offsetWidth;
+  old.style.animation=outgoing;
   next.classList.add('active');
+  const incomingKey=oldIndex+'-'+n;
+  next.style.animation=incoming[incomingKey]||(
+    forward?'cardInRight .72s cubic-bezier(.18,.82,.2,1) both':
+    'cardInLeft .72s cubic-bezier(.18,.82,.2,1) both'
+  );
   i=n;
   const throwbackSong=document.getElementById('throwbackSong');
   if(throwbackSong){
@@ -134,7 +152,9 @@ function go(n){
     else if(oldIndex===2){throwbackSong.pause();throwbackSong.currentTime=0;}
   }
   setTimeout(()=>{
-    old.classList.remove('active','exit-left','exit-right');
+    old.classList.remove('active','exit-left','exit-right','enter-left','enter-right');
+    next.style.animation='none';
+    old.style.animation='none';
     card.classList.remove('transitioning',trans.cls);
     transitionDoodles.innerHTML='';
     busy=false;
