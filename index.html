@@ -136,7 +136,7 @@ window.onSpotifyIframeApiReady = function(IFrameAPI){
   </article>
 </div>
 <script>
-function startBirthdayWeather(){const p=document.getElementById('p2');if(!p)return;p.classList.remove('sunrise');clearTimeout(window.birthdayWeatherTimer);window.birthdayWeatherTimer=setTimeout(()=>p.classList.add('sunrise'),7600)}
+function startBirthdayWeather(){const p=document.getElementById('p2');if(!p)return;p.classList.remove('sunrise');clearTimeout(window.birthdayWeatherTimer);window.birthdayWeatherTimer=setTimeout(()=>p.classList.add('sunrise'),4600)}
 function resetBirthdayWeather(){const p=document.getElementById('p2');if(!p)return;clearTimeout(window.birthdayWeatherTimer);p.classList.remove('sunrise')}
 function playBirthdaySong(){const c=window.spotifyEmbedController;if(c)c.play().catch(()=>{});}
 function pauseBirthdaySong(){const c=window.spotifyEmbedController;if(c)c.pause().catch(()=>{});}
@@ -189,7 +189,9 @@ function go(n){
     : 'cardOutRight .58s cubic-bezier(.55,.08,.72,.35) both';
   old.classList.add(forward?'exit-left':'exit-right');
   old.style.animation=outgoing;
+  old.style.pointerEvents='none';
   next.classList.add('active');
+  next.style.pointerEvents='none';
   const incomingKey=oldIndex+'-'+n;
   next.style.animation=incoming[incomingKey]||(
     forward?'cardInRight .72s cubic-bezier(.18,.82,.2,1) both':
@@ -215,7 +217,10 @@ function go(n){
     card.classList.remove('transitioning',trans.cls);
     transitionDoodles.innerHTML='';
     busy=false;
-    pages.forEach((p,k)=>p.style.pointerEvents=(k===i?'auto':'none'));
+    pages.forEach((p,k)=>{
+      p.style.pointerEvents='none';
+      if(k===i)p.style.pointerEvents='auto';
+    });
   },900);
 }
 document.querySelectorAll('.next').forEach(b=>b.addEventListener('click',e=>{
