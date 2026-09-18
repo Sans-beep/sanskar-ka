@@ -196,7 +196,8 @@ function saveEggs(){try{localStorage.setItem(EGG_KEY,JSON.stringify(discoveredEg
 function closeEggFound(){eggFound.classList.remove('show');eggFound.setAttribute('aria-hidden','true');eggVisual.classList.remove('cracked')}
 function discoverEgg(id){if(discoveredEggs.includes(id)||discoveredEggs.length>=21)return;discoveredEggs.push(id);saveEggs();const n=discoveredEggs.length;eggCount.textContent=String(n).padStart(2,'0')+' / 21';eggSub.textContent=n===1?'your first one starts the count.':n===21?'you found all 21. ♡':'another little thing, just for you.';eggFound.classList.remove('show');void eggFound.offsetWidth;eggVisual.classList.remove('cracked');eggFound.classList.add('show');eggFound.setAttribute('aria-hidden','false');setTimeout(()=>eggVisual.classList.add('cracked'),380);setTimeout(closeEggFound,1750)}
 document.querySelectorAll('.egg-trigger').forEach(el=>{const activate=e=>{if(e.type==='keydown'&&e.key!=='Enter'&&e.key!==' ')return;e.preventDefault();discoverEgg(el.dataset.egg)};el.addEventListener('click',activate);el.addEventListener('keydown',activate)});eggFound.addEventListener('click',e=>{if(e.target===eggFound)closeEggFound()});
-\nlet secretTaps=0,tapReset;
+
+let secretTaps=0,tapReset;
 const env=document.getElementById('secretEnvelope');
 const count=document.getElementById('tapCount');
 const pop=document.getElementById('letterPop');
