@@ -71,23 +71,24 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
 /* Page 2 — rain to sunrise */
 #p2{overflow:hidden;background:linear-gradient(180deg,#141619 0%,#17191c 52%,#25201f 100%)}
 #p2 .weather-scene{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0;opacity:1}
-#p2 .weather-scene:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,10,13,.36),rgba(8,8,8,.1) 55%,rgba(0,0,0,.2));transition:opacity 1.6s ease}
-.weather-cloud{position:absolute;border-radius:999px;background:rgba(66,72,80,.7);filter:blur(18px);opacity:.8;animation:cloudDrift 18s linear infinite}
-.cloud-a{width:270px;height:90px;left:-55px;top:9%;transform:rotate(-4deg)}
-.cloud-b{width:330px;height:110px;right:-85px;top:17%;opacity:.62;animation-duration:23s;animation-direction:reverse}
-.cloud-c{width:220px;height:70px;left:23%;top:28%;opacity:.42;animation-duration:20s}
-.rain{position:absolute;inset:-15% -10%;opacity:.72;background-image:repeating-linear-gradient(105deg,transparent 0 18px,rgba(207,216,223,.23) 19px,transparent 20px 34px);background-size:72px 72px;animation:rainFall .48s linear infinite}
-.sun{position:absolute;width:112px;height:112px;border-radius:50%;right:11%;top:18%;background:#f6d9a0;box-shadow:0 0 35px 10px rgba(246,217,160,.35);opacity:0;transform:scale(.65);transition:opacity 2.2s ease,transform 2.4s cubic-bezier(.2,.8,.2,1)}
-.sun-glow{position:absolute;width:360px;height:360px;right:-70px;top:-35px;border-radius:50%;background:radial-gradient(circle,rgba(246,207,139,.28),rgba(246,207,139,.08) 34%,transparent 68%);opacity:0;transition:opacity 2.5s ease}
+#p2 .weather-scene:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,10,13,.42),rgba(8,8,8,.1) 55%,rgba(0,0,0,.2));transition:opacity 1.6s ease}
+.weather-cloud{position:absolute;border-radius:999px;background:rgba(66,72,80,.7);filter:blur(18px);opacity:.82;animation:cloudDrift 18s linear infinite}
+.cloud-a{width:270px;height:90px;left:-55px;top:7%;transform:rotate(-4deg)}
+.cloud-b{width:330px;height:110px;right:-85px;top:14%;opacity:.66;animation-duration:23s;animation-direction:reverse}
+.cloud-c{width:220px;height:70px;left:23%;top:25%;opacity:.46;animation-duration:20s}
+.rain{position:absolute;inset:-15% -10%;opacity:.94;background-image:repeating-linear-gradient(105deg,transparent 0 12px,rgba(214,224,232,.34) 13px,transparent 15px 27px);background-size:56px 56px;animation:rainFall .42s linear infinite}
+.sun{position:absolute;width:112px;height:112px;border-radius:50%;right:8%;top:5%;background:#f6d9a0;box-shadow:0 0 35px 10px rgba(246,217,160,.35);opacity:0;transform:scale(.65);transition:opacity 2.2s ease,transform 2.4s cubic-bezier(.2,.8,.2,1)}
+.sun-glow{position:absolute;width:320px;height:320px;right:-55px;top:-75px;border-radius:50%;background:radial-gradient(circle,rgba(246,207,139,.28),rgba(246,207,139,.08) 34%,transparent 68%);opacity:0;transition:opacity 2.5s ease}
 #p2.sunrise .weather-scene:after{opacity:.28}
 #p2.sunrise .cloud-a{opacity:.48;transform:translateX(-65px) rotate(-4deg)}
 #p2.sunrise .cloud-b{opacity:.3;transform:translateX(75px)}
 #p2.sunrise .cloud-c{opacity:.16;transform:translateY(-28px)}
-#p2.sunrise .rain{opacity:.08;animation-duration:.9s}
+#p2.sunrise .rain{opacity:.11;animation-duration:.85s}
 #p2.sunrise .sun{opacity:1;transform:scale(1)}
 #p2.sunrise .sun-glow{opacity:1}
 #p2 .inner,#p2 .top,#p2 .back{z-index:3}
 .spotify-wrap{width:min(100%,330px);margin:18px auto 10px;filter:drop-shadow(0 12px 22px #0007);opacity:.94}
+.spotify-wrap #spotifyEmbed{width:100%;height:80px;border-radius:12px;overflow:hidden}
 .spotify-wrap iframe{display:block;width:100%;height:80px;border:0;border-radius:12px}
 @keyframes rainFall{from{background-position:0 -72px}to{background-position:72px 72px}}
 @keyframes cloudDrift{0%{margin-left:0}50%{margin-left:28px}100%{margin-left:0}}
@@ -96,7 +97,7 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
 <body>
 <div class="shell"><main class="card">
 <section class="page active" id="p1"><div class="top"><span>FOR KASHISH</span><span>01 / 07</span></div><div class="inner"><i class="doodle d1">♡</i><i class="doodle d2">✦</i><i class="doodle d3">⌁</i><div class="script hero">Hey<br>Kashish</div><div class="note" style="margin-top:25px">glad you exist :)</div><button class="btn next">tap to continue →</button></div></section>
-<section class="page" id="p2"><div class="weather-scene" aria-hidden="true"><div class="weather-cloud cloud-a"></div><div class="weather-cloud cloud-b"></div><div class="weather-cloud cloud-c"></div><div class="rain"></div><div class="sun"></div><div class="sun-glow"></div></div><div class="top"><span>JANUARY ENERGY</span><span>02 / 07</span></div><div class="inner"><i class="doodle d1">♡</i><i class="doodle d2">☆</i><div class="kicker">a tiny interruption to your day</div><div class="script birthday" style="margin-top:22px">Happy<br>Birthday ♡</div><div class="note" style="margin-top:25px">today gets to be a little more about you.</div><div class="spotify-wrap"><iframe title="Uff Teri Adaa on Spotify" src="https://open.spotify.com/embed/track/0og9wKFGgFFNQnrBe7eisG?utm_source=generator&theme=0" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe></div><button class="btn next">okay, continue →</button></div><button class="back" data-back aria-label="Go back">← back</button></section>
+<section class="page" id="p2"><div class="weather-scene" aria-hidden="true"><div class="weather-cloud cloud-a"></div><div class="weather-cloud cloud-b"></div><div class="weather-cloud cloud-c"></div><div class="rain"></div><div class="sun"></div><div class="sun-glow"></div></div><div class="top"><span>JANUARY ENERGY</span><span>02 / 07</span></div><div class="inner"><i class="doodle d1">♡</i><i class="doodle d2">☆</i><div class="kicker">a tiny interruption to your day</div><div class="script birthday" style="margin-top:22px">Happy<br>Birthday ♡</div><div class="note" style="margin-top:25px">today gets to be a little more about you.</div><div class="spotify-wrap"><div id="spotifyEmbed" aria-label="Uff Teri Adaa on Spotify"></div></div><button class="btn next">okay, continue →</button></div><button class="back" data-back aria-label="Go back">← back</button></section>
 <section class="page" id="p3"><div class="top"><span>THE ARCHIVES</span><span>03 / 07</span></div><div class="inner throwback-inner"><i class="doodle d1">♡</i><i class="doodle d2">✦</i><div class="kicker">a little throwback</div><div class="throwback-note">found this in the archives.</div><div class="throwback-photo"><div class="tape"></div><img src="throwback-photo.jpg" alt="A childhood birthday memory of Kashish"></div><div class="throwback-copy">you sent me this three years ago.<br><span>look at you. ♡</span></div><div class="throwback-small">some things really don't change.</div><i class="doodle">♡</i><button class="btn next">continue →</button></div><button class="back" data-back aria-label="Go back">← back</button></section>
 <section class="page" id="p4"><div class="top"><span>FIRST THINGS FIRST</span><span>04 / 07</span></div><div class="inner"><i class="doodle d1">↗</i><i class="doodle d4">♡</i><div class="kicker">there's a little something</div><div class="copy" style="margin-top:15px">waiting for you.</div><div class="choco">🍫</div><div class="scribble">yes, this one :)</div><div class="note" style="margin-top:10px">check your door.</div><button class="btn next">I've got it →</button></div><button class="back" data-back aria-label="Go back">← back</button></section>
 <section class="page" id="p5"><div class="top"><span>A LITTLE SWEETNESS</span><span>05 / 07</span></div><div class="inner"><i class="doodle d1">♡</i><i class="doodle d2">✎</i><div class="kicker">okay… evidence please</div><div class="proof-polaroid"><div class="tape"></div><div class="proof-photo" id="proofPhoto"><span class="photo-placeholder">your chocolate<br>has entered the chat 🍫</span><img id="proofImage" alt="Your chocolate photo preview"><div class="proof-caption">proof ♡</div></div></div><div class="copy" style="font-size:26px">Send me a picture<br>with the chocolates.</div><label class="upload-label" for="proofUpload">choose photo →</label><input class="upload-input" id="proofUpload" type="file" accept="image/*"><div class="upload-status" id="uploadStatus">no photo = no slot machine 😭</div><button class="btn p4-next" id="p4Next" disabled>I've got it →</button></div><button class="back" data-back aria-label="Go back">← back</button></section>
@@ -106,6 +107,23 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
 
 
 <div class="joy" id="joy">okayyy… you found it ♡</div>
+<script>
+window.onSpotifyIframeApiReady = function(IFrameAPI){
+  const element=document.getElementById('spotifyEmbed');
+  if(!element)return;
+  IFrameAPI.createController(element,{
+    width:'100%',
+    height:80,
+    uri:'spotify:track:0og9wKFGgFFNQnrBe7eisG'
+  },function(controller){
+    window.spotifyEmbedController=controller;
+    if(window.sitePageIndex===1){
+      controller.play().catch(()=>{});
+    }
+  });
+};
+</script>
+<script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
 <div class="heart-burst" id="heartBurst"></div>
 <div class="letter-pop" id="letterPop" aria-hidden="true">
   <article class="letter-card">
@@ -118,16 +136,20 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
   </article>
 </div>
 <script>
-function startBirthdayWeather(){const p=document.getElementById('p2');if(!p)return;p.classList.remove('sunrise');clearTimeout(window.birthdayWeatherTimer);window.birthdayWeatherTimer=setTimeout(()=>p.classList.add('sunrise'),4200)}
+function startBirthdayWeather(){const p=document.getElementById('p2');if(!p)return;p.classList.remove('sunrise');clearTimeout(window.birthdayWeatherTimer);window.birthdayWeatherTimer=setTimeout(()=>p.classList.add('sunrise'),7600)}
 function resetBirthdayWeather(){const p=document.getElementById('p2');if(!p)return;clearTimeout(window.birthdayWeatherTimer);p.classList.remove('sunrise')}
+function playBirthdaySong(){const c=window.spotifyEmbedController;if(c)c.play().catch(()=>{});}
+function pauseBirthdaySong(){const c=window.spotifyEmbedController;if(c)c.pause().catch(()=>{});}
 const pages=[...document.querySelectorAll('.page')];
 let i=0,busy=false;
+window.sitePageIndex=0;
 let proofFile=null,proofUploaded=false;
 
 function go(n){
   if(busy || n<0 || n>=pages.length || n===i)return;
   busy=true;
   const oldIndex=i, old=pages[i], next=pages[n], forward=n>i;
+  if(oldIndex===1)pauseBirthdaySong();
   const card=document.querySelector('.card');
   const transitionDoodles=document.getElementById('transitionDoodles');
   const transitionMap={
@@ -174,7 +196,13 @@ function go(n){
     'cardInLeft .72s cubic-bezier(.18,.82,.2,1) both'
   );
   i=n;
-  if(n===1)startBirthdayWeather(); else if(oldIndex===1)resetBirthdayWeather();
+  window.sitePageIndex=i;
+  if(n===1){
+    startBirthdayWeather();
+    playBirthdaySong();
+  }else if(oldIndex===1){
+    resetBirthdayWeather();
+  }
   const throwbackSong=document.getElementById('throwbackSong');
   if(throwbackSong){
     if(n===2){throwbackSong.currentTime=0;throwbackSong.play().catch(()=>{});}
