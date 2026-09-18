@@ -135,6 +135,9 @@ const count=document.getElementById('tapCount');
 const pop=document.getElementById('letterPop');
 const joy=document.getElementById('joy');
 const burst=document.getElementById('heartBurst');
+const tapSound=new Audio('tiu-tiu-tiooo.mp3');
+tapSound.preload='auto';
+tapSound.volume=.72;
 
 function closeLetter(){
   pop.classList.remove('open');
@@ -148,6 +151,8 @@ pop.addEventListener('click',e=>{if(e.target===pop)closeLetter()});
 env.addEventListener('click',()=>{
   secretTaps++;
   clearTimeout(tapReset);
+  tapSound.currentTime=0;
+  tapSound.play().catch(()=>{});
   count.innerHTML=secretTaps<9
     ? `something feels suspicious… <b>${secretTaps}/9</b> ♡`
     : `you found it. ♡`;
