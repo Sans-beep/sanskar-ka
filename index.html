@@ -94,10 +94,20 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
 @keyframes cloudDrift{0%{margin-left:0}50%{margin-left:28px}100%{margin-left:0}}
 </style>
 </head>
+<script>
+window.onSpotifyIframeApiReady = function(IFrameAPI){
+  const element=document.getElementById('spotifyEmbed');
+  if(!element)return;
+  IFrameAPI.createController(element,{width:'100%',height:80,uri:'spotify:track:0og9wKFGgFFNQnrBe7eisG'},function(controller){
+    window.spotifyEmbedController=controller;
+  });
+};
+</script>
+<script src="https://open.spotify.com/embed/iframe-api/v1"></script>
 <body>
 <div class="shell"><main class="card">
 <section class="page active" id="p1"><div class="top"><span>FOR KASHISH</span><span>01 / 07</span></div><div class="inner"><i class="doodle d1">♡</i><i class="doodle d2">✦</i><i class="doodle d3">⌁</i><div class="script hero">Hey<br>Kashish</div><div class="note" style="margin-top:25px">glad you exist :)</div><button class="btn next">tap to continue →</button></div></section>
-<section class="page" id="p2"><div class="weather-scene" aria-hidden="true"><div class="weather-cloud cloud-a"></div><div class="weather-cloud cloud-b"></div><div class="weather-cloud cloud-c"></div><div class="rain"></div><div class="sun"></div><div class="sun-glow"></div></div><div class="top"><span>JANUARY ENERGY</span><span>02 / 07</span></div><div class="inner"><i class="doodle d1">♡</i><i class="doodle d2">☆</i><div class="kicker">a tiny interruption to your day</div><div class="script birthday" style="margin-top:22px">Happy<br>Birthday ♡</div><div class="note" style="margin-top:25px">today gets to be a little more about you.</div><div class="spotify-wrap"><iframe id="spotifyEmbed" title="Uff Teri Adaa on Spotify" src="https://open.spotify.com/embed/track/0og9wKFGgFFNQnrBe7eisG?utm_source=generator&theme=0" loading="eager" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe></div><button class="btn next">okay, continue →</button></div><button class="back" data-back aria-label="Go back">← back</button></section>
+<section class="page" id="p2"><div class="weather-scene" aria-hidden="true"><div class="weather-cloud cloud-a"></div><div class="weather-cloud cloud-b"></div><div class="weather-cloud cloud-c"></div><div class="rain"></div><div class="sun"></div><div class="sun-glow"></div></div><div class="top"><span>JANUARY ENERGY</span><span>02 / 07</span></div><div class="inner"><i class="doodle d1">♡</i><i class="doodle d2">☆</i><div class="kicker">a tiny interruption to your day</div><div class="script birthday" style="margin-top:22px">Happy<br>Birthday ♡</div><div class="note" style="margin-top:25px">today gets to be a little more about you.</div><div class="spotify-wrap"><iframe id="spotifyEmbed" title="Uff Teri Adaa on Spotify" src="https://open.spotify.com/embed/track/0og9wKFGgFFNQnrBe7eisG?utm_source=generator&theme=0&autoplay=1" loading="eager" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe></div><button class="btn next">okay, continue →</button></div><button class="back" data-back aria-label="Go back">← back</button></section>
 <section class="page" id="p3"><div class="top"><span>THE ARCHIVES</span><span>03 / 07</span></div><div class="inner throwback-inner"><i class="doodle d1">♡</i><i class="doodle d2">✦</i><div class="kicker">a little throwback</div><div class="throwback-note">found this in the archives.</div><div class="throwback-photo"><div class="tape"></div><img src="throwback-photo.jpg" alt="A childhood birthday memory of Kashish"></div><div class="throwback-copy">you sent me this three years ago.<br><span>look at you. ♡</span></div><div class="throwback-small">some things really don't change.</div><i class="doodle">♡</i><button class="btn next">continue →</button></div><button class="back" data-back aria-label="Go back">← back</button></section>
 <section class="page" id="p4"><div class="top"><span>FIRST THINGS FIRST</span><span>04 / 07</span></div><div class="inner"><i class="doodle d1">↗</i><i class="doodle d4">♡</i><div class="kicker">there's a little something</div><div class="copy" style="margin-top:15px">waiting for you.</div><div class="choco">🍫</div><div class="scribble">yes, this one :)</div><div class="note" style="margin-top:10px">check your door.</div><button class="btn next">I've got it →</button></div><button class="back" data-back aria-label="Go back">← back</button></section>
 <section class="page" id="p5"><div class="top"><span>A LITTLE SWEETNESS</span><span>05 / 07</span></div><div class="inner"><i class="doodle d1">♡</i><i class="doodle d2">✎</i><div class="kicker">okay… evidence please</div><div class="proof-polaroid"><div class="tape"></div><div class="proof-photo" id="proofPhoto"><span class="photo-placeholder">your chocolate<br>has entered the chat 🍫</span><img id="proofImage" alt="Your chocolate photo preview"><div class="proof-caption">proof ♡</div></div></div><div class="copy" style="font-size:26px">Send me a picture<br>with the chocolates.</div><label class="upload-label" for="proofUpload">choose photo →</label><input class="upload-input" id="proofUpload" type="file" accept="image/*"><div class="upload-status" id="uploadStatus">no photo = no slot machine 😭</div><button class="btn p4-next" id="p4Next" disabled>I've got it →</button></div><button class="back" data-back aria-label="Go back">← back</button></section>
@@ -191,6 +201,7 @@ function go(n){
   window.sitePageIndex=i;
   if(n===1){
     startBirthdayWeather();
+    setTimeout(playBirthdaySong,80);
   }else if(oldIndex===1){
     resetBirthdayWeather();
   }
