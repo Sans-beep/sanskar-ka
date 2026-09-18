@@ -101,7 +101,7 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
 <section class="page" id="p6"><div class="top"><span>ONE MORE THING</span><span>06 / 07</span></div><div class="inner"><i class="doodle d1">♡</i><i class="doodle d2">✦</i><div class="kicker">the letter</div><div class="copy" style="font-size:38px;margin-top:12px">There's something<br>with it that you'll need.</div><div class="envelope hit" id="secretEnvelope" aria-label="Tap the envelope nine times"><div class="seal">♡</div></div><div class="tap-count" id="tapCount">there's something here… <b>♡</b></div><div class="note">open the letter. keep the little code.</div><i class="doodle">⌁</i><button class="btn next">I have it →</button></div></section>
 <section class="page" id="p7"><div class="top"><span>PRIVATE ENTRY</span><span>07 / 07</span></div><div class="inner"><i class="doodle d1">♡</i><i class="doodle d2">⌁</i><div class="kicker">the next chapter is locked</div><div class="copy" style="font-size:39px;margin-top:14px">Enter the code<br>from the letter.</div><input id="code" maxlength="20" placeholder="• • • • •" autocomplete="off"><button class="btn" id="unlock">unlock →</button><div class="error" id="error"></div><div class="tiny">no cheating, bhondu girl.</div></div></section>
 <div class="ambient"><span class="dust a">·</span><span class="dust b">✦</span><span class="dust c">·</span><span class="leaf">⌁</span></div><div class="transition-doodles" id="transitionDoodles"></div></main></div>
-<button class="global-back" id="globalBack" type="button" aria-label="Go back">← back</button>
+<button class="global-back" id="globalBack" style="display:none" type="button" aria-label="Go back">← back</button>
 <audio id="birthdaySong" preload="auto" src="Uff Teri Adaa I Like You Karthik Calling Karthik 128 Kbps.mp3"></audio>
 
 <div class="joy" id="joy">okayyy… you found it ♡</div>
@@ -233,7 +233,7 @@ document.addEventListener('click',e=>{
 },true);
 
 const globalBack=document.getElementById('globalBack');
-function syncGlobalBack(){globalBack.classList.toggle('show',i>0);}
+function syncGlobalBack(){globalBack.style.display=i>0?"flex":"none";globalBack.classList.toggle("show",i>0);}
 globalBack.addEventListener('click',e=>{
   e.preventDefault();
   e.stopPropagation();
