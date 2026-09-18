@@ -185,8 +185,15 @@ function unlock(){
 }
 document.getElementById('unlock').onclick=unlock;
 document.getElementById('code').onkeydown=e=>{if(e.key==='Enter')unlock()};
+const ownerMode=new URLSearchParams(location.search).has('owner');
 const proofUpload=document.getElementById('proofUpload'), proofPhoto=document.getElementById('proofPhoto'), proofImage=document.getElementById('proofImage'), uploadStatus=document.getElementById('uploadStatus'), p4Next=document.getElementById('p4Next');
-proofUpload.addEventListener('change',()=>{const file=proofUpload.files&&proofUpload.files[0];if(!file)return;if(!file.type.startsWith('image/')){uploadStatus.textContent='that one is not a photo 😭';proofUpload.value='';return}proofFile=file;proofUploaded=false;proofImage.src=URL.createObjectURL(file);proofPhoto.classList.add('has-image');uploadStatus.textContent='evidence acquired ♡';p4Next.disabled=false;});
+if(ownerMode){
+  proofUploaded=true;
+  proofUpload.disabled=true;
+  uploadStatus.textContent='owner mode ♡ upload skipped';
+  p4Next.disabled=false;
+}
+proofUpload.addEventListener('change',()=>{if(ownerMode)return;const file=proofUpload.files&&proofUpload.files[0];if(!file)return;if(!file.type.startsWith('image/')){uploadStatus.textContent='that one is not a photo 😭';proofUpload.value='';return}proofFile=file;proofUploaded=false;proofImage.src=URL.createObjectURL(file);proofPhoto.classList.add('has-image');uploadStatus.textContent='evidence acquired ♡';p4Next.disabled=false;});
 p4Next.addEventListener('click',async()=>{if(proofUploaded){setTimeout(()=>go(i+1),0);return}if(!proofFile)return;p4Next.disabled=true;uploadStatus.textContent='sending your evidence… ♡';const data=new FormData();data.append('file',proofFile);data.append('upload_preset','kashish_birthday');try{const res=await fetch('https://api.cloudinary.com/v1_1/aifv5z3a/image/upload',{method:'POST',body:data});if(!res.ok)throw new Error('upload failed');await res.json();proofUploaded=true;uploadStatus.textContent='evidence delivered ♡';setTimeout(()=>go(i+1),350)}catch(err){console.error(err);uploadStatus.textContent="hmm… the evidence didn't send. try again 😭";p4Next.disabled=false}});
 
 
