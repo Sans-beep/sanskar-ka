@@ -129,7 +129,7 @@ function go(n){
   setTimeout(()=>{old.classList.remove('exit-left','exit-right');card.classList.remove('transitioning',trans.cls);transitionDoodles.innerHTML='';busy=false},900);
 }
 document.querySelectorAll('.next').forEach(b=>b.addEventListener('click',()=>go(i+1)));
-document.querySelectorAll('[data-back]').forEach(b=>b.addEventListener('click',()=>go(i-1)));
+document.querySelectorAll('[data-back]').forEach(b=>b.addEventListener('click',e=>{if(i===0)return;e.preventDefault();go(i-1)}));
 
 function unlock(){
   const v=document.getElementById('code').value.trim().toUpperCase();
