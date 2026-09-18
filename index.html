@@ -123,7 +123,10 @@ function go(n){
   old.classList.remove('exit-left','exit-right','enter-left','enter-right');
   old.classList.add(forward?'exit-left':'exit-right');
   void old.offsetWidth;
-  next.classList.add(forward?'enter-right':'enter-left','active');
+  // Add the enter class first, force a single animation start, then activate it.
+  next.classList.add(forward ? 'enter-right' : 'enter-left');
+  void next.offsetWidth;
+  next.classList.add('active');
   i=n;
   const throwbackSong=document.getElementById('throwbackSong');
   if(throwbackSong){
