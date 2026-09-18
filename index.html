@@ -66,7 +66,7 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
 </head>
 <body>
 <div class="shell"><main class="card">
-<section class="page active" id="p1"><div class="top"><span>FOR KASHISH</span><span>01 / 06</span></div><div class="inner"><i class="doodle d1">♡</i><i class="doodle d2">✦</i><i class="doodle d3">⌁</i><div class="script hero">Hey<br>Kashish</div><div class="note" style="margin-top:25px">glad you exist :)</div><button class="btn next">tap to continue →</button></div></section>
+<section class="page active" id="p1"><div class="top"><span>FOR KASHISH</span><span>01 / 07</span></div><div class="inner"><i class="doodle d1">♡</i><i class="doodle d2">✦</i><i class="doodle d3">⌁</i><div class="script hero">Hey<br>Kashish</div><div class="note" style="margin-top:25px">glad you exist :)</div><button class="btn next">tap to continue →</button></div></section>
 <section class="page" id="p2"><div class="top"><span>JANUARY ENERGY</span><span>02 / 07</span></div><div class="inner"><i class="doodle d1">♡</i><i class="doodle d2">☆</i><div class="kicker">a tiny interruption to your day</div><div class="script birthday" style="margin-top:22px">Happy<br>Birthday ♡</div><div class="note" style="margin-top:25px">today gets to be a little more about you.</div><button class="btn next">okay, continue →</button></div><button class="back" data-back aria-label="Go back">← back</button></section>
 <section class="page" id="p3"><div class="top"><span>THE ARCHIVES</span><span>03 / 07</span></div><div class="inner throwback-inner"><i class="doodle d1">♡</i><i class="doodle d2">✦</i><div class="kicker">a little throwback</div><div class="throwback-note">found this in the archives.</div><div class="throwback-photo"><div class="tape"></div><img src="throwback-photo.jpg" alt="A childhood birthday memory of Kashish"></div><div class="throwback-copy">you sent me this three years ago.<br><span>look at you. ♡</span></div><div class="throwback-small">some things really don't change.</div><button class="btn next">continue →</button></div><button class="back" data-back aria-label="Go back">← back</button></section>
 <section class="page" id="p4"><div class="top"><span>FIRST THINGS FIRST</span><span>04 / 07</span></div><div class="inner"><i class="doodle d1">↗</i><i class="doodle d4">♡</i><div class="kicker">there's a little something</div><div class="copy" style="margin-top:15px">waiting for you.</div><div class="choco">🍫</div><div class="scribble">yes, this one :)</div><div class="note" style="margin-top:10px">check your door.</div><button class="btn next">I've got it →</button></div><button class="back" data-back aria-label="Go back">← back</button></section>
@@ -95,16 +95,21 @@ let i=0,busy=false;
 function go(n){
   if(busy || n<0 || n>=pages.length || n===i)return;
   busy=true;
-  const old=pages[i], next=pages[n], forward=n>i;
+  const oldIndex=i, old=pages[i], next=pages[n], forward=n>i;
   old.classList.remove('active','exit-left','exit-right','enter-left','enter-right');
   next.classList.remove('active','exit-left','exit-right','enter-left','enter-right');
   void next.offsetWidth;
   old.classList.add(forward?'exit-left':'exit-right');
   next.classList.add(forward?'enter-right':'enter-left','active');
   i=n;
+  const throwbackSong=document.getElementById('throwbackSong');
+  if(throwbackSong){
+    if(n===2){throwbackSong.currentTime=0;throwbackSong.play().catch(()=>{});}
+    else if(oldIndex===2){throwbackSong.pause();throwbackSong.currentTime=0;}
+  }
   setTimeout(()=>{old.classList.remove('exit-left','exit-right');busy=false},620);
 }
-document.querySelectorAll('.next').forEach(b=>b.addEventListener('click',()=>go(i+1)));const throwbackSong=document.getElementById('throwbackSong');document.querySelectorAll('.next').forEach(b=>b.addEventListener('click',()=>{if(i===2&&throwbackSong)throwbackSong.play().catch(()=>{});}));
+document.querySelectorAll('.next').forEach(b=>b.addEventListener('click',()=>go(i+1)));
 document.querySelectorAll('[data-back]').forEach(b=>b.addEventListener('click',()=>go(i-1)));
 
 function unlock(){
