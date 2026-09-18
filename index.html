@@ -19,6 +19,10 @@ border:1px solid #302b28;border-radius:28px;box-shadow:0 30px 100px #000}
 .page.enter-right{animation:cardInRight .72s cubic-bezier(.18,.82,.2,1) both}
 .page.exit-left{animation:cardOutLeft .58s cubic-bezier(.55,.08,.72,.35) both;pointer-events:none}
 .page.exit-right{animation:cardOutRight .58s cubic-bezier(.55,.08,.72,.35) both;pointer-events:none}
+/* scrapbook-style transitions */
+.card.transitioning{isolation:isolate}.transition-doodles{position:absolute;inset:0;z-index:12;pointer-events:none;overflow:hidden}.transition-doodle{position:absolute;font-family:Caveat,cursive;color:#e8b8bb;font-size:24px;opacity:0;animation:doodleAppear .9s cubic-bezier(.2,.8,.2,1) forwards}.transition-doodle.soft{color:#d9c8bd;font-size:19px}.transition-doodle.big{font-size:32px}@keyframes doodleAppear{0%{opacity:0;transform:translate3d(var(--sx),var(--sy),0) rotate(var(--sr)) scale(.45)}22%{opacity:.95}72%{opacity:.82;transform:translate3d(0,0,0) rotate(0) scale(1)}100%{opacity:0;transform:translate3d(var(--ex),var(--ey),0) rotate(var(--er)) scale(.92)}}
+.card.t01 .page.enter-right{animation:peelIn .82s cubic-bezier(.18,.84,.2,1) both}.card.t01 .page.exit-left{animation:peelOut .68s cubic-bezier(.55,.08,.72,.35) both}.card.t23 .page.enter-right{animation:photoIn .78s cubic-bezier(.18,.86,.2,1) both}.card.t23 .page.exit-left{animation:photoOut .62s cubic-bezier(.55,.08,.72,.35) both}.card.t34 .page.enter-right{animation:liftIn .82s cubic-bezier(.2,.85,.18,1) both}.card.t45 .page.enter-right{animation:softPushIn .72s cubic-bezier(.2,.82,.2,1) both}.card.t56 .page.enter-right{animation:paperIn .86s cubic-bezier(.18,.86,.18,1) both}.card.t67 .page.enter-right{animation:pullIn .8s cubic-bezier(.2,.84,.18,1) both}
+@keyframes peelIn{0%{opacity:0;transform:translate3d(18%,20px,0) rotate(3deg) scale(.97);clip-path:inset(0 0 0 18%)}65%{opacity:1;transform:translate3d(-2px,0,0) rotate(-.35deg) scale(1);clip-path:inset(0 0 0 0)}100%{opacity:1;transform:none;clip-path:inset(0)}}@keyframes peelOut{100%{opacity:0;transform:translate3d(-105%,8px,0) rotate(-4deg) skewY(-1deg)}}@keyframes photoIn{0%{opacity:0;transform:translate3d(90%,14px,0) rotate(5deg) scale(.94)}55%{opacity:1;transform:translate3d(-5px,0,0) rotate(-.7deg) scale(1.01)}100%{opacity:1;transform:none}}@keyframes photoOut{100%{opacity:0;transform:translate3d(-90%,-8px,0) rotate(-5deg) scale(.96)}}@keyframes liftIn{0%{opacity:0;transform:translate3d(0,55px,0) rotate(-1.8deg) scale(.97)}65%{opacity:1;transform:translate3d(0,-4px,0) rotate(.25deg) scale(1.005)}100%{opacity:1;transform:none}}@keyframes softPushIn{0%{opacity:0;transform:translate3d(70%,0,0) rotate(1.5deg) scale(.985)}75%{opacity:1;transform:translate3d(-3px,0,0) rotate(-.2deg)}100%{opacity:1;transform:none}}@keyframes paperIn{0%{opacity:0;transform:translate3d(15%,70px,0) rotate(2.5deg) scale(.96)}62%{opacity:1;transform:translate3d(-2px,-2px,0) rotate(-.35deg) scale(1.01)}100%{opacity:1;transform:none}}@keyframes pullIn{0%{opacity:0;transform:translate3d(0,30px,0) rotate(-2deg) scale(.965)}58%{opacity:1;transform:translate3d(0,-3px,0) rotate(.3deg) scale(1.005)}100%{opacity:1;transform:none}}
 @keyframes cardInLeft{0%{opacity:0;transform:translate3d(-115%,18px,0) rotate(-3.2deg) scale(.985)}72%{opacity:1;transform:translate3d(3px,0,0) rotate(.25deg) scale(1)}100%{opacity:1;transform:translate3d(0,0,0) rotate(0deg) scale(1)}}
 @keyframes cardInRight{0%{opacity:0;transform:translate3d(115%,18px,0) rotate(3.2deg) scale(.985)}72%{opacity:1;transform:translate3d(-3px,0,0) rotate(-.25deg) scale(1)}100%{opacity:1;transform:translate3d(0,0,0) rotate(0deg) scale(1)}}
 @keyframes cardOutLeft{0%{opacity:1;transform:translate3d(0,0,0) rotate(0deg)}100%{opacity:0;transform:translate3d(-112%,-12px,0) rotate(-3deg)}}
@@ -73,7 +77,7 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
 <section class="page" id="p5"><div class="top"><span>A LITTLE SWEETNESS</span><span>05 / 07</span></div><div class="inner"><i class="doodle d1">♡</i><i class="doodle d2">✎</i><div class="kicker">okay… evidence please</div><div class="proof-polaroid"><div class="tape"></div><div class="proof-photo" id="proofPhoto"><span class="photo-placeholder">your chocolate<br>has entered the chat 🍫</span><img id="proofImage" alt="Your chocolate photo preview"><div class="proof-caption">proof ♡</div></div></div><div class="copy" style="font-size:26px">Send me a picture<br>with the chocolates.</div><label class="upload-label" for="proofUpload">choose photo →</label><input class="upload-input" id="proofUpload" type="file" accept="image/*"><div class="upload-status" id="uploadStatus">no photo = no slot machine 😭</div><button class="btn p4-next" id="p4Next" disabled>I've got it →</button></div><button class="back" data-back aria-label="Go back">← back</button></section>
 <section class="page" id="p6"><div class="top"><span>ONE MORE THING</span><span>06 / 07</span></div><div class="inner"><i class="doodle d1">♡</i><i class="doodle d2">✦</i><div class="kicker">the letter</div><div class="copy" style="font-size:38px;margin-top:12px">There's something<br>with it that you'll need.</div><div class="envelope hit" id="secretEnvelope" aria-label="Tap the envelope nine times"><div class="seal">♡</div></div><div class="tap-count" id="tapCount">there's something here… <b>♡</b></div><div class="note">open the letter. keep the little code.</div><button class="btn next">I have it →</button></div><button class="back" data-back aria-label="Go back">← back</button></section>
 <section class="page" id="p7"><div class="top"><span>PRIVATE ENTRY</span><span>07 / 07</span></div><div class="inner"><i class="doodle d1">♡</i><i class="doodle d2">⌁</i><div class="kicker">the next chapter is locked</div><div class="copy" style="font-size:39px;margin-top:14px">Enter the code<br>from the letter.</div><input id="code" maxlength="20" placeholder="• • • • •" autocomplete="off"><button class="btn" id="unlock">unlock →</button><div class="error" id="error"></div><div class="tiny">no cheating, bhondu girl.</div></div><button class="back" data-back aria-label="Go back">← back</button></section>
-<div class="ambient"><span class="dust a">·</span><span class="dust b">✦</span><span class="dust c">·</span><span class="leaf">⌁</span></div></main></div>
+<div class="ambient"><span class="dust a">·</span><span class="dust b">✦</span><span class="dust c">·</span><span class="leaf">⌁</span></div><div class="transition-doodles" id="transitionDoodles"></div></main></div>
 
 
 <div class="joy" id="joy">okayyy… you found it ♡</div>
@@ -96,6 +100,21 @@ function go(n){
   if(busy || n<0 || n>=pages.length || n===i)return;
   busy=true;
   const oldIndex=i, old=pages[i], next=pages[n], forward=n>i;
+  const card=document.querySelector('.card');
+  const transitionDoodles=document.getElementById('transitionDoodles');
+  const transitionMap={
+    '0-1':{cls:'t01',items:[['♡','12%','22%','-28px','12px','0','-8deg'],['✦','82%','27%','24px','10px','0','12deg'],['⌁','19%','76%','-18px','18px','0','-10deg'],['♡','76%','72%','18px','-12px','0','8deg']]},
+    '1-2':{cls:'t12',items:[['✧','15%','30%','-22px','8px','0','-14deg'],['♡','86%','35%','22px','4px','0','12deg'],['✦','72%','78%','18px','18px','0','-8deg']]},
+    '2-3':{cls:'t23',items:[['✦','10%','20%','-20px','10px','0','-12deg'],['♡','88%','24%','20px','8px','0','10deg'],['⌁','18%','82%','-14px','-14px','0','-6deg'],['✧','78%','76%','18px','-10px','0','9deg']]},
+    '3-4':{cls:'t34',items:[['↗','13%','42%','-18px','0','0','-12deg'],['♡','87%','62%','20px','-8px','0','12deg'],['✦','70%','18%','12px','-14px','0','6deg']]},
+    '4-5':{cls:'t45',items:[['✦','17%','25%','-16px','6px','0','-8deg'],['♡','84%','29%','18px','4px','0','10deg'],['❀','81%','76%','16px','-10px','0','-7deg'],['⌁','13%','72%','-12px','-8px','0','8deg']]},
+    '5-6':{cls:'t56',items:[['♡','11%','31%','-18px','8px','0','-12deg'],['✦','89%','24%','18px','10px','0','9deg'],['✧','82%','79%','18px','-14px','0','-7deg'],['⌁','18%','81%','-14px','-8px','0','8deg']]},
+    '6-5':{cls:'t65',items:[['♡','86%','31%','18px','8px','0','10deg'],['✦','12%','24%','-18px','10px','0','-9deg']]}
+  };
+  const trans=transitionMap[`${oldIndex}-${n}`]||{cls:'generic',items:[['♡','15%','25%','-18px','8px','0','-8deg'],['✦','84%','70%','18px','-10px','0','9deg']]};
+  card.className=card.className.replace(/\bt\d+\b/g,'').trim(); card.classList.add('transitioning',trans.cls);
+  transitionDoodles.innerHTML='';
+  trans.items.forEach((d,k)=>{const el=document.createElement('span');el.className='transition-doodle '+(k%3===0?'big':'soft');el.textContent=d[0];el.style.left=d[1];el.style.top=d[2];el.style.setProperty('--sx',d[3]);el.style.setProperty('--sy',d[4]);el.style.setProperty('--ex',`${k%2?'-':'+'}${8+k*3}px`);el.style.setProperty('--ey',`${k%2?'-':'+'}${10+k*2}px`);el.style.setProperty('--sr',d[5]);el.style.setProperty('--er',d[6]);el.style.animationDelay=`${k*70}ms`;transitionDoodles.appendChild(el)});
   old.classList.remove('active','exit-left','exit-right','enter-left','enter-right');
   next.classList.remove('active','exit-left','exit-right','enter-left','enter-right');
   void next.offsetWidth;
@@ -107,7 +126,7 @@ function go(n){
     if(n===2){throwbackSong.currentTime=0;throwbackSong.play().catch(()=>{});}
     else if(oldIndex===2){throwbackSong.pause();throwbackSong.currentTime=0;}
   }
-  setTimeout(()=>{old.classList.remove('exit-left','exit-right');busy=false},620);
+  setTimeout(()=>{old.classList.remove('exit-left','exit-right');card.classList.remove('transitioning',trans.cls);transitionDoodles.innerHTML='';busy=false},900);
 }
 document.querySelectorAll('.next').forEach(b=>b.addEventListener('click',()=>go(i+1)));
 document.querySelectorAll('[data-back]').forEach(b=>b.addEventListener('click',()=>go(i-1)));
