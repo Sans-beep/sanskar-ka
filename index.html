@@ -115,12 +115,15 @@ function go(n){
   card.className=card.className.replace(/\bt\d+\b/g,'').trim(); card.classList.add('transitioning',trans.cls);
   transitionDoodles.innerHTML='';
   trans.items.forEach((d,k)=>{const el=document.createElement('span');el.className='transition-doodle '+(k%3===0?'big':'soft');el.textContent=d[0];el.style.left=d[1];el.style.top=d[2];el.style.setProperty('--sx',d[3]);el.style.setProperty('--sy',d[4]);el.style.setProperty('--ex',`${k%2?'-':'+'}${8+k*3}px`);el.style.setProperty('--ey',`${k%2?'-':'+'}${10+k*2}px`);el.style.setProperty('--sr',d[5]);el.style.setProperty('--er',d[6]);el.style.animationDelay=`${k*70}ms`;transitionDoodles.appendChild(el)});
-  // Keep exactly one page active during each navigation step.
-  // Clear stale transition state before forcing the next page's animation.
-  pages.forEach(p=>p.classList.remove('active','exit-left','exit-right','enter-left','enter-right'));
-  void next.offsetWidth;
+  // Reset every page's navigation classes, then animate only the requested pair.
+  // The old page is hidden immediately so it can never visually re-enter during the handoff.
+  pages.forEach(p=>{
+    p.classList.remove('active','exit-left','exit-right','enter-left','enter-right');
+    p.style.pointerEvents='none';
+  });
   old.classList.add(forward?'exit-left':'exit-right');
   next.classList.add(forward?'enter-right':'enter-left','active');
+  void next.offsetWidth;
   i=n;
   const throwbackSong=document.getElementById('throwbackSong');
   if(throwbackSong){
