@@ -41,6 +41,7 @@ function go(n){
   busy=true;
   const oldIndex=i, old=pages[i], next=pages[n], forward=n>i;
   if(oldIndex===1)pauseBirthdaySong();
+  if(oldIndex===7){stopPhase2Hum();}
   if(oldIndex===2){
     const t=document.getElementById('throwbackSong');
     if(t)fadeOutAudio(t,450,true);
@@ -306,7 +307,7 @@ env.addEventListener('click',()=>{
     8:'…',
     9:'FINAL ATTEMPT.'
   };
-  let spins=0,busy2=false,phase2Audio=null;
+  let spins=0,busy2=false,phase2Audio=null,phase2Hum=null,phase2HumGain=null;
   const reels=[...machine.querySelectorAll('.reel-column')];
   const strips=reels.map(r=>r.querySelector('.reel-strip'));
 
@@ -351,6 +352,25 @@ env.addEventListener('click',()=>{
       return phase2Audio;
     }catch(e){return null}
   }
+  function startPhase2Hum(){
+    const ac=getAudio();if(!ac||phase2Hum)return;
+    const o=ac.createOscillator(),g=ac.createGain(),o2=ac.createOscillator(),g2=ac.createGain();
+    o.type='sine';o.frequency.value=58;o2.type='triangle';o2.frequency.value=116;
+    g.gain.value=.008;g2.gain.value=.004;
+    o.connect(g);g.connect(ac.destination);o2.connect(g2);g2.connect(ac.destination);
+    o.start();o2.start();phase2Hum={o,o2};phase2HumGain={g,g2};
+    [g,g2].forEach(x=>x.gain.setTargetAtTime(x.gain.value,ac.currentTime,.2));
+  }
+  function stopPhase2Hum(){
+    if(!phase2Hum||!phase2Audio)return;
+    const ac=phase2Audio, hum=phase2Hum,gains=phase2HumGain;
+    const now=ac.currentTime;
+    gains.g.gain.cancelScheduledValues(now);gains.g.gain.setTargetAtTime(.0001,now,.18);
+    gains.g2.gain.cancelScheduledValues(now);gains.g2.gain.setTargetAtTime(.0001,now,.18);
+    setTimeout(()=>{try{hum.o.stop();hum.o2.stop()}catch(e){}},700);
+    phase2Hum=null;phase2HumGain=null;
+  }
+
   function tone(freq,dur=.08,type='triangle',vol=.035,slide=0){
     const ac=getAudio();if(!ac)return;
     const o=ac.createOscillator(),g=ac.createGain();
@@ -469,6 +489,7 @@ env.addEventListener('click',()=>{
     setStatus(spinNotes[spinNo]);
     hint.textContent=spinNo===5?'listen.':(spinNo===8?'…':'pull it.');
     visualSpin(spinNo);
+    startPhase2Hum();
     pullLever();
     mechanicalStart();
 
