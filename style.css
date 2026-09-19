@@ -125,9 +125,9 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
    ========================================================= */
 #p8.phase2-page{
   --p2-ink:#07131F;--p2-blue:#245BFF;--p2-yellow:#D9FF3F;--p2-red:#FF4B3E;--p2-paper:#FFF8E8;
-  background:var(--p2-ink);color:var(--p2-paper);padding:0;overflow:hidden;place-items:stretch;isolation:isolate;
+  background-color:var(--p2-ink);color:var(--p2-paper);padding:0;overflow:hidden;place-items:stretch;isolation:isolate;
 }
-#p8.phase2-page:before{content:"";position:absolute;inset:0;opacity:.15;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:38px 38px;mask-image:linear-gradient(to bottom,rgba(0,0,0,.92),transparent 92%);z-index:0}
+#p8.phase2-page:before{content:"";position:absolute;inset:16px;pointer-events:none;border:1px solid rgba(83,120,151,.18);z-index:0}
 #p8.phase2-page:after{display:none}
 #p8 .p2-topbar{position:absolute;top:18px;left:18px;right:18px;z-index:8;display:flex;justify-content:space-between;gap:10px;font:700 9px/1 "Courier New",monospace;letter-spacing:.12em;color:#9eb4c9;text-transform:uppercase}
 #p8 .p2-content{position:relative;z-index:4;width:100%;height:100%;padding:45px 18px 18px;display:flex;flex-direction:column;align-items:center;overflow:hidden}
@@ -147,7 +147,7 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
 #p8 .machine-face{position:relative;margin:0 18px;padding:12px 13px 14px;background:#15283c;border:2px solid #284662;border-radius:11px;box-shadow:inset 0 4px 0 rgba(255,255,255,.03),inset 0 -7px 0 rgba(0,0,0,.12)}
 #p8 .reel-sign{margin:0 0 9px;font:700 8px/1 "Courier New",monospace;color:#8fa9c2;letter-spacing:.16em}
 #p8 .reel-window{height:220px;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;position:relative;padding:7px;background:#06101a;border:2px solid #34526e;border-radius:7px;box-shadow:inset 0 12px 16px rgba(0,0,0,.25),inset 0 -12px 16px rgba(0,0,0,.25)}
-#p8 .reel-window:before,#p8 .reel-window:after{content:"";position:absolute;left:3px;right:3px;height:18px;z-index:3;pointer-events:none}.reel-window:before{top:2px;background:linear-gradient(to bottom,#06101a,transparent)}.reel-window:after{bottom:2px;background:linear-gradient(to top,#06101a,transparent)}
+#p8 .reel-window:before,#p8 .reel-window:after{content:"";position:absolute;left:3px;right:3px;height:18px;z-index:3;pointer-events:none;background:#06101a;opacity:.75}.reel-window:before{top:2px}.reel-window:after{bottom:2px}
 #p8 .reel-column{position:relative;overflow:hidden;border:2px solid #203a52;border-radius:5px;background:#f0eadc;box-shadow:inset 0 0 0 2px #fffaf0}
 #p8 .reel-column:before{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(90deg,rgba(7,19,31,.14),transparent 26%,transparent 72%,rgba(7,19,31,.14));mix-blend-mode:multiply}
 #p8 .reel-strip{position:absolute;left:0;right:0;top:0;will-change:transform;transition:transform .95s cubic-bezier(.12,.75,.16,1)}
@@ -164,7 +164,7 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
 #p8 .machine-screw{position:absolute;width:9px;height:9px;border-radius:50%;background:#6d8293;border:2px solid #182b3c;box-shadow:inset 1px 1px #c6d1d8;z-index:6}.screw-a{top:23px;left:14px}.screw-b{top:23px;right:13px}.screw-c{bottom:13px;left:14px}.screw-d{bottom:13px;right:13px}
 #p8 .machine-edge-note{position:absolute;left:-19px;bottom:48px;padding:6px 7px;background:#f3e8d5;color:#07131F;font:900 7px/1 "Arial Narrow","Arial",sans-serif;letter-spacing:.04em;transform:rotate(-7deg);box-shadow:3px 4px 0 rgba(0,0,0,.28)}
 #p8 .p2-progress{width:min(100%,310px);height:5px;background:#193047;overflow:hidden;margin-top:10px;border-left:2px solid var(--p2-red);border-right:2px solid var(--p2-yellow)}
-#p8 #p2ProgressFill{display:block;width:0;height:100%;background:linear-gradient(90deg,var(--p2-red) 0 40%,var(--p2-yellow) 40% 100%);transition:width .45s cubic-bezier(.2,.8,.2,1)}
+#p8 #p2ProgressFill{display:block;width:0;height:100%;background:var(--p2-yellow);border-right:2px solid var(--p2-red);transition:width .45s cubic-bezier(.2,.8,.2,1)}
 #p8 .p2-hint{margin-top:8px;color:#5f7c97;font:700 8px/1 "Courier New",monospace;letter-spacing:.08em;text-transform:lowercase}
 #p8 .p2-grid{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}.p2-cross{position:absolute;color:var(--p2-yellow);font:900 20px/1 "Courier New",monospace;opacity:.45}.p2-cross.c1{left:7%;top:17%}.p2-cross.c2{right:8%;bottom:28%}.p2-ring{position:absolute;border:2px solid var(--p2-blue);border-radius:50%;opacity:.23}.p2-ring.r1{width:90px;height:90px;right:-35px;top:39%}.p2-ring.r2{width:48px;height:48px;left:-18px;bottom:18%;border-color:var(--p2-red)}.p2-stripe{position:absolute;width:180px;height:13px;background:var(--p2-red);opacity:.12;transform:rotate(-24deg)}.p2-stripe.s1{left:-65px;top:31%}.p2-stripe.s2{right:-72px;bottom:17%;background:var(--p2-yellow);transform:rotate(21deg)}.p2-scribble{position:absolute;font:900 7px/1 "Courier New",monospace;color:#52708c;letter-spacing:.12em}.p2-scribble.ss1{left:4%;bottom:9%;transform:rotate(-7deg)}.p2-scribble.ss2{right:3%;top:29%;transform:rotate(8deg)}
 #p8 .p2-glitch{position:absolute;inset:0;z-index:30;background:rgba(36,91,255,.1);display:grid;place-items:center;opacity:0;pointer-events:none;mix-blend-mode:screen}.p2-glitch span{padding:5px 8px;border:1px solid var(--p2-red);color:var(--p2-red);font:900 9px/1 "Courier New",monospace;letter-spacing:.15em;transform:skewX(-11deg);opacity:.8}.p2-glitch.show{animation:p2Glitch .42s steps(2,end)}
@@ -176,3 +176,19 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
 @media (max-height:700px){#p8 .p2-content{padding-top:40px}#p8 .p2-intro{margin-bottom:0}#p8 .slot-machine{min-height:380px;margin-top:14px;max-height:500px}#p8 .machine-top{height:59px;padding-top:18px}#p8 .reel-window{height:180px}#p8 .reel-cell{height:55px}.slot-glyph{transform:scale(.84)}#p8 .machine-face{padding-top:9px}#p8 .control-deck{min-height:82px}#p8 .machine-lower{padding-top:8px}}
 @media (max-width:360px){#p8 .p2-content{padding-left:12px;padding-right:12px}#p8 .p2-intro h2{font-size:32px}#p8 .slot-machine{width:100%}#p8 .machine-face{margin-left:12px;margin-right:12px}#p8 .control-deck{gap:22px}#p8 .slot-button{width:96px}#p8 .machine-edge-note{left:-9px;font-size:6px}}
 @media (prefers-reduced-motion:reduce){#p8 *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* Phase 2 motion language: physical, not glossy. */
+.story-thread.phase2-hidden,.ambient.phase2-hidden{opacity:0!important;visibility:hidden!important}
+#p8.spin-jolt .slot-machine{animation:p2Jolt .48s cubic-bezier(.2,.8,.2,1)}
+#p8.spin-heavy .slot-machine{animation:p2Heavy .72s cubic-bezier(.25,.7,.2,1)}
+#p8.spin-heavy .machine-lights i{animation-duration:.38s}
+#p8.spin-shift .p2-ring.r1{animation:p2ShiftRing .9s cubic-bezier(.2,.8,.2,1)}
+#p8.spin-shift .p2-stripe.s1{animation:p2StripeShift 1s cubic-bezier(.2,.8,.2,1)}
+#p8.spin-overload .slot-machine{animation:p2Overload .85s cubic-bezier(.12,.75,.18,1);box-shadow:14px 16px 0 rgba(0,0,0,.34),0 28px 60px rgba(0,0,0,.5)}
+#p8.spin-overload .p2-cross.c1{animation:p2CrossFlash .55s steps(2,end) 3}
+@keyframes p2Jolt{0%,100%{transform:rotate(-.55deg) translateY(0)}38%{transform:rotate(.5deg) translateY(-5px)}70%{transform:rotate(-.8deg) translateY(2px)}}
+@keyframes p2Heavy{0%,100%{transform:rotate(-.55deg) translate(0,0)}30%{transform:rotate(-.9deg) translate(2px,5px)}62%{transform:rotate(.1deg) translate(-2px,1px)}}
+@keyframes p2ShiftRing{0%{transform:translate(0,0) rotate(0)}50%{transform:translate(-35px,13px) rotate(25deg)}100%{transform:translate(8px,-7px) rotate(-6deg)}}
+@keyframes p2StripeShift{0%{transform:rotate(-24deg) translateX(0)}55%{transform:rotate(-20deg) translateX(32px)}100%{transform:rotate(-28deg) translateX(-6px)}}
+@keyframes p2Overload{0%,100%{transform:rotate(-.55deg) scale(1)}20%{transform:rotate(-1.1deg) scale(1.008)}42%{transform:rotate(.7deg) scale(.996)}64%{transform:rotate(-.8deg) scale(1.006)}}
+@keyframes p2CrossFlash{0%,100%{opacity:.45;transform:scale(1)}50%{opacity:1;transform:scale(1.35) rotate(12deg)}}
