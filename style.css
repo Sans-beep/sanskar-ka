@@ -186,6 +186,9 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
 #p8.spin-shift .p2-stripe.s1{animation:p2StripeShift 1s cubic-bezier(.2,.8,.2,1)}
 #p8.spin-overload .slot-machine{animation:p2Overload .85s cubic-bezier(.12,.75,.18,1);box-shadow:14px 16px 0 rgba(0,0,0,.34),0 28px 60px rgba(0,0,0,.5)}
 #p8.spin-overload .p2-cross.c1{animation:p2CrossFlash .55s steps(2,end) 3}
+
+#p8 .p2-ring.r1{animation:p2RingFloat 8s ease-in-out infinite}#p8 .p2-ring.r2{animation:p2RingFloat 6.5s ease-in-out infinite reverse}.p2-scribble.ss1{animation:p2ScribbleDrift 9s ease-in-out infinite}.p2-scribble.ss2{animation:p2ScribbleDrift 11s ease-in-out infinite reverse}
+@keyframes p2RingFloat{0%,100%{transform:translate(0,0) rotate(0)}50%{transform:translate(-6px,8px) rotate(7deg)}}@keyframes p2ScribbleDrift{0%,100%{transform:rotate(-7deg) translate(0,0)}50%{transform:rotate(-5deg) translate(4px,-3px)}}
 @keyframes p2Jolt{0%,100%{transform:rotate(-.55deg) translateY(0)}38%{transform:rotate(.5deg) translateY(-5px)}70%{transform:rotate(-.8deg) translateY(2px)}}
 @keyframes p2Heavy{0%,100%{transform:rotate(-.55deg) translate(0,0)}30%{transform:rotate(-.9deg) translate(2px,5px)}62%{transform:rotate(.1deg) translate(-2px,1px)}}
 @keyframes p2ShiftRing{0%{transform:translate(0,0) rotate(0)}50%{transform:translate(-35px,13px) rotate(25deg)}100%{transform:translate(8px,-7px) rotate(-6deg)}}
