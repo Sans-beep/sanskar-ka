@@ -1,23 +1,38 @@
 
 function startBirthdayWeather(){const p=document.getElementById('p2');if(!p)return;p.classList.remove('sunrise');clearTimeout(window.birthdayWeatherTimer);window.birthdayWeatherTimer=setTimeout(()=>p.classList.add('sunrise'),4600)}
 function resetBirthdayWeather(){const p=document.getElementById('p2');if(!p)return;clearTimeout(window.birthdayWeatherTimer);p.classList.remove('sunrise')}
-function playBirthdaySong(){
-  const a=document.getElementById('birthdaySong');
+function fadeInAudio(a,target=.5,duration=700){
   if(!a)return;
-  a.pause();
-  a.currentTime=0;
+  if(a._fadeTimer)clearInterval(a._fadeTimer);
+  a.volume=0;
   const p=a.play();
   if(p&&p.catch)p.catch(()=>{});
+  const started=performance.now();
+  a._fadeTimer=setInterval(()=>{
+    const t=Math.min(1,(performance.now()-started)/duration);
+    a.volume=target*t;
+    if(t>=1){clearInterval(a._fadeTimer);a._fadeTimer=null;}
+  },30);
 }
-function pauseBirthdaySong(){
-  const a=document.getElementById('birthdaySong');
-  if(a){
-    a.pause();
-    a.currentTime=0;
-  }
+function fadeOutAudio(a,duration=500,reset=true){
+  if(!a)return;
+  if(a._fadeTimer)clearInterval(a._fadeTimer);
+  const start=a.volume, started=performance.now();
+  a._fadeTimer=setInterval(()=>{
+    const t=Math.min(1,(performance.now()-started)/duration);
+    a.volume=start*(1-t);
+    if(t>=1){
+      clearInterval(a._fadeTimer);a._fadeTimer=null;
+      a.pause();
+      if(reset)a.currentTime=0;
+    }
+  },30);
 }
+function playBirthdaySong(){const a=document.getElementById('birthdaySong');if(a){a.pause();a.currentTime=0;fadeInAudio(a,.42,850)}}
+function pauseBirthdaySong(){fadeOutAudio(document.getElementById('birthdaySong'),450,true)}
+
 const pages=[...document.querySelectorAll('.page')];
-let i=0,busy=false;
+let i=0,busy=false,phase1Ending=false;
 window.sitePageIndex=0;
 let proofFile=null,proofUploaded=false;
 
@@ -26,7 +41,10 @@ function go(n){
   busy=true;
   const oldIndex=i, old=pages[i], next=pages[n], forward=n>i;
   if(oldIndex===1)pauseBirthdaySong();
-  if(n!==1)pauseBirthdaySong();
+  if(oldIndex===2){
+    const t=document.getElementById('throwbackSong');
+    if(t)fadeOutAudio(t,450,true);
+  }
   const card=document.querySelector('.card');
   const transitionDoodles=document.getElementById('transitionDoodles');
   const transitionMap={
@@ -77,6 +95,8 @@ function go(n){
   i=n;
   window.sitePageIndex=i;
   syncGlobalBack();
+  const thread=document.getElementById('storyThread');
+  if(thread){thread.classList.remove('play');void thread.offsetWidth;thread.classList.add('play');}
   if(n===1){
     startBirthdayWeather();
     playBirthdaySong();
@@ -84,9 +104,9 @@ function go(n){
     resetBirthdayWeather();
   }
   const throwbackSong=document.getElementById('throwbackSong');
-  if(throwbackSong){
-    if(n===2){throwbackSong.currentTime=0;throwbackSong.play().catch(()=>{});}
-    else if(oldIndex===2){throwbackSong.pause();throwbackSong.currentTime=0;}
+  if(throwbackSong && n===2){
+    throwbackSong.currentTime=0;
+    fadeInAudio(throwbackSong,.48,850);
   }
   setTimeout(()=>{
     old.classList.remove('active','exit-left','exit-right','enter-left','enter-right');
@@ -114,7 +134,7 @@ document.addEventListener('click',e=>{
 },true);
 
 const globalBack=document.getElementById('globalBack');
-function syncGlobalBack(){globalBack.style.display=i>0?"flex":"none";globalBack.classList.toggle("show",i>0);}
+function syncGlobalBack(){const show=i>0&&!phase1Ending;globalBack.style.display=show?"flex":"none";globalBack.classList.toggle("show",show);}
 globalBack.addEventListener('click',e=>{
   e.preventDefault();
   e.stopPropagation();
@@ -123,20 +143,38 @@ globalBack.addEventListener('click',e=>{
 });
 syncGlobalBack();
 
+function runPhase1Ending(){
+  phase1Ending=true;
+  const overlay=document.getElementById('codeReveal');
+  const grant=document.getElementById('revealGrant');
+  const wait=document.getElementById('revealWait');
+  const found=document.getElementById('revealFound');
+  const number=document.getElementById('revealNumber');
+  const final=document.getElementById('revealFinal');
+  const back=document.getElementById('globalBack');
+  if(back)back.style.display='none';
+  overlay.classList.add('show');
+  overlay.setAttribute('aria-hidden','false');
+  [grant,wait,found,number,final].forEach(el=>el.classList.remove('show'));
+  [[grant,180],[wait,1150],[found,2250],[number,3400],[final,4450]].forEach(([el,delay])=>setTimeout(()=>el.classList.add('show'),delay));
+}
 function unlock(){
   const v=document.getElementById('code').value.trim().toUpperCase();
   const e=document.getElementById('error');
-  if(v==='KASHISH09'){
-    e.textContent='ACCESS GRANTED ♡';
-    setTimeout(()=>alert('Phase 2 unlocked — slot machine'),450);
+  const input=document.getElementById('code');
+  const button=document.getElementById('unlock');
+  if(v==='KASHISH19'){
+    e.textContent='';
+    input.disabled=true;
+    button.disabled=true;
+    runPhase1Ending();
   }else{
     e.textContent='Oh my bhondu girl not today 😭🫶🏻';
-    document.getElementById('code').value='';
+    input.value='';
   }
-}
-document.getElementById('unlock').onclick=unlock;
+}document.getElementById('unlock').onclick=unlock;
 document.getElementById('code').onkeydown=e=>{if(e.key==='Enter')unlock()};
-const ownerMode=/^(?:[^?]*\?)?owner(?:=1)?(?:&|$)/.test(location.search.replace(/^\?/,''));
+const ownerMode=new URLSearchParams(location.search).has('owner');
 const proofUpload=document.getElementById('proofUpload'), proofPhoto=document.getElementById('proofPhoto'), proofImage=document.getElementById('proofImage'), uploadStatus=document.getElementById('uploadStatus'), p4Next=document.getElementById('p4Next');
 if(ownerMode){
   proofUploaded=true;
@@ -144,10 +182,11 @@ if(ownerMode){
   proofUpload.disabled=true;
   p4Next.disabled=false;
   p4Next.removeAttribute('disabled');
+  document.getElementById('proofPolaroid').classList.add('verified');
   uploadStatus.textContent='owner mode ♡ upload skipped';
 }
 proofUpload.addEventListener('change',()=>{if(ownerMode)return;const file=proofUpload.files&&proofUpload.files[0];if(!file)return;if(!file.type.startsWith('image/')){uploadStatus.textContent='that one is not a photo 😭';proofUpload.value='';return}proofFile=file;proofUploaded=false;proofImage.src=URL.createObjectURL(file);proofPhoto.classList.add('has-image');uploadStatus.textContent='evidence acquired ♡';p4Next.disabled=false;});
-p4Next.addEventListener('click',async()=>{if(proofUploaded){setTimeout(()=>go(i+1),0);return}if(!proofFile)return;p4Next.disabled=true;uploadStatus.textContent='sending your evidence… ♡';const data=new FormData();data.append('file',proofFile);data.append('upload_preset','kashish_birthday');try{const res=await fetch('https://api.cloudinary.com/v1_1/aifv5z3a/image/upload',{method:'POST',body:data});if(!res.ok)throw new Error('upload failed');await res.json();proofUploaded=true;uploadStatus.textContent='evidence delivered ♡';setTimeout(()=>go(i+1),350)}catch(err){console.error(err);uploadStatus.textContent="hmm… the evidence didn't send. try again 😭";p4Next.disabled=false}});
+p4Next.addEventListener('click',async()=>{if(proofUploaded){setTimeout(()=>go(i+1),0);return}if(!proofFile)return;p4Next.disabled=true;uploadStatus.textContent='sending your evidence… ♡';const data=new FormData();data.append('file',proofFile);data.append('upload_preset','kashish_birthday');try{const res=await fetch('https://api.cloudinary.com/v1_1/aifv5z3a/image/upload',{method:'POST',body:data});if(!res.ok)throw new Error('upload failed');await res.json();proofUploaded=true;document.getElementById('proofPolaroid').classList.add('verified');uploadStatus.textContent='okay, i believe you ♡';setTimeout(()=>go(i+1),900)}catch(err){console.error(err);uploadStatus.textContent="hmm… the evidence didn't send. try again 😭";p4Next.disabled=false}});
 
 
 let secretTaps=0,tapReset;
@@ -164,7 +203,7 @@ function closeLetter(){
   pop.classList.remove('open');
   pop.setAttribute('aria-hidden','true');
   const song=document.getElementById('letterSong');
-  if(song){ song.pause(); clearTimeout(window.letterSongStop); }
+  if(song){ clearTimeout(window.letterSongStop); fadeOutAudio(song,500,true); }
 }
 document.getElementById('closeLetter').onclick=closeLetter;
 pop.addEventListener('click',e=>{if(e.target===pop)closeLetter()});
@@ -202,18 +241,16 @@ env.addEventListener('click',()=>{
       burst.appendChild(el);
     });
 
+    // Start audio during the user gesture so mobile autoplay policies are more reliable.
+    const letterSong=document.getElementById('letterSong');
+    if(letterSong){letterSong.currentTime=20;fadeInAudio(letterSong,.56,900);}
     // The actual letter opens automatically after the heart burst.
     setTimeout(()=>{
       pop.classList.add('open');
       pop.setAttribute('aria-hidden','false');
       const song=document.getElementById('letterSong');
-      song.currentTime=20;
-      song.play().catch(()=>{});
       clearTimeout(window.letterSongStop);
-      window.letterSongStop=setTimeout(()=>{
-        song.pause();
-        song.currentTime=20;
-      },40000);
+      window.letterSongStop=setTimeout(()=>fadeOutAudio(song,900,true),40000);
     },620);
   }else{
     tapReset=setTimeout(()=>{
