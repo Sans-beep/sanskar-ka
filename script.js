@@ -391,10 +391,11 @@ env.addEventListener('click',()=>{
 
   function animateStrip(strip,reelIndex,spinNo,desired,delay,duration){
     const cellH=reels[reelIndex].querySelector('.reel-cell')?.offsetHeight||68;
+    const windowH=reels[reelIndex].parentElement?.offsetHeight||220;
     const symbolIndex=symbols.indexOf(desired);
     const cycleStart=(spinNo*8)+8+reelIndex*3;
     const targetIndex=cycleStart+(symbolIndex-(cycleStart%symbols.length)+symbols.length)%symbols.length;
-    const stopOffset=Math.max(0,targetIndex*cellH-(220-cellH)/2);
+    const stopOffset=Math.max(0,targetIndex*cellH-(windowH-cellH)/2);
     strip.style.transition='none';
     strip.style.transform='translate3d(0,'+(-Math.min((spinNo===1?0:targetIndex-10)*cellH,stopOffset-10))+'px,0)';
     void strip.offsetHeight;
@@ -407,10 +408,14 @@ env.addEventListener('click',()=>{
   }
 
   function visualSpin(spinNo){
-    p2.classList.remove('spin-shake','spin-sticky','machine-calm');
+    p2.classList.remove('spin-shake','spin-sticky','machine-calm','spin-jolt','spin-heavy','spin-shift','spin-overload');
+    if(spinNo===1)p2.classList.add('spin-jolt');
     if(spinNo===2)p2.classList.add('spin-shake');
     if(spinNo===3)p2.classList.add('spin-sticky');
+    if(spinNo===6)p2.classList.add('spin-heavy');
+    if(spinNo===7)p2.classList.add('spin-shift');
     if(spinNo===8)p2.classList.add('machine-calm');
+    if(spinNo===9)p2.classList.add('spin-overload');
     if(spinNo===4){
       glitch.classList.remove('show');void glitch.offsetWidth;glitch.classList.add('show');
     }
