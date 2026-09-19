@@ -95,6 +95,10 @@ function go(n){
   i=n;
   window.sitePageIndex=i;
   syncGlobalBack();
+  const storyLayer=document.getElementById('storyThread');
+  const ambientLayer=document.querySelector('.ambient');
+  if(storyLayer)storyLayer.classList.toggle('phase2-hidden',i===7);
+  if(ambientLayer)ambientLayer.classList.toggle('phase2-hidden',i===7);
   const thread=document.getElementById('storyThread');
   if(thread){thread.classList.remove('play');void thread.offsetWidth;thread.classList.add('play');}
   if(n===1){
@@ -157,6 +161,13 @@ function runPhase1Ending(){
   overlay.setAttribute('aria-hidden','false');
   [grant,wait,found,number,final].forEach(el=>el.classList.remove('show'));
   [[grant,180],[wait,1150],[found,2250],[number,3400],[final,4450]].forEach(([el,delay])=>setTimeout(()=>el.classList.add('show'),delay));
+  clearTimeout(window.phase1ToPhase2Timer);
+  window.phase1ToPhase2Timer=setTimeout(()=>{
+    overlay.classList.remove('show');
+    overlay.setAttribute('aria-hidden','true');
+    phase1Ending=false;
+    go(7);
+  },6200);
 }
 function unlock(){
   const v=document.getElementById('code').value.trim().toUpperCase();
@@ -249,3 +260,220 @@ env.addEventListener('click',()=>{
     },2200);
   }
 });
+
+
+/* =========================================================
+   PHASE 2 — SLOT MACHINE ENGINE
+   Nine spins, tactile interactions, synthesized machine audio.
+   ========================================================= */
+(()=>{
+  const p2=document.getElementById('p8');
+  const machine=document.getElementById('slotMachine');
+  const lever=document.getElementById('slotLever');
+  const spinButton=document.getElementById('spinButton');
+  const counter=document.getElementById('p2Counter');
+  const spinSub=document.getElementById('spinSub');
+  const status=document.getElementById('slotStatus');
+  const progress=document.getElementById('p2ProgressFill');
+  const hint=document.getElementById('p2Hint');
+  const glitch=document.getElementById('p2Glitch');
+  const finale=document.getElementById('p2Finale');
+  const finaleOne=document.getElementById('finaleOne');
+  const finaleTwo=document.getElementById('finaleTwo');
+  const finaleTitle=document.getElementById('finaleTitle');
+  if(!p2||!machine||!lever||!spinButton)return;
+
+  const symbols=['seven','cherry','star','cake','k','19','bow','butter'];
+  const patterns={
+    1:['cherry','seven','star'],
+    2:['k','bow','19'],
+    3:['star','cherry','seven'],
+    4:['19','bow','k'],
+    5:['seven','star','cherry'],
+    6:['bow','k','19'],
+    7:['cherry','19','star'],
+    8:['k','seven','bow'],
+    9:['cake','cake','cake']
+  };
+  const spinNotes={
+    1:'MAKE ONE CHOICE.',
+    2:'STAY WITH IT.',
+    3:'DON’T TOUCH ANYTHING ELSE.',
+    4:'SIGNAL STABILIZING.',
+    5:'LISTEN.',
+    6:'HEAVY MECHANISM.',
+    7:'CALIBRATING.',
+    8:'…',
+    9:'FINAL ATTEMPT.'
+  };
+  let spins=0,busy2=false,phase2Audio=null;
+  const reels=[...machine.querySelectorAll('.reel-column')];
+  const strips=reels.map(r=>r.querySelector('.reel-strip'));
+
+  function glyph(type){
+    const s=document.createElement('span');
+    s.className='slot-glyph glyph-'+type;
+    s.setAttribute('aria-hidden','true');
+    return s;
+  }
+  function buildReels(){
+    strips.forEach((strip,reelIndex)=>{
+      strip.innerHTML='';
+      for(let j=0;j<112;j++){
+        const cell=document.createElement('div');
+        cell.className='reel-cell';
+        cell.appendChild(glyph(symbols[(j+reelIndex*2)%symbols.length]));
+        strip.appendChild(cell);
+      }
+      strip.style.transform='translate3d(0,0,0)';
+    });
+  }
+  buildReels();
+
+  function pad(n){return String(n).padStart(2,'0')}
+  function setCounter(n){
+    const v=pad(Math.min(n,9))+' / 09';
+    counter.textContent=v;spinSub.textContent=v;
+  }
+  function setStatus(textValue){
+    status.lastElementChild.textContent=textValue;
+  }
+  function setProgress(done){
+    progress.style.width=(done/9*100)+'%';
+  }
+
+  function getAudio(){
+    try{
+      const C=window.AudioContext||window.webkitAudioContext;
+      if(!C)return null;
+      if(!phase2Audio)phase2Audio=new C();
+      if(phase2Audio.state==='suspended')phase2Audio.resume().catch(()=>{});
+      return phase2Audio;
+    }catch(e){return null}
+  }
+  function tone(freq,dur=.08,type='triangle',vol=.035,slide=0){
+    const ac=getAudio();if(!ac)return;
+    const o=ac.createOscillator(),g=ac.createGain();
+    o.type=type;o.frequency.setValueAtTime(freq,ac.currentTime);
+    if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,freq+slide),ac.currentTime+dur);
+    g.gain.setValueAtTime(vol,ac.currentTime);
+    g.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+dur);
+    o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+dur);
+  }
+  function noise(dur=.16,vol=.025){
+    const ac=getAudio();if(!ac)return;
+    const size=Math.max(1,Math.floor(ac.sampleRate*dur));
+    const buffer=ac.createBuffer(1,size,ac.sampleRate),data=buffer.getChannelData(0);
+    for(let k=0;k<size;k++)data[k]=(Math.random()*2-1)*(1-k/size);
+    const src=ac.createBufferSource(),g=ac.createGain(),f=ac.createBiquadFilter();
+    f.type='lowpass';f.frequency.value=1800;g.gain.value=vol;
+    src.buffer=buffer;src.connect(f);f.connect(g);g.connect(ac.destination);src.start();src.stop(ac.currentTime+dur);
+  }
+  function mechanicalStart(){
+    tone(112,.16,'square',.028,-38);
+    setTimeout(()=>tone(76,.2,'sawtooth',.022,34),75);
+    noise(.12,.018);
+  }
+  function reelTick(delay=0){
+    setTimeout(()=>tone(205,.045,'square',.018,-80),delay);
+  }
+  function reelStop(reelIndex,delay){
+    setTimeout(()=>{
+      tone(290+reelIndex*65,.09,'triangle',.034,45);
+      noise(.055,.012);
+    },delay);
+  }
+
+  function pullLever(){
+    lever.classList.remove('pulled');void lever.offsetWidth;lever.classList.add('pulled');
+    setTimeout(()=>lever.classList.remove('pulled'),540);
+  }
+
+  function animateStrip(strip,reelIndex,spinNo,desired,delay,duration){
+    const cellH=reels[reelIndex].querySelector('.reel-cell')?.offsetHeight||68;
+    const symbolIndex=symbols.indexOf(desired);
+    const cycleStart=(spinNo*8)+8+reelIndex*3;
+    const targetIndex=cycleStart+(symbolIndex-(cycleStart%symbols.length)+symbols.length)%symbols.length;
+    const stopOffset=Math.max(0,targetIndex*cellH-(220-cellH)/2);
+    strip.style.transition='none';
+    strip.style.transform='translate3d(0,'+(-Math.min((spinNo===1?0:targetIndex-10)*cellH,stopOffset-10))+'px,0)';
+    void strip.offsetHeight;
+    strip.style.transition='transform '+duration+'ms cubic-bezier(.11,.74,.17,1)';
+    setTimeout(()=>strip.style.transform='translate3d(0,'+(-stopOffset)+'px,0)',delay);
+    reelTick(delay+Math.max(80,duration*.22));
+    reelTick(delay+Math.max(180,duration*.48));
+    reelStop(reelIndex,delay+duration-35);
+    return delay+duration;
+  }
+
+  function visualSpin(spinNo){
+    p2.classList.remove('spin-shake','spin-sticky','machine-calm');
+    if(spinNo===2)p2.classList.add('spin-shake');
+    if(spinNo===3)p2.classList.add('spin-sticky');
+    if(spinNo===8)p2.classList.add('machine-calm');
+    if(spinNo===4){
+      glitch.classList.remove('show');void glitch.offsetWidth;glitch.classList.add('show');
+    }
+  }
+
+  function finishSpin(spinNo){
+    spins=spinNo;
+    setProgress(spins);
+    if(spins<9){
+      setCounter(spins+1);
+      setStatus(spinNotes[spins+1]);
+      hint.textContent=spins===8?'the machine knows.':(spins===5?'don’t overthink it.':'the lever is not decorative.');
+      busy2=false;
+      spinButton.disabled=false;
+      lever.disabled=false;
+    }else{
+      setCounter(9);
+      setStatus('RESULT: THREE OF A KIND.');
+      hint.textContent='you made it all the way here.';
+      spinButton.disabled=true;lever.disabled=true;
+      setTimeout(showFinale,850);
+    }
+  }
+
+  function showFinale(){
+    finale.classList.add('show');
+    finale.setAttribute('aria-hidden','false');
+    finaleOne.classList.remove('show');finaleTwo.classList.remove('show');
+    finale.classList.remove('cakes-in','title-in','sub-in');
+    setTimeout(()=>finaleOne.classList.add('show'),260);
+    setTimeout(()=>finaleTwo.classList.add('show'),1050);
+    setTimeout(()=>finale.classList.add('cakes-in'),1830);
+    setTimeout(()=>finale.classList.add('title-in'),2750);
+    setTimeout(()=>finale.classList.add('sub-in'),3380);
+    tone(164,.12,'triangle',.03,35);
+    setTimeout(()=>tone(246,.12,'triangle',.028,45),140);
+    setTimeout(()=>tone(369,.18,'triangle',.035,65),280);
+    setTimeout(()=>tone(492,.32,'sine',.026,0),520);
+  }
+
+  function spin(){
+    if(busy2||spins>=9)return;
+    busy2=true;
+    const spinNo=spins+1;
+    spinButton.disabled=true;lever.disabled=true;
+    setCounter(spinNo);
+    setStatus(spinNotes[spinNo]);
+    hint.textContent=spinNo===5?'listen.':(spinNo===8?'…':'pull it.');
+    visualSpin(spinNo);
+    pullLever();
+    mechanicalStart();
+
+    const pattern=patterns[spinNo];
+    const baseDuration=spinNo===6?1250:(spinNo===8?1350:(spinNo===9?1550:980));
+    const delays=spinNo===3?[0,180,360]:spinNo===9?[0,600,1300]:[0,105,210];
+    const durations=spinNo===5?[1100,1220,1340]:spinNo===8?[1350,1420,1490]:spinNo===9?[720,880,1080]:[baseDuration,baseDuration+95,baseDuration+175];
+    const ends=pattern.map((s,k)=>animateStrip(strips[k],k,spinNo,s,delays[k],durations[k]));
+    const maxEnd=Math.max(...ends);
+    ends.forEach((end,k)=>{if(spinNo===9&&k<2)setTimeout(()=>tone(150+k*28,.07,'square',.018,-40),end+20)});
+    setTimeout(()=>finishSpin(spinNo),maxEnd+190);
+  }
+
+  spinButton.addEventListener('click',spin);
+  lever.addEventListener('click',spin);
+  setCounter(1);setProgress(0);setStatus(spinNotes[1]);
+})();
