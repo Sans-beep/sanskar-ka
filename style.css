@@ -84,3 +84,35 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
 @keyframes rainFall{from{background-position:0 -72px}to{background-position:72px 72px}}
 @keyframes cloudDrift{0%{margin-left:0}50%{margin-left:28px}100%{margin-left:0}}
 .global-back{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:100000;display:none;align-items:center;justify-content:center;min-width:82px;height:36px;padding:0 15px;border:1px solid #514944;background:rgba(16,15,14,.96);color:#d8cec7;border-radius:999px;font:500 11px "DM Sans";letter-spacing:.03em;cursor:pointer;pointer-events:auto;appearance:none;-webkit-appearance:none}.global-back.show{display:flex}.global-back:hover{background:rgba(32,29,27,.98);border-color:#756960}
+
+/* ===== Phase 1 final polish ===== */
+.story-thread{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;overflow:visible;opacity:.72}
+.story-thread .thread-shadow{fill:none;stroke:#0a0908;stroke-width:4.5;stroke-linecap:round;opacity:.22;filter:blur(1.5px)}
+.story-thread .thread-line{fill:none;stroke:#d7aeb0;stroke-width:1.35;stroke-linecap:round;stroke-dasharray:4 7;opacity:.34}
+.story-thread.play .thread-line{animation:threadTravel 1.25s ease both}
+@keyframes threadTravel{0%{stroke-dashoffset:34;opacity:.08}42%{opacity:.52}100%{stroke-dashoffset:0;opacity:.34}}
+.archive-meta{display:flex;justify-content:space-between;gap:12px;margin:0 12px 8px;font:12px Caveat;color:#a99c95;transform:rotate(-1deg)}
+.archive-meta span:last-child{transform:rotate(2deg)}
+.delivery-slip{width:min(270px,82vw);padding:19px 20px 17px;margin:12px auto 11px;background:#e7ddd2;color:#2e2724;position:relative;transform:rotate(-1.8deg);box-shadow:0 20px 42px #0009;text-align:left}
+.delivery-slip:before{content:"";position:absolute;left:11px;right:11px;top:10px;height:2px;background:repeating-linear-gradient(90deg,#bbaea4 0 8px,transparent 8px 12px);opacity:.55}
+.delivery-slip .slip-head{font:600 11px "DM Sans";letter-spacing:.18em;margin-top:8px}
+.delivery-slip .slip-rule{height:1px;background:#b8aaa0;margin:12px 0 10px}
+.delivery-slip .slip-row{display:flex;justify-content:space-between;gap:10px;font:17px Caveat;line-height:1.15}
+.delivery-slip .slip-note{margin-top:12px;font:15px Caveat;color:#675a53}
+.delivery-slip .slip-code{position:absolute;right:17px;bottom:10px;font:18px Caveat;color:#8b6666;transform:rotate(3deg)}
+.proof-polaroid.verified{transform:rotate(-4deg) scale(1.01)}
+.verified-stamp{position:absolute;right:-18px;top:-10px;padding:7px 10px;border:2px solid #9d6f72;color:#9d6f72;background:#e8ddd2;font:600 10px "DM Sans";letter-spacing:.14em;transform:rotate(8deg) scale(.86);opacity:0;transition:opacity .35s ease,transform .35s cubic-bezier(.2,.8,.2,1);z-index:4}
+.proof-polaroid.verified .verified-stamp{opacity:1;transform:rotate(8deg) scale(1)}
+.code-reveal{position:absolute;inset:0;z-index:45;background:rgba(5,5,5,.94);display:grid;place-items:center;opacity:0;pointer-events:none;transition:opacity .55s ease}
+.code-reveal.show{opacity:1;pointer-events:auto}
+.reveal-stack{width:100%;max-width:330px;padding:24px;text-align:center}
+.reveal-line{opacity:0;transform:translateY(8px) scale(.985);color:#eee5dd;transition:opacity .55s ease,transform .7s cubic-bezier(.2,.8,.2,1);font-family:Caveat,cursive}
+.reveal-line.show{opacity:1;transform:none}
+.reveal-line.grant{font-size:24px;color:#e8b8bb}
+.reveal-line.wait{font-size:19px;color:#8e8782;margin-top:28px}
+.reveal-line.found{font-size:31px;margin-top:28px}
+.reveal-number{font:500 78px/1 Caveat;color:#f0d6d0;margin:26px 0 6px;opacity:0;transform:scale(.8);transition:opacity .7s ease,transform .8s cubic-bezier(.18,.86,.2,1)}
+.reveal-number.show{opacity:1;transform:scale(1)}
+.reveal-final{font-size:34px;color:#eee5dd;margin-top:20px}
+.reveal-final small{display:block;margin-top:12px;font:10px "DM Sans";letter-spacing:.2em;text-transform:uppercase;color:#6e6761}
+@media (max-height:620px){.hero{font-size:54px}.birthday{font-size:49px}.delivery-slip{margin-top:4px;margin-bottom:6px}.proof-polaroid{transform:scale(.9) rotate(-4deg)}}
