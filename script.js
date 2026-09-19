@@ -396,11 +396,15 @@ env.addEventListener('click',()=>{
     const cycleStart=(spinNo*8)+8+reelIndex*3;
     const targetIndex=cycleStart+(symbolIndex-(cycleStart%symbols.length)+symbols.length)%symbols.length;
     const stopOffset=Math.max(0,targetIndex*cellH-(windowH-cellH)/2);
+    const previousOffset=Number(strip.dataset.offset||0);
     strip.style.transition='none';
-    strip.style.transform='translate3d(0,'+(-Math.min((spinNo===1?0:targetIndex-10)*cellH,stopOffset-10))+'px,0)';
+    strip.style.transform='translate3d(0,'+(-previousOffset)+'px,0)';
     void strip.offsetHeight;
     strip.style.transition='transform '+duration+'ms cubic-bezier(.11,.74,.17,1)';
-    setTimeout(()=>strip.style.transform='translate3d(0,'+(-stopOffset)+'px,0)',delay);
+    setTimeout(()=>{
+      strip.style.transform='translate3d(0,'+(-stopOffset)+'px,0)';
+      strip.dataset.offset=String(stopOffset);
+    },delay);
     reelTick(delay+Math.max(80,duration*.22));
     reelTick(delay+Math.max(180,duration*.48));
     reelStop(reelIndex,delay+duration-35);
