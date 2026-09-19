@@ -15,6 +15,81 @@
 <section class="page" id="p5"><div class="top"><span>A LITTLE SWEETNESS</span><span>19.10.26</span></div><div class="inner"><i class="doodle d1">♡</i><i class="doodle d2">✎</i><div class="kicker">you came back.</div><div class="proof-polaroid" id="proofPolaroid"><div class="tape"></div><div class="proof-photo" id="proofPhoto"><span class="photo-placeholder">show me the chocolate ♡</span><img id="proofImage" alt="Your chocolate photo preview"><div class="proof-caption">evidence</div></div><div class="verified-stamp">VERIFIED ♡</div></div><div class="copy" style="font-size:26px">okay… prove you found it.</div><label class="upload-label" for="proofUpload">choose photo →</label><input class="upload-input" id="proofUpload" type="file" accept="image/*"><div class="upload-status" id="uploadStatus">I know you found it. prove it.</div><button class="btn p4-next" id="p4Next" disabled>continue →</button></div></section>
 <section class="page" id="p6"><div class="top"><span>ONE MORE THING</span><span>19.10.26</span></div><div class="inner"><i class="doodle d1">♡</i><i class="doodle d2">✦</i><div class="kicker">the letter</div><div class="copy" style="font-size:38px;margin-top:12px">there's something<br>in the letter you'll need later.</div><div class="envelope hit" id="secretEnvelope" aria-label="Tap the envelope nine times"><div class="seal">19</div></div><div class="tap-count" id="tapCount">there's something here… <b>♡</b></div><div class="note">open the letter. keep the little code.</div><i class="doodle">⌁</i><button class="btn next">I have it →</button></div></section>
 <section class="page" id="p7"><div class="top"><span>PRIVATE ENTRY</span><span>19.10.26</span></div><div class="inner"><i class="doodle d1">♡</i><i class="doodle d2">⌁</i><div class="kicker">the next chapter is locked</div><div class="copy" style="font-size:39px;margin-top:14px">enter the code<br>from the letter.</div><input id="code" maxlength="20" placeholder="• • • • • • • • •" autocomplete="off"><button class="btn" id="unlock">unlock →</button><div class="error" id="error"></div><div class="tiny">no cheating, bhondu girl.</div></div></section>
+<section class="page phase2-page" id="p8" aria-label="Phase 2 slot machine">
+  <div class="p2-grid" aria-hidden="true">
+    <span class="p2-cross c1">+</span><span class="p2-cross c2">+</span>
+    <span class="p2-ring r1"></span><span class="p2-ring r2"></span>
+    <span class="p2-stripe s1"></span><span class="p2-stripe s2"></span>
+    <span class="p2-scribble ss1">NO. 19</span>
+    <span class="p2-scribble ss2">KEEP PULLING</span>
+  </div>
+  <div class="p2-topbar">
+    <span>PHASE 02 / MACHINE DEPT.</span>
+    <span id="p2Counter">01 / 09</span>
+  </div>
+  <div class="p2-content">
+    <div class="p2-intro">
+      <span class="p2-eyebrow">ONE MORE THING</span>
+      <h2>okay.<br><em>one more thing.</em></h2>
+      <span class="p2-micro">built specifically for one very bhondu girl.</span>
+    </div>
+
+    <div class="slot-machine" id="slotMachine">
+      <div class="machine-top">
+        <div class="machine-label">SANSKAR'S<br><strong>UNNECESSARY MACHINE</strong></div>
+        <div class="machine-lights" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div class="machine-sticker">DO NOT<br>SHAKE</div>
+      </div>
+
+      <div class="machine-face">
+        <div class="reel-sign">TRY YOUR LUCK / 19</div>
+        <div class="reel-window" id="reelWindow">
+          <div class="reel-column" data-reel="0"><div class="reel-strip"></div></div>
+          <div class="reel-column" data-reel="1"><div class="reel-strip"></div></div>
+          <div class="reel-column" data-reel="2"><div class="reel-strip"></div></div>
+          <div class="win-line"></div>
+        </div>
+        <div class="machine-status" id="slotStatus"><span class="status-dot"></span><span>MAKE ONE CHOICE.</span></div>
+      </div>
+
+      <div class="machine-lower">
+        <div class="machine-meta">
+          <span>MODEL: K-19</span>
+          <span>NO REFUNDS</span>
+        </div>
+        <div class="control-deck">
+          <button class="slot-button" id="spinButton" type="button">
+            <span class="button-face">SPIN</span>
+            <small id="spinSub">01 / 09</small>
+          </button>
+          <button class="lever" id="slotLever" type="button" aria-label="Pull the slot machine lever">
+            <span class="lever-shadow"></span><span class="lever-arm"></span><span class="lever-knob">PULL</span>
+          </button>
+        </div>
+        <div class="machine-footer">
+          <span id="p2Tiny">MACHINE NO. 1906</span>
+          <span>PROPERTY OF K.</span>
+        </div>
+      </div>
+
+      <div class="machine-screw screw-a"></div><div class="machine-screw screw-b"></div>
+      <div class="machine-screw screw-c"></div><div class="machine-screw screw-d"></div>
+      <div class="machine-edge-note">SERIOUSLY,<br>STOP READING THESE.</div>
+    </div>
+
+    <div class="p2-progress"><span id="p2ProgressFill"></span></div>
+    <div class="p2-hint" id="p2Hint">the lever is not decorative.</div>
+  </div>
+
+  <div class="p2-glitch" id="p2Glitch" aria-hidden="true"><span>NO SIGNAL</span></div>
+  <div class="p2-finale" id="p2Finale" aria-hidden="true">
+    <div class="finale-line" id="finaleOne">well.</div>
+    <div class="finale-line" id="finaleTwo">look at you.</div>
+    <div class="finale-cakes" aria-hidden="true"><span class="mini-cake"></span><span class="mini-cake"></span><span class="mini-cake"></span></div>
+    <div class="finale-title" id="finaleTitle">HAPPY BIRTHDAY, KASHISH.</div>
+    <div class="finale-sub">PHASE TWO COMPLETE <span>♡</span></div>
+  </div>
+</section>
 <svg class="story-thread" id="storyThread" viewBox="0 0 430 760" preserveAspectRatio="none" aria-hidden="true"><path class="thread-shadow" d="M18 92 C74 132 62 196 29 248 S20 367 76 407 S402 445 402 510 S335 612 389 686"></path><path class="thread-line" d="M18 92 C74 132 62 196 29 248 S20 367 76 407 S402 445 402 510 S335 612 389 686"></path></svg><div class="ambient"><span class="dust a">·</span><span class="dust b">✦</span><span class="dust c">·</span><span class="leaf">⌁</span></div><div class="transition-doodles" id="transitionDoodles"></div></main></div>
 <button class="global-back" id="globalBack" style="display:none" type="button" aria-label="Go back">← back</button><div class="code-reveal" id="codeReveal" aria-hidden="true"><div class="reveal-stack"><div class="reveal-line grant" id="revealGrant">ACCESS GRANTED ♡</div><div class="reveal-line wait" id="revealWait">wait.</div><div class="reveal-line found" id="revealFound">you actually found it.</div><div class="reveal-number" id="revealNumber">19</div><div class="reveal-line reveal-final" id="revealFinal">okay. let’s play.<small>phase one complete</small></div></div></div>
 <audio id="birthdaySong" preload="auto" src="Uff Teri Adaa I Like You Karthik Calling Karthik 128 Kbps.mp3"></audio>
