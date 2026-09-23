@@ -118,3 +118,91 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
 @media (max-height:620px){.hero{font-size:54px}.birthday{font-size:49px}.delivery-slip{margin-top:4px;margin-bottom:6px}.proof-polaroid{transform:scale(.9) rotate(-4deg)}}
 
 .page .top,.page .inner{z-index:3}
+
+/* ===== Responsive frame: phone + laptop ===== */
+@media (min-width: 700px){
+  .shell{
+    min-height:100svh;
+    padding:30px 40px;
+  }
+
+  .card{
+    width:min(1100px, calc(100vw - 80px));
+    height:min(760px, calc(100svh - 60px));
+    max-height:calc(100svh - 60px);
+    border-radius:30px;
+  }
+
+  .page{
+    padding:34px 52px 72px;
+  }
+
+  .inner{
+    max-width:560px;
+  }
+
+  .top{
+    top:28px;
+    left:42px;
+    right:42px;
+  }
+
+  .hero{font-size:82px}
+  .birthday{font-size:74px}
+  .copy{font-size:32px}
+  .note{font-size:19px}
+  .btn{padding:14px 27px}
+
+  .throwback-inner{max-width:620px}
+  .throwback-photo{
+    width:300px;
+    height:260px;
+  }
+  .throwback-copy{font-size:25px}
+  .throwback-small{font-size:19px}
+
+  .delivery-slip{width:330px}
+  .proof-polaroid{width:190px;height:225px}
+  .envelope{width:310px;height:190px}
+
+  #p6 .copy{font-size:42px}
+  #p7 .copy{font-size:43px}
+
+  .global-back{
+    bottom:22px;
+  }
+}
+
+/* Wide laptop: use the screen instead of stretching the phone layout */
+@media (min-width: 1100px) and (min-height: 700px){
+  .card{
+    width:min(1180px, calc(100vw - 96px));
+    height:min(780px, calc(100svh - 64px));
+    max-height:calc(100svh - 64px);
+  }
+
+  .page{padding-left:72px;padding-right:72px}
+  .top{left:58px;right:58px}
+
+  .inner{max-width:640px}
+  .hero{font-size:92px}
+  .birthday{font-size:82px}
+
+  .throwback-photo{width:330px;height:285px}
+  .delivery-slip{width:360px}
+}
+
+/* Very short laptop windows: protect vertical content */
+@media (min-width: 700px) and (max-height: 680px){
+  .shell{padding:18px 28px}
+  .card{
+    height:calc(100svh - 36px);
+    max-height:calc(100svh - 36px);
+  }
+  .page{padding-top:24px;padding-bottom:60px}
+  .hero{font-size:68px}
+  .birthday{font-size:62px}
+  .throwback-photo{width:250px;height:205px}
+  .delivery-slip{margin-top:7px;margin-bottom:7px}
+  .proof-polaroid{transform:scale(.88) rotate(-4deg);margin-bottom:4px}
+}
