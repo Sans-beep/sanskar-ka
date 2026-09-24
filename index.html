@@ -16,70 +16,43 @@
 <section class="page" id="p6"><div class="top"><span>ONE MORE THING</span><span>19.10.26</span></div><div class="inner"><i class="doodle d1">♡</i><i class="doodle d2">✦</i><div class="kicker">the letter</div><div class="copy" style="font-size:38px;margin-top:12px">there's something<br>in the letter you'll need later.</div><div class="envelope hit" id="secretEnvelope" aria-label="Tap the envelope nine times"><div class="seal">19</div></div><div class="tap-count" id="tapCount">there's something here… <b>♡</b></div><div class="note">open the letter. keep the little code.</div><i class="doodle">⌁</i><button class="btn next">I have it →</button></div></section>
 <section class="page" id="p7"><div class="top"><span>PRIVATE ENTRY</span><span>19.10.26</span></div><div class="inner"><i class="doodle d1">♡</i><i class="doodle d2">⌁</i><div class="kicker">the next chapter is locked</div><div class="copy" style="font-size:39px;margin-top:14px">enter the code<br>from the letter.</div><input id="code" maxlength="20" placeholder="• • • • • • • • •" autocomplete="off"><button class="btn" id="unlock">unlock →</button><div class="error" id="error"></div><div class="tiny">no cheating, bhondu girl.</div></div></section>
 
-<section class="page phase2-illustrated" id="p8">
-  <div class="room-illustration" id="roomScene">
-    <svg class="room-art" viewBox="0 0 900 700" preserveAspectRatio="xMidYMid slice" aria-label="A quiet illustrated bedroom">
-      <defs>
-        <linearGradient id="rw" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#20263b"/><stop offset="1" stop-color="#111725"/></linearGradient>
-        <linearGradient id="rf" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#191824"/><stop offset="1" stop-color="#0b0d15"/></linearGradient>
-        <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#101a34"/><stop offset="1" stop-color="#30436a"/></linearGradient>
-        <radialGradient id="glow"><stop stop-color="#ffd98b" stop-opacity=".9"/><stop offset="1" stop-color="#d88955" stop-opacity="0"/></radialGradient>
-        <filter id="ink"><feTurbulence baseFrequency=".015" numOctaves="2" seed="4" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.5"/></filter>
-      </defs>
-      <rect width="900" height="700" fill="url(#rw)"/>
-      <path d="M0 485 Q240 455 470 482 T900 458 V700 H0Z" fill="url(#rf)"/>
-      <path d="M0 486 Q240 468 470 482 T900 460" fill="none" stroke="#3b4054" stroke-width="3"/>
-
-      <g data-object="window" class="room-hit" tabindex="0" role="button" aria-label="Look at the window">
-        <rect x="592" y="58" width="255" height="260" rx="4" fill="#0a0f1c" stroke="#75666b" stroke-width="11"/>
-        <rect x="607" y="73" width="225" height="230" fill="url(#sky)"/>
-        <circle cx="778" cy="112" r="17" fill="#f2dba1"/>
-        <path d="M607 248 Q650 210 698 242 T790 232 T832 250 V303 H607Z" fill="#172642"/>
-        <g fill="#e5b566" opacity=".65"><rect x="640" y="232" width="7" height="4"/><rect x="684" y="220" width="6" height="4"/><rect x="726" y="241" width="8" height="4"/><rect x="770" y="222" width="6" height="4"/><rect x="802" y="248" width="7" height="4"/></g>
-        <path d="M603 66 Q627 95 617 150 T627 230 T612 305" fill="none" stroke="#b8a1a5" stroke-width="23" opacity=".55"/>
-        <path d="M842 66 Q818 95 830 150 T819 230 T836 305" fill="none" stroke="#b8a1a5" stroke-width="23" opacity=".55"/>
-      </g>
-
-      <g class="wall-collage" filter="url(#ink)">
-        <rect x="58" y="78" width="292" height="196" rx="4" fill="#242b3d" stroke="#655b67" stroke-width="3"/>
-        <g transform="rotate(-4 120 140)"><rect x="86" y="100" width="74" height="91" fill="#d8c6b5"/><rect x="93" y="108" width="60" height="68" fill="#5b6375"/></g>
-        <g transform="rotate(5 210 143)"><rect x="175" y="96" width="65" height="95" fill="#d8c6b5"/><rect x="182" y="103" width="51" height="75" fill="#706875"/></g>
-        <g transform="rotate(-2 291 145)"><rect x="263" y="108" width="63" height="82" fill="#d8c6b5"/><rect x="269" y="115" width="51" height="64" fill="#526072"/></g>
-        <path d="M80 230 C122 205 148 247 182 221 S244 250 280 220 S326 239 340 216" fill="none" stroke="#d5a99f" stroke-width="3"/>
-      </g>
-      <g class="shelf"><rect x="52" y="35" width="330" height="17" rx="3" fill="#634b53"/><rect x="72" y="7" width="54" height="31" fill="#79616a"/><rect x="136" y="1" width="43" height="38" fill="#846d72"/><rect x="188" y="11" width="49" height="28" fill="#626779"/><path d="M278 38 q20 -31 35 0 q20 -31 39 0" fill="none" stroke="#66806d" stroke-width="11" stroke-linecap="round"/><circle cx="340" cy="28" r="11" fill="#d79761"/></g>
-
-      <g class="desk">
-        <path d="M330 334 H574 L600 493 H310Z" fill="#403039" stroke="#6e5960" stroke-width="4"/><rect x="321" y="321" width="260" height="20" rx="4" fill="#79585c"/>
-        <rect x="348" y="339" width="12" height="145" fill="#29242c"/><rect x="543" y="339" width="12" height="145" fill="#29242c"/>
-        <rect x="374" y="365" width="96" height="58" rx="3" fill="#0c1019" stroke="#88727a" stroke-width="3"/><path d="M389 379 h62 M389 390 h46 M389 401 h55" stroke="#6d768a" stroke-width="3"/>
-        <g data-object="lamp" class="room-hit" tabindex="0" role="button" aria-label="Touch the lamp"><ellipse cx="515" cy="352" rx="60" ry="35" fill="url(#glow)"/><path d="M498 329 H526 L540 358 H485Z" fill="#d9b487" stroke="#7b6460" stroke-width="3"/><path d="M512 357 V398" stroke="#8c7777" stroke-width="5"/><ellipse cx="512" cy="402" rx="25" ry="5" fill="#665159"/></g>
-        <g data-object="music" class="room-hit" tabindex="0" role="button" aria-label="Touch the record player"><rect x="464" y="428" width="95" height="38" rx="5" fill="#25202a" stroke="#80676d" stroke-width="3"/><circle class="record-disc" cx="505" cy="447" r="22" fill="#101017" stroke="#9b626c" stroke-width="2"/><circle cx="505" cy="447" r="4" fill="#cf956f"/><path d="M531 432 Q550 423 548 443" fill="none" stroke="#d1b29f" stroke-width="4"/></g>
-        <g data-object="drawer" class="room-hit" tabindex="0" role="button" aria-label="Open the desk drawer"><rect x="382" y="438" width="76" height="34" rx="3" fill="#523d44"/><circle cx="420" cy="455" r="3" fill="#c8a079"/></g>
-        <rect x="371" y="294" width="53" height="28" rx="5" fill="#b98976"/><path d="M381 307 h33" stroke="#44353b" stroke-width="3"/>
-      </g>
-
-      <g class="bed">
-        <path d="M-45 456 Q155 408 365 460 L475 700 H-45Z" fill="#3e4562" stroke="#756875" stroke-width="5"/>
-        <path d="M-15 490 Q175 444 375 487 L448 700 H-15Z" fill="#707a92"/>
-        <path d="M0 525 Q150 480 330 518" fill="none" stroke="#a18d96" stroke-width="10" opacity=".72"/>
-        <path d="M25 596 Q150 548 280 594" fill="none" stroke="#3d4560" stroke-width="38"/>
-        <g transform="rotate(-8 132 516)"><rect x="65" y="470" width="120" height="67" rx="12" fill="#b68b91"/><path d="M78 493 q26 -15 50 0 t42 0" fill="none" stroke="#dfb9ae" stroke-width="4"/></g>
-        <g data-object="notebook" class="room-hit" tabindex="0" role="button" aria-label="Open the notebook"><g transform="rotate(-7 286 606)"><rect x="232" y="555" width="118" height="86" rx="3" fill="#d8c3ac"/><path d="M291 555 V641" stroke="#a58d82" stroke-width="3"/><path d="M245 573 h38 M245 584 h38 M301 573 h35 M301 584 h29" stroke="#8c7471" stroke-width="2"/></g></g>
-        <g data-object="phone" class="room-hit" tabindex="0" role="button" aria-label="Check the phone"><rect x="120" y="622" width="56" height="32" rx="6" transform="rotate(-16 148 638)" fill="#11121b" stroke="#8b6971" stroke-width="2"/><circle cx="148" cy="637" r="2" fill="#d7a6a2"/></g>
-      </g>
-
-      <ellipse cx="665" cy="596" rx="158" ry="60" fill="#2d3242" stroke="#5e5667" stroke-width="4"/>
-      <g class="plant"><path d="M678 522 V420" stroke="#5a4b4e" stroke-width="8"/><path d="M678 448 q-55 -18 -66 -65 q53 7 66 45 M678 468 q48 -33 72 -74 q-51 4 -72 51 M678 426 q-5 -44 -38 -70 q-4 42 30 67" fill="#55715f" stroke="#74866e" stroke-width="3"/><path d="M644 518 h68 l-10 40 h-48Z" fill="#795d58"/></g>
-      <g class="record-shelf"><rect x="668" y="386" width="188" height="113" fill="#302932" stroke="#67545e" stroke-width="4"/><rect x="683" y="402" width="80" height="83" fill="#15141d"/><path d="M689 414 h67 M689 426 h67 M689 438 h67 M689 450 h67 M689 462 h67" stroke="#7d6871" stroke-width="5"/><circle cx="814" cy="427" r="31" fill="#101017" stroke="#9a5d67" stroke-width="3"/><circle cx="814" cy="427" r="6" fill="#d0a078"/></g>
-      <g data-object="box" class="room-hit" tabindex="0" role="button" aria-label="Open the little box"><rect x="575" y="545" width="72" height="48" rx="4" fill="#9b6d68" stroke="#d0a18e" stroke-width="3"/><path d="M568 545 H654 L644 532 H578Z" fill="#b98678" stroke="#d0a18e" stroke-width="3"/><path d="M605 535 v52" stroke="#e4b49a" stroke-width="3"/></g>
-      <g fill="#c9aaa1" opacity=".75" font-family="cursive"><text x="72" y="305" font-size="17">keep this.</text><text x="735" y="356" font-size="15">♡</text><text x="462" y="514" font-size="14" transform="rotate(-7 462 514)">somewhere quiet</text></g>
-    </svg>
-    <div class="room-floating-note" id="roomNote" aria-live="polite"></div>
+<section class="page phase2-room" id="p8">
+  <div class="room-top"><span>THE ROOM THAT REMEMBERS</span><span>19</span></div>
+  <div class="room-scene" id="roomScene">
+    <div class="room-window" id="roomWindow" data-object="window" role="button" tabindex="0" aria-label="Look outside">
+      <div class="window-sky"></div><div class="window-city"></div><div class="window-curtain left"></div><div class="window-curtain right"></div>
+      <span class="hotspot">look outside</span>
+    </div>
+    <div class="room-wall">
+      <div class="photo-cluster">
+        <span class="mini-photo p-a"></span><span class="mini-photo p-b"></span><span class="mini-photo p-c"></span>
+        <span class="mini-note">some things<br>stay here.</span>
+      </div>
+      <button class="room-object wall-object" data-object="wall" aria-label="Look behind the wall collage">✦</button>
+    </div>
+    <div class="room-desk">
+      <div class="desk-lamp" data-object="lamp" role="button" tabindex="0" aria-label="Tap the lamp"><span class="lamp-shade"></span><span class="lamp-stem"></span><span class="lamp-base"></span></div>
+      <div class="turntable" data-object="music" role="button" tabindex="0" aria-label="Play the room's song">
+        <div class="record"></div><div class="tonearm"></div><span class="music-label">play me ♡</span>
+      </div>
+      <button class="drawer" data-object="drawer" aria-label="Open the drawer"><span>drawer</span></button>
+      <div class="desk-line"></div>
+    </div>
+    <div class="room-bed">
+      <div class="blanket"></div>
+      <button class="notebook" data-object="notebook" aria-label="Open the notebook"><span>little things</span><b>♡</b></button>
+    </div>
+    <div class="room-box" data-object="box" role="button" tabindex="0" aria-label="Open the final keepsake box">
+      <div class="box-lid">19 ♡</div><div class="box-body"></div><span class="box-label">one last thing</span>
+    </div>
+    <div class="room-plant"><i></i><i></i><i></i><i></i><span></span></div>
+    <div class="room-rug"></div>
+    <div class="room-copy">things are quieter here.<br><em>look around.</em></div>
+    <div class="room-note" id="roomNote" aria-live="polite"></div>
     <div class="room-memory" id="roomMemory" aria-hidden="true"></div>
-    <div class="room-audio-status" id="roomAudioStatus">somewhere in here, there's a song.</div>
-    <div class="room-film-grain"></div>
+    <div class="room-audio-status" id="roomAudioStatus">the room has a song.</div>
   </div>
+  <div class="room-hint">nothing is labelled. <span>mostly.</span></div>
 </section>
 <svg class="story-thread" id="storyThread" viewBox="0 0 430 760" preserveAspectRatio="none" aria-hidden="true"><path class="thread-shadow" d="M18 92 C74 132 62 196 29 248 S20 367 76 407 S402 445 402 510 S335 612 389 686"></path><path class="thread-line" d="M18 92 C74 132 62 196 29 248 S20 367 76 407 S402 445 402 510 S335 612 389 686"></path></svg><div class="ambient"><span class="dust a">·</span><span class="dust b">✦</span><span class="dust c">·</span><span class="leaf">⌁</span></div><div class="transition-doodles" id="transitionDoodles"></div></main></div>
 <button class="global-back" id="globalBack" style="display:none" type="button" aria-label="Go back">← back</button><div class="code-reveal" id="codeReveal" aria-hidden="true"><div class="reveal-stack"><div class="reveal-line grant" id="revealGrant">ACCESS GRANTED ♡</div><div class="reveal-line wait" id="revealWait">wait.</div><div class="reveal-line found" id="revealFound">you actually found it.</div><div class="reveal-number" id="revealNumber">19</div><div class="reveal-line reveal-final" id="revealFinal">okay. let’s play.<small>phase one complete</small><button class="reveal-enter" id="enterPhase2">enter the room →</button></div></div></div>
