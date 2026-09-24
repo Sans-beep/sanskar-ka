@@ -397,7 +397,7 @@ runPhase1Ending=function(){
 (function initBirthdayAnalytics(){
   const send=(name,data={})=>{
     try{
-      if(window.ownerMode || !window.umami || typeof window.umami.track!=='function') return;
+      if(new URLSearchParams(location.search).has('owner') || !window.umami || typeof window.umami.track!=='function') return;
       window.umami.track(name,data);
     }catch(_){}
   };
@@ -419,7 +419,7 @@ runPhase1Ending=function(){
 
   // Keep the current session labeled without assigning a persistent identity.
   try{
-    if(!window.ownerMode && window.umami && typeof window.umami.identify==='function'){
+    if(!new URLSearchParams(location.search).has('owner') && window.umami && typeof window.umami.identify==='function'){
       window.umami.identify({experience:'kashish-birthday',version:'phase-1'});
     }
   }catch(_){}
