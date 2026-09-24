@@ -385,3 +385,128 @@ runPhase1Ending=function(){
   _originalRunPhase1Ending();
   setTimeout(()=>document.getElementById('revealFinal')?.classList.add('show'),4450);
 };
+
+
+/* ===== Umami analytics: birthday experience instrumentation =====
+   Privacy boundary:
+   - Uses Umami's anonymous session model.
+   - Does not send names, email addresses, uploaded filenames, photo contents,
+     GPS coordinates, or the secret code itself.
+   - Owner/test mode is excluded so your own testing does not pollute production data.
+*/
+(function initBirthdayAnalytics(){
+  const send=(name,data={})=>{
+    try{
+      if(window.ownerMode || !window.umami || typeof window.umami.track!=='function') return;
+      window.umami.track(name,data);
+    }catch(_){}
+  };
+
+  const safeSource=()=>{
+    const q=new URLSearchParams(location.search);
+    const keys=['utm_source','utm_medium','utm_campaign','utm_content','utm_term','from'];
+    const out={};
+    keys.forEach(k=>{const v=q.get(k);if(v)out[k]=v.slice(0,120)});
+    return out;
+  };
+
+  // Umami automatically records pageviews, referrers, URL, language, screen,
+  // device/browser and performance data. We add the story-specific layer.
+  send('site-loaded',{experience:'birthday',entry_page:1});
+
+  const source=safeSource();
+  if(Object.keys(source).length)send('link-source',source);
+
+  // Keep the current session labeled without assigning a persistent identity.
+  try{
+    if(!window.ownerMode && window.umami && typeof window.umami.identify==='function'){
+      window.umami.identify({experience:'kashish-birthday',version:'phase-1'});
+    }
+  }catch(_){}
+
+  // Navigation: record every story page reached.
+  const previousGo=window.go;
+  if(typeof previousGo==='function'){
+    window.go=function(n){
+      const from=window.sitePageIndex;
+      const result=previousGo(n);
+      if(from!==n){
+        send('phase-view',{phase:n+1,from_page:from+1});
+        send('phase-transition',{from_page:from+1,to_page:n+1,direction:n>from?'forward':'back'});
+      }
+      return result;
+    };
+  }
+
+  // Page-1 CTA.
+  document.querySelectorAll('.page .next').forEach((el)=>{
+    el.addEventListener('click',()=>send('continue-click',{page:Number(el.closest('.page')?.id?.replace('p',''))||0}));
+  });
+
+  // Phase 1 milestone events.
+  const code=document.getElementById('code');
+  const unlock=document.getElementById('unlock');
+  if(unlock)unlock.addEventListener('click',()=>{
+    const value=(code?.value||'').trim().toUpperCase();
+    send('code-attempt',{result:value==='KASHISH19'?'correct':'incorrect'});
+  });
+
+  const enter2=document.getElementById('enterPhase2');
+  if(enter2)enter2.addEventListener('click',()=>send('phase-1-complete',{phase:1}));
+
+  // Chocolate proof: never send the filename or image itself.
+  const upload=document.getElementById('proofUpload');
+  if(upload)upload.addEventListener('change',()=>{
+    if(upload.files?.length)send('proof-photo-selected',{type:'image'});
+  });
+
+  const originalFetch=window.fetch;
+  window.fetch=function(...args){
+    const url=String(args[0]||'');
+    const p=originalFetch.apply(this,args);
+    if(url.includes('api.cloudinary.com/v1_1/aifv5z3a/image/upload')){
+      p.then(r=>{
+        send(r.ok?'proof-upload-success':'proof-upload-failed',{service:'cloudinary'});
+      }).catch(()=>send('proof-upload-failed',{service:'cloudinary',reason:'network'}));
+    }
+    return p;
+  };
+
+  // Letter interaction: track the meaningful milestones, not every tap count.
+  const envelope=document.getElementById('secretEnvelope');
+  let envelopeTaps=0;
+  if(envelope)envelope.addEventListener('click',()=>{
+    envelopeTaps++;
+    if(envelopeTaps===1)send('letter-discovered',{});
+    if(envelopeTaps===9)send('letter-unlocked',{taps:9});
+  });
+  const letter=document.getElementById('letterPop');
+  if(letter){
+    const observer=new MutationObserver(()=>{
+      if(letter.classList.contains('open'))send('letter-opened',{});
+    });
+    observer.observe(letter,{attributes:true,attributeFilter:['class']});
+  }
+
+  // Phase 2 room: track which objects were actually explored.
+  const room= document.getElementById('p8');
+  if(room){
+    room.querySelectorAll('[data-object]').forEach(el=>{
+      el.addEventListener('click',()=>send('room-interaction',{object:el.dataset.object}));
+    });
+  }
+
+  // Back navigation is useful for understanding exploration.
+  const back=document.getElementById('globalBack');
+  if(back)back.addEventListener('click',()=>send('back-navigation',{from_page:window.sitePageIndex+1}));
+
+  // Send one event when the page is being left; this is not a replacement for
+  // Umami's session/realtime data, just a clean story-level endpoint.
+  let leftSent=false;
+  const markLeft=()=>{
+    if(leftSent)return;
+    leftSent=true;
+    send('site-exit',{last_page:(window.sitePageIndex||0)+1});
+  };
+  window.addEventListener('pagehide',markLeft,{once:true});
+})();
