@@ -33,6 +33,17 @@ function pauseBirthdaySong(){fadeOutAudio(document.getElementById('birthdaySong'
 
 const pages=[...document.querySelectorAll('.page')];
 let i=0,busy=false,phase1Ending=false;
+function setCurrentPage(n){
+  pages.forEach((p,k)=>{
+    p.classList.toggle('active',k===n);
+    p.style.pointerEvents=k===n?'auto':'none';
+    if(k!==n)p.style.animation='none';
+  });
+  i=n;
+  window.sitePageIndex=i;
+  syncGlobalBack();
+}
+
 window.sitePageIndex=0;
 let proofFile=null,proofUploaded=false;
 
@@ -125,33 +136,26 @@ function go(n){
 function handleNextButton(button){
   if(!button || busy)return;
   const page=button.closest('.page');
-  if(!page || pages[i]!==page)return;
-  if(i<pages.length-1)go(i+1);
+  const index=pages.indexOf(page);
+  if(index<0 || index!==i)return;
+  if(index<pages.length-1)go(index+1);
 }
 document.querySelectorAll('.next').forEach(button=>{
-  button.addEventListener('click',e=>{
+  button.onclick=function(e){
     e.preventDefault();
     e.stopPropagation();
     handleNextButton(button);
-  });
+  };
 });
-document.addEventListener('click',e=>{
-  const nextButton=e.target.closest('.next');
-  if(!nextButton)return;
-  e.preventDefault();
-  e.stopPropagation();
-  handleNextButton(nextButton);
-},true);
-
 const globalBack=document.getElementById('globalBack');
 function syncGlobalBack(){const show=i>0&&!phase1Ending;globalBack.style.display=show?"flex":"none";globalBack.classList.toggle("show",show);}
-globalBack.addEventListener('click',e=>{
+globalBack.onclick=function(e){
   e.preventDefault();
   e.stopPropagation();
   if(busy || i===0)return;
   go(i-1);
-});
-syncGlobalBack();
+};
+setCurrentPage(0);
 
 function runPhase1Ending(){
   phase1Ending=true;
