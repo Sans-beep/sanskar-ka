@@ -350,7 +350,7 @@ if(phase2Page){
         else playPhase2Song();
       }
       if(obj==='drawer'){
-        openMemory('<h3>little things.</h3><p>some memories don't need a date.</p><p>the weird jokes.<br>the random screenshots.<br>the things you almost forgot.</p><p>they still made it here. ♡</p>');
+        openMemory('<h3>little things.</h3><p>some memories don\'t need a date.</p><p>the weird jokes.<br>the random screenshots.<br>the things you almost forgot.</p><p>they still made it here. ♡</p>');
       }
       if(obj==='window'){
         phase2Page.classList.toggle('night');
