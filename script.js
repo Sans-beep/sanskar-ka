@@ -77,7 +77,7 @@ function go(n){
     '3-4':'liftIn .82s cubic-bezier(.2,.85,.18,1) both',
     '4-5':'softPushIn .72s cubic-bezier(.2,.82,.2,1) both',
     '5-6':'paperIn .86s cubic-bezier(.18,.86,.18,1) both',
-    '6-7':'pullIn .8s cubic-bezier(.2,.84,.18,1) both'
+    '6-7':'roomIn .95s cubic-bezier(.2,.8,.2,1) both'
   };
   const outgoing=forward
     ? 'cardOutLeft .58s cubic-bezier(.55,.08,.72,.35) both'
@@ -259,3 +259,115 @@ env.addEventListener('click',()=>{
     },2200);
   }
 });
+
+
+/* ===== Phase 2 interaction layer ===== */
+const phase2Song=document.getElementById('phase2Song');
+const phase2Page=document.getElementById('p8');
+const roomNote=document.getElementById('roomNote');
+const roomMemory=document.getElementById('roomMemory');
+const roomScene=document.getElementById('roomScene');
+const roomAudioStatus=document.getElementById('roomAudioStatus');
+let phase2SongPlaying=false;
+
+function pausePhase2Song(){
+  if(!phase2Song)return;
+  fadeOutAudio(phase2Song,650,true);
+  phase2SongPlaying=false;
+  if(phase2Page)phase2Page.classList.remove('playing');
+}
+function showRoomNote(text){
+  if(!roomNote)return;
+  roomNote.innerHTML=text;
+  roomNote.classList.remove('show'); void roomNote.offsetWidth; roomNote.classList.add('show');
+  clearTimeout(window.roomNoteTimer);
+  window.roomNoteTimer=setTimeout(()=>roomNote.classList.remove('show'),4200);
+}
+function openMemory(html){
+  if(!roomMemory)return;
+  roomMemory.innerHTML='<div class="memory-paper">'+html+'<button class="memory-close" type="button">okay, close</button></div>';
+  roomMemory.classList.add('show');
+  roomMemory.setAttribute('aria-hidden','false');
+}
+function closeMemory(){
+  if(!roomMemory)return;
+  roomMemory.classList.remove('show');
+  roomMemory.setAttribute('aria-hidden','true');
+}
+function playPhase2Song(){
+  if(!phase2Song)return;
+  phase2Song.currentTime=0;
+  phase2SongPlaying=true;
+  if(phase2Page)phase2Page.classList.add('playing');
+  if(roomAudioStatus)roomAudioStatus.textContent='Jaan Nisaar — for this room ♡';
+  const promise=fadeInAudio(phase2Song,.46,1100);
+  void promise;
+  setTimeout(()=>{
+    if(!phase2SongPlaying)return;
+    if(phase2Song.readyState<2 && roomAudioStatus)roomAudioStatus.textContent='add jaan-nisaar.mp3 to the repo to hear this ♡';
+  },900);
+}
+function enterRoom(){
+  phase1Ending=false;
+  const overlay=document.getElementById('codeReveal');
+  if(overlay){
+    overlay.classList.remove('show');
+    overlay.setAttribute('aria-hidden','true');
+  }
+  go(7);
+}
+const enterPhase2=document.getElementById('enterPhase2');
+if(enterPhase2)enterPhase2.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();enterRoom();});
+
+if(phase2Page){
+  const activate=(el)=>el&&el.click();
+  phase2Page.querySelectorAll('[data-object]').forEach(el=>{
+    const obj=el.dataset.object;
+    el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();activate(el);}});
+    el.addEventListener('click',()=>{
+      if(obj==='lamp'){
+        phase2Page.classList.toggle('lamp-on');
+        showRoomNote(phase2Page.classList.contains('lamp-on')
+          ? 'you always liked soft light better.<br><span style="font-size:16px">apparently that still counts.</span>'
+          : 'okay. back to the soft light.');
+      }
+      if(obj==='music'){
+        if(phase2SongPlaying){pausePhase2Song();if(roomAudioStatus)roomAudioStatus.textContent='the room went quiet.';}
+        else playPhase2Song();
+      }
+      if(obj==='drawer'){
+        openMemory('<h3>little things.</h3><p>some memories don't need a date.</p><p>the weird jokes.<br>the random screenshots.<br>the things you almost forgot.</p><p>they still made it here. ♡</p>');
+      }
+      if(obj==='window'){
+        phase2Page.classList.toggle('night');
+        showRoomNote(phase2Page.classList.contains('night')
+          ? 'the same room.<br>a completely different memory.'
+          : 'look at that sky.');
+      }
+      if(obj==='wall'){
+        showRoomNote('hidden between all the noise:<br><strong style="font-size:24px">you.</strong>');
+      }
+      if(obj==='notebook'){
+        openMemory('<h3>from the notebook.</h3><p>things i would probably never say out loud:</p><p>your laugh is still contagious.<br>you make ordinary days less ordinary.<br>and somehow, you are still very you.</p><p>— a note left here ♡</p>');
+      }
+      if(obj==='box'){
+        phase2Page.classList.add('open-box','found-all');
+        showRoomNote('you found the last thing.<br><span style="font-size:17px">phase three can wait one second.</span>');
+        setTimeout(()=>openMemory('<h3>19.</h3><p>not a clue this time.</p><p>just a tiny reminder that this room was made for one very specific person.</p><p>happy birthday, Kashish. ♡</p>'),500);
+      }
+    });
+  });
+  roomMemory.addEventListener('click',e=>{if(e.target===roomMemory||e.target.closest('.memory-close'))closeMemory();});
+}
+
+const _originalGo=go;
+go=function(n){
+  if(i===7 && n!==7)pausePhase2Song();
+  return _originalGo(n);
+};
+
+const _originalRunPhase1Ending=runPhase1Ending;
+runPhase1Ending=function(){
+  _originalRunPhase1Ending();
+  setTimeout(()=>document.getElementById('revealFinal')?.classList.add('show'),4450);
+};
