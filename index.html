@@ -15,6 +15,72 @@
 <section class="page" id="p5"><div class="top"><span>A LITTLE SWEETNESS</span><span>19.10.26</span></div><div class="inner"><i class="doodle d1">♡</i><i class="doodle d2">✎</i><div class="kicker">you came back.</div><div class="proof-polaroid" id="proofPolaroid"><div class="tape"></div><div class="proof-photo" id="proofPhoto"><span class="photo-placeholder">show me the chocolate ♡</span><img id="proofImage" alt="Your chocolate photo preview"><div class="proof-caption">evidence</div></div><div class="verified-stamp">VERIFIED ♡</div></div><div class="copy" style="font-size:26px">okay… prove you found it.</div><label class="upload-label" for="proofUpload">choose photo →</label><input class="upload-input" id="proofUpload" type="file" accept="image/*"><div class="upload-status" id="uploadStatus">I know you found it. prove it.</div><button class="btn p4-next" id="p4Next" disabled>continue →</button></div></section>
 <section class="page" id="p6"><div class="top"><span>ONE MORE THING</span><span>19.10.26</span></div><div class="inner"><i class="doodle d1">♡</i><i class="doodle d2">✦</i><div class="kicker">the letter</div><div class="copy" style="font-size:38px;margin-top:12px">there's something<br>in the letter you'll need later.</div><div class="envelope hit" id="secretEnvelope" aria-label="Tap the envelope nine times"><div class="seal">19</div></div><div class="tap-count" id="tapCount">there's something here… <b>♡</b></div><div class="note">open the letter. keep the little code.</div><i class="doodle">⌁</i><button class="btn next">I have it →</button></div></section>
 <section class="page" id="p7"><div class="top"><span>PRIVATE ENTRY</span><span>19.10.26</span></div><div class="inner"><i class="doodle d1">♡</i><i class="doodle d2">⌁</i><div class="kicker">the next chapter is locked</div><div class="copy" style="font-size:39px;margin-top:14px">enter the code<br>from the letter.</div><input id="code" maxlength="20" placeholder="• • • • • • • • •" autocomplete="off"><button class="btn" id="unlock">unlock →</button><div class="error" id="error"></div><div class="tiny">no cheating, bhondu girl.</div></div></section>
+
+<section class="phase2-screen" id="p8" aria-label="Phase 2 entrance">
+  <div class="phase2-paper-sky" aria-hidden="true"></div>
+  <div class="phase2-grain" aria-hidden="true"></div>
+  <div class="phase2-entry">
+    <div class="phase2-mini">CHAPTER TWO · 19</div>
+    <div class="phase2-entry-copy">
+      <span class="phase2-hand">okay.</span>
+      <span class="phase2-entry-title">one more push.</span>
+      <span class="phase2-entry-small">don't be shy.</span>
+    </div>
+    <div class="double-door" id="doubleDoor" role="button" tabindex="0" aria-label="Push the doors open">
+      <div class="door-frame">
+        <div class="door-glow"></div>
+        <div class="door-leaf door-left">
+          <span class="door-label">19</span><span class="door-knob"></span>
+        </div>
+        <div class="door-leaf door-right">
+          <span class="door-label">♡</span><span class="door-knob"></span>
+        </div>
+        <div class="door-gap"></div>
+      </div>
+    </div>
+    <div class="push-message" id="pushMessage">push.</div>
+    <div class="push-meter" aria-hidden="true"><span id="pushMeter"></span></div>
+  </div>
+</section>
+
+<section class="phase2-screen" id="p9" aria-label="Nineteen doors hallway">
+  <div class="hallway-top">
+    <div><span class="hallway-kicker">19 DOORS</span><span class="hallway-note">find your way to the last one.</span></div>
+    <div class="music-pill" id="musicPill">♫ playing</div>
+  </div>
+  <div class="hallway-scene">
+    <div class="hallway-wall left-wall" aria-label="Left row of doors">
+      <div class="door-stack" id="leftDoors"></div>
+    </div>
+    <div class="hallway-center">
+      <div class="ceiling-light l1"></div><div class="ceiling-light l2"></div><div class="ceiling-light l3"></div>
+      <div class="floor-shadow"></div>
+      <div class="hallway-floor-line"></div>
+      <div class="hallway-hint" id="hallwayHint">start somewhere.</div>
+    </div>
+    <div class="hallway-wall right-wall" aria-label="Right row of doors">
+      <div class="door-stack" id="rightDoors"></div>
+    </div>
+  </div>
+  <div class="door-counter"><span id="doorCounter">01 / 19</span><span id="doorProgress">one found at a time ♡</span></div>
+</section>
+
+<div class="phase2-room" id="phase2Room" aria-hidden="true">
+  <div class="room-backdrop"></div>
+  <div class="room-card" id="roomCard">
+    <button class="room-close" id="roomClose" type="button" aria-label="Close door">×</button>
+    <div class="room-number" id="roomNumber">03</div>
+    <div class="room-copy" id="roomCopy">
+      <div class="room-kicker">you found it.</div>
+      <div class="room-title">three steps in.</div>
+      <div class="room-detail" id="roomDetail">now go one more.</div>
+    </div>
+    <button class="room-next" id="roomNext" type="button">back to the hallway →</button>
+  </div>
+</div>
+
+<audio id="phase2Song" preload="auto" loop src="Uff Teri Adaa I Like You Karthik Calling Karthik 128 Kbps.mp3"></audio>
+
 <svg class="story-thread" id="storyThread" viewBox="0 0 430 760" preserveAspectRatio="none" aria-hidden="true"><path class="thread-shadow" d="M18 92 C74 132 62 196 29 248 S20 367 76 407 S402 445 402 510 S335 612 389 686"></path><path class="thread-line" d="M18 92 C74 132 62 196 29 248 S20 367 76 407 S402 445 402 510 S335 612 389 686"></path></svg><div class="ambient"><span class="dust a">·</span><span class="dust b">✦</span><span class="dust c">·</span><span class="leaf">⌁</span></div><div class="transition-doodles" id="transitionDoodles"></div></main></div>
 <button class="global-back" id="globalBack" style="display:none" type="button" aria-label="Go back">← back</button><div class="code-reveal" id="codeReveal" aria-hidden="true"><div class="reveal-stack"><div class="reveal-line grant" id="revealGrant">ACCESS GRANTED ♡</div><div class="reveal-line wait" id="revealWait">wait.</div><div class="reveal-line found" id="revealFound">you actually found it.</div><div class="reveal-number" id="revealNumber">19</div><div class="reveal-line reveal-final" id="revealFinal">okay. let’s play.<small>phase one complete</small></div></div></div>
 <audio id="birthdaySong" preload="auto" src="Uff Teri Adaa I Like You Karthik Calling Karthik 128 Kbps.mp3"></audio>
