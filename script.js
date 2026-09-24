@@ -122,15 +122,25 @@ function go(n){
   },900);
 }
 /* GLOBAL NAVIGATION — one handler for every forward control + one dedicated back control. */
+function handleNextButton(button){
+  if(!button || busy)return;
+  const page=button.closest('.page');
+  if(!page || pages[i]!==page)return;
+  if(i<pages.length-1)go(i+1);
+}
+document.querySelectorAll('.next').forEach(button=>{
+  button.addEventListener('click',e=>{
+    e.preventDefault();
+    e.stopPropagation();
+    handleNextButton(button);
+  });
+});
 document.addEventListener('click',e=>{
   const nextButton=e.target.closest('.next');
   if(!nextButton)return;
   e.preventDefault();
   e.stopPropagation();
-  if(busy)return;
-  const page=nextButton.closest('.page');
-  if(!page || pages[i]!==page)return;
-  if(i<pages.length-1)go(i+1);
+  handleNextButton(nextButton);
 },true);
 
 const globalBack=document.getElementById('globalBack');
