@@ -257,3 +257,38 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
 @media (min-width:700px){.phase2-room{padding:0}.room-window{right:9%;width:39%;height:43%}.room-wall{bottom:38%;width:53%}.room-desk{bottom:25%;height:22%}.room-bed{right:24%;height:36%}.room-copy{font-size:24px;left:5%;top:13%}.room-top{left:42px;right:42px}.room-hint{bottom:20px}.room-audio-status{bottom:9%}}
 @media (max-width:620px){.room-window{right:6%;top:14%;width:45%;height:32%}.room-wall{bottom:45%;width:61%}.room-desk{bottom:31%;height:18%}.desk-lamp{height:120px}.turntable{right:22%;width:31%;height:64%}.room-bed{right:22%;height:31%}.room-box{right:5%;bottom:9%;width:20%;height:10%}.room-copy{font-size:17px}.room-top{left:23px;right:23px}.room-hint{font-size:12px}.room-audio-status{bottom:12%}}
 .reveal-enter{display:block;margin:16px auto 0;border:1px solid #756960;background:#eee5dd;color:#171413;border-radius:999px;padding:10px 17px;font:600 11px "DM Sans";letter-spacing:.02em;cursor:pointer;opacity:0;transform:translateY(6px);transition:opacity .6s ease .35s,transform .6s ease .35s}.reveal-line.show .reveal-enter{opacity:1;transform:none}
+
+/* ===== Phase 2 — illustrated room rebuild ===== */
+.phase2-illustrated{padding:0!important;display:block!important;background:#0d1019;overflow:hidden}
+.phase2-illustrated .room-illustration{position:absolute;inset:0;overflow:hidden;background:#111725}
+.phase2-illustrated .room-art{position:absolute;inset:-1%;width:102%;height:102%;display:block;transform:scale(1.015);transform-origin:center;filter:saturate(.88) contrast(.98)}
+.phase2-illustrated .room-art:focus{outline:none}
+.phase2-illustrated .room-hit{cursor:pointer;outline:none;transition:filter .25s ease,transform .25s ease}
+.phase2-illustrated .room-hit:hover{filter:brightness(1.08)}
+.phase2-illustrated .room-hit:focus-visible{filter:brightness(1.1)}
+.phase2-illustrated .room-film-grain{position:absolute;inset:0;pointer-events:none;opacity:.14;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='130' height='130'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");mix-blend-mode:screen}
+.phase2-illustrated .room-illustration:after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 57% 49%,transparent 20%,rgba(5,7,13,.12) 58%,rgba(3,5,9,.55) 100%)}
+.phase2-illustrated .room-floating-note{position:absolute;left:50%;top:17%;transform:translate(-50%,-8px);width:min(82%,360px);text-align:center;font:20px/1.05 Caveat,cursive;color:#e8d8cf;text-shadow:0 2px 15px #000;opacity:0;pointer-events:none;transition:opacity .5s ease,transform .5s ease}
+.phase2-illustrated .room-floating-note.show{opacity:1;transform:translate(-50%,0)}
+.phase2-illustrated .room-audio-status{position:absolute;left:50%;bottom:25px;transform:translateX(-50%);font:14px Caveat,cursive;color:#c7b8b1;opacity:.7;white-space:nowrap;pointer-events:none;text-shadow:0 2px 12px #000}
+.phase2-illustrated .room-memory{position:absolute;inset:0;z-index:8;display:grid;place-items:center;padding:28px;background:rgba(8,10,16,.48);backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .35s ease}
+.phase2-illustrated .room-memory.show{opacity:1;pointer-events:auto}
+.phase2-illustrated .memory-paper{width:min(88%,390px);max-height:72%;overflow:auto;padding:28px 26px 22px;background:#ded0c1;color:#292329;box-shadow:0 25px 70px #000b;transform:rotate(-1.3deg);font:18px/1.35 Caveat,cursive}
+.phase2-illustrated .memory-paper h3{margin:0 0 12px;font-size:34px;font-weight:500}
+.phase2-illustrated .memory-paper p{margin:10px 0}
+.phase2-illustrated .memory-close{margin-top:12px;border:1px solid #78696b;background:#f0e5da;border-radius:999px;padding:8px 15px;font:600 11px "DM Sans";cursor:pointer}
+.phase2-illustrated.playing .record-disc{animation:roomRecordSpin 2.7s linear infinite}
+.phase2-illustrated.lamp-on .lamp-hit{filter:brightness(1.15)}
+.phase2-illustrated.lamp-on .room-art{filter:saturate(.92) contrast(.98) brightness(1.04)}
+.phase2-illustrated.night .room-art{filter:saturate(.78) brightness(.82) contrast(1.02)}
+.phase2-illustrated .box-hit .box-lid{transform-origin:605px 545px;transition:transform .55s cubic-bezier(.2,.8,.2,1)}
+.phase2-illustrated.open-box .box-hit .box-lid{transform:translateY(-13px) rotate(-7deg)}
+@keyframes roomRecordSpin{to{transform:rotate(360deg)}}
+@media(max-width:699px){
+  .phase2-illustrated .room-audio-status{bottom:16px;font-size:13px}
+  .phase2-illustrated .room-floating-note{top:13%;font-size:19px}
+}
+@media(min-width:700px){
+  .phase2-illustrated .room-illustration{border-radius:0}
+  .phase2-illustrated .room-art{transform:scale(1.01)}
+}
