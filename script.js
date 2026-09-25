@@ -528,9 +528,57 @@ runPhase1Ending=function(){
 
 /* ===== Phase 2 film + Lost Frame integration ===== */
 (function initPhase2FilmAndLostFrame(){
-  const filmPage=document.getElementById('p8'), video=document.getElementById('phase2Animation');
-  const filmStage=document.getElementById('filmStage'), moon=document.getElementById('moonHotspot');
-  const filmLine=document.getElementById('filmLine'), filmContinue=document.getElementById('filmContinue');
+  const filmPage=document.getElementById('p8');
+  const video=document.getElementById('phase2Animation');
+  const filmStage=document.getElementById('filmStage');
+  const moon=document.getElementById('moonHotspot');
+  const filmLine=document.getElementById('filmLine');
+  const filmContinue=document.getElementById('filmContinue');
+
+  const lostPage=document.getElementById('p9');
+  const lostRail=document.getElementById('lostRail');
+  const lostWhisper=document.getElementById('lostWhisper');
+  const lostDetail=document.getElementById('lostDetail');
+  const lostTitle=document.getElementById('lostTitle');
+  const lostNote=document.getElementById('lostNote');
+  const lostSecret=document.getElementById('lostSecret');
+  const lostClose=document.getElementById('lostClose');
+  const lostBigImage=document.getElementById('lostBigImage');
+
+  const lostPhotoNames=[
+    'throwback-photo.jpg',
+    'kashish-01.jpg',
+    'kashish-02.jpg',
+    'kashish-03.jpg',
+    'kashish-04.jpg',
+    'kashish-05.jpg'
+  ];
+
+  const lostNotes=[
+    'saved because i liked the light.',
+    'this one stayed.',
+    'somewhere between ordinary and you.',
+    'couldn’t bring myself to delete this.',
+    'same light.',
+    'still here.'
+  ];
+
+  const activateLostFrame=()=>{
+    lostPage?.classList.add('moon-entered');
+    window.setTimeout(()=>{
+      lostRail?.classList.add('show');
+      lostWhisper?.classList.add('show');
+    },180);
+  };
+
+  const resetLostFrame=()=>{
+    lostPage?.classList.remove('moon-entered');
+    lostRail?.classList.remove('show');
+    lostDetail?.classList.remove('open');
+    lostSecret?.classList.remove('show');
+    if(lostBigImage)lostBigImage.removeAttribute('src');
+  };
+
   function playFilm(){
     if(!video)return;
     video.loop=true;
@@ -540,27 +588,128 @@ runPhase1Ending=function(){
     video.setAttribute('webkit-playsinline','');
     filmPage?.classList.add('playing');
     document.body.classList.add('phase2-active');
-    try{ video.load(); }catch(e){}
+    try{video.load();}catch(e){}
     const p=video.play();
     if(p?.then)p.then(()=>filmStage?.classList.add('ready')).catch(()=>{
       filmStage?.classList.add('ready');
-      const retry=()=>{video.play().catch(()=>{});document.removeEventListener('pointerdown',retry);document.removeEventListener('touchstart',retry);};
+      const retry=()=>{
+        video.play().catch(()=>{});
+        document.removeEventListener('pointerdown',retry);
+        document.removeEventListener('touchstart',retry);
+      };
       document.addEventListener('pointerdown',retry,{once:true,passive:true});
       document.addEventListener('touchstart',retry,{once:true,passive:true});
     });
   }
-  function stopFilm(){ if(!video)return; video.pause(); video.currentTime=0; filmPage?.classList.remove('playing'); document.body.classList.remove('phase2-active'); filmContinue?.classList.remove('show'); filmLine?.classList.remove('show'); }
+
+  function stopFilm(){
+    if(!video)return;
+    video.pause();
+    video.currentTime=0;
+    filmPage?.classList.remove('playing');
+    document.body.classList.remove('phase2-active');
+    filmContinue?.classList.remove('show');
+    filmLine?.classList.remove('show');
+  }
+
   video?.addEventListener('loadeddata',()=>filmStage?.classList.add('ready'));
-  moon?.addEventListener('click',()=>{if(filmLine){filmLine.innerHTML='some things look different<br>when you come back to them.';filmLine.classList.remove('show');void filmLine.offsetWidth;filmLine.classList.add('show')} if(window.umami?.track)window.umami.track('phase2-moon-discovered')});
-  filmContinue?.addEventListener('click',()=>{if(window.umami?.track)window.umami.track('phase2-film-complete');go(8)});
+
+  moon?.addEventListener('click',()=>{
+    if(filmStage)filmStage.classList.add('moon-chosen');
+    if(filmLine){
+      filmLine.innerHTML='some things look different<br>when you come back to them.';
+      filmLine.classList.remove('show');
+      void filmLine.offsetWidth;
+      filmLine.classList.add('show');
+    }
+    if(window.umami?.track)window.umami.track('phase2-moon-discovered');
+
+    // The moon is the only cue: no extra button, no hard cut.
+    window.setTimeout(()=>{
+      resetLostFrame();
+      go(8);
+      window.setTimeout(activateLostFrame,260);
+    },720);
+  });
+
+  // Keep the old fallback control harmless if it ever becomes visible.
+  filmContinue?.addEventListener('click',()=>{
+    if(window.umami?.track)window.umami.track('phase2-film-complete');
+    go(8);
+  });
+
   const oldGo=go;
-  go=function(n){if(n===7)playFilm();if(i===7&&n!==7)stopFilm();return oldGo(n)};
-  const lostIntro=document.getElementById('lostIntro'), lostRail=document.getElementById('lostRail'), lostEnter=document.getElementById('lostEnter');
-  const lostDetail=document.getElementById('lostDetail'), lostTitle=document.getElementById('lostTitle'), lostNote=document.getElementById('lostNote'), lostSecret=document.getElementById('lostSecret'), lostClose=document.getElementById('lostClose');
-  const notes=['you always notice the quiet ones.','three years later and this one still feels familiar.','not everything needs a reason.','there is something hiding here.','you nearly skipped this one.','19. that\'s all.','okay… you found the frame i didn\'t label.','maybe the last frame isn\'t actually the last.'];
-  lostEnter?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();lostIntro?.classList.add('hidden');setTimeout(()=>lostRail?.classList.add('show'),250);if(window.umami?.track)window.umami.track('lost-frame-opened')});
-  document.querySelectorAll('#p9 .lost-frame').forEach((frame,index)=>frame.addEventListener('click',()=>{if(index===6){lostSecret?.classList.add('show');if(window.umami?.track)window.umami.track('lost-frame-found');return}if(lostTitle)lostTitle.textContent=frame.querySelector('b')?.textContent||'FRAME';if(lostNote)lostNote.textContent=notes[index]||'some things are worth keeping.';lostDetail?.classList.add('open');if(window.umami?.track)window.umami.track('lost-frame-viewed',{frame:index+1})}));
+  go=function(n){
+    // Enter Phase 2 from the reveal.
+    if(n===7)playFilm();
+
+    // Moon → Lost Frame: stop only the video, not the song.
+    if(i===7 && n===8)stopFilm();
+
+    // Leaving the Lost Frame entirely stops the song.
+    if(i===8 && n!==8){
+      pausePhase2Song();
+      resetLostFrame();
+    }
+
+    return oldGo(n);
+  };
+
+  // Load any real Kashish photos that are present. Missing slots stay elegant
+  // instead of showing broken-image UI; upload the matching filenames later.
+  document.querySelectorAll('#p9 .photo-frame').forEach((frame,index)=>{
+    const img=frame.querySelector('img');
+    if(!img)return;
+    const wanted=frame.dataset.photo||lostPhotoNames[index];
+    img.src=wanted;
+    img.addEventListener('load',()=>frame.querySelector('.lost-image')?.classList.add('has-photo'),{once:true});
+    img.addEventListener('error',()=>{
+      frame.classList.add('photo-missing');
+      frame.querySelector('.lost-image')?.classList.remove('has-photo');
+      img.removeAttribute('src');
+    },{once:true});
+  });
+
+  document.querySelectorAll('#p9 .lost-frame').forEach((frame,index)=>{
+    frame.addEventListener('click',()=>{
+      const img=frame.querySelector('img');
+      const src=img?.currentSrc||img?.src||'';
+      if(lostBigImage){
+        if(src){
+          lostBigImage.src=src;
+          lostBigImage.alt=img?.alt||'Kashish memory';
+          lostBigImage.style.display='block';
+        }else{
+          lostBigImage.removeAttribute('src');
+          lostBigImage.style.display='none';
+        }
+      }
+      if(lostTitle)lostTitle.textContent=frame.querySelector('b')?.textContent||'FRAME';
+      if(lostNote)lostNote.textContent=lostNotes[index]||'some things are worth keeping.';
+      lostDetail?.classList.add('open');
+
+      if(index===4){
+        lostSecret?.classList.remove('show');
+        void lostSecret?.offsetWidth;
+        lostSecret?.classList.add('show');
+        clearTimeout(window.lostSecretTimer);
+        window.lostSecretTimer=window.setTimeout(()=>lostSecret?.classList.remove('show'),3800);
+        if(window.umami?.track)window.umami.track('lost-frame-found');
+      }else if(window.umami?.track){
+        window.umami.track('lost-frame-viewed',{frame:index+1});
+      }
+    });
+  });
+
   lostClose?.addEventListener('click',()=>lostDetail?.classList.remove('open'));
-  lostDetail?.addEventListener('click',e=>{if(e.target===lostDetail)lostDetail.classList.remove('open')});
-  document.addEventListener('keydown',e=>{if(e.key==='Escape')lostDetail?.classList.remove('open')});
+  lostDetail?.addEventListener('click',e=>{
+    if(e.target===lostDetail)lostDetail.classList.remove('open');
+  });
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape')lostDetail?.classList.remove('open');
+  });
+
+  if(window.umami?.track){
+    lostRail?.addEventListener('scroll',()=>{});
+  }
 })();
