@@ -643,10 +643,12 @@ runPhase1Ending=function(){
     // Enter Phase 2 from the reveal.
     if(n===7)playFilm();
 
-    // Moon → Lost Frame: stop only the video, not the song.
-    if(i===7 && n===8)stopFilm();
+    // Any exit from the cinematic Phase 2 screen must release its fixed
+    // viewport lock. The song is intentionally allowed to continue only
+    // when moving between Phase 2 and Lost Frame.
+    if(i===7 && n!==7)stopFilm();
 
-    // Leaving the Lost Frame entirely stops the song.
+    // Leaving the Lost Frame for Phase 1 stops the Phase 2 song.
     if(i===8 && n!==7 && n!==8){
       pausePhase2Song();
       resetLostFrame();
