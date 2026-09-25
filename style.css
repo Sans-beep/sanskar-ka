@@ -638,3 +638,143 @@ body.phase2-active .card{
   35%{opacity:1}
   100%{opacity:0}
 }
+
+
+/* ===== FINAL PHASE 2 / LOST FRAME LAYOUT ===== */
+body.phase2-active{
+  overflow:auto!important;
+  width:auto!important;
+  height:auto!important;
+}
+body.phase2-active .shell,
+body.phase2-active main{
+  width:auto!important;
+  max-width:none!important;
+  padding:0!important;
+  margin:0!important;
+  overflow:hidden!important;
+}
+body.phase2-active .card{
+  width:min(100%,430px)!important;
+  height:min(calc(100svh - 32px),760px)!important;
+  max-width:430px!important;
+  max-height:calc(100svh - 32px)!important;
+  position:relative!important;
+  border:1px solid #302b28!important;
+  border-radius:28px!important;
+  box-shadow:0 30px 100px #000!important;
+  overflow:hidden!important;
+}
+.phase2-film.active{
+  position:absolute!important;
+  inset:0!important;
+  z-index:3!important;
+  width:100%!important;
+  height:100%!important;
+  max-width:none!important;
+  max-height:none!important;
+  margin:0!important;
+  padding:22px 24px 62px!important;
+  border:0!important;
+  border-radius:0!important;
+  overflow:hidden!important;
+}
+.phase2-film.active .film-stage{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  border:0!important;
+  border-radius:0!important;
+  overflow:hidden!important;
+}
+.phase2-film.active #phase2Animation{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  max-width:none!important;
+  max-height:none!important;
+  object-fit:cover!important;
+  border:0!important;
+  border-radius:0!important;
+}
+.moon-hotspot{
+  z-index:100!important;
+  pointer-events:auto!important;
+  right:0!important;
+  top:0!important;
+  width:55%!important;
+  height:52%!important;
+  opacity:0!important;
+  touch-action:manipulation!important;
+}
+.lost-frame-page.active{
+  position:absolute!important;
+  inset:0!important;
+  z-index:4!important;
+  width:100%!important;
+  height:100%!important;
+  max-width:none!important;
+  max-height:none!important;
+  margin:0!important;
+  padding:22px 24px 62px!important;
+  border:0!important;
+  border-radius:0!important;
+  overflow:hidden!important;
+  background:#090909!important;
+}
+.card:has(.lost-frame-page.active){
+  width:min(100%,430px)!important;
+  height:min(calc(100svh - 32px),760px)!important;
+  max-width:430px!important;
+  max-height:calc(100svh - 32px)!important;
+  position:relative!important;
+  border:1px solid #302b28!important;
+  border-radius:28px!important;
+  box-shadow:0 30px 100px #000!important;
+  overflow:hidden!important;
+}
+.lost-frame-page.active .lost-stage{
+  width:100%!important;
+  height:100%!important;
+  inset:0!important;
+}
+@media (min-width:700px){
+  body.phase2-active .card,
+  .card:has(.phase2-film.active),
+  .card:has(.lost-frame-page.active){
+    width:min(100%,1100px)!important;
+    max-width:1100px!important;
+  }
+  body.phase2-active .card,
+  .card:has(.phase2-film.active),
+  .card:has(.lost-frame-page.active){
+    height:min(calc(100svh - 32px),820px)!important;
+    max-height:calc(100svh - 32px)!important;
+  }
+}
+@media (min-width:1100px){
+  body.phase2-active .card,
+  .card:has(.phase2-film.active),
+  .card:has(.lost-frame-page.active){
+    width:min(100%,1180px)!important;
+    max-width:1180px!important;
+  }
+}
+
+/* Keep the page's normal frame; never remove it during Phase 2. */
+.card:has(.phase2-film.active),
+.card:has(.lost-frame-page.active){
+  border:1px solid #302b28!important;
+  border-radius:28px!important;
+  box-shadow:0 30px 100px #000!important;
+}
+
+/* No post-click overlay should block the moon. */
+.phase2-film .film-stage.moon-chosen::after{
+  pointer-events:none!important;
+  z-index:90!important;
+}
