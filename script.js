@@ -280,8 +280,78 @@ env.addEventListener('click',()=>{
 /* ===== Phase 2 — cinematic video + Jaan Nisaar only ===== */
 const phase2Song=document.getElementById('phase2Song');
 const phase2Page=document.getElementById('p8');
-const phase2Video=document.getElementById('phase2Animation');
+const phase2Videos=[
+  document.getElementById('phase2AnimationA'),
+  document.getElementById('phase2AnimationB')
+].filter(Boolean);
+let phase2VideoIndex=0;
 let phase2SongPlaying=false;
+let phase2LoopTimer=null;
+let phase2Crossfading=false;
+
+function activePhase2Video(){
+  return phase2Videos[phase2VideoIndex]||null;
+}
+
+function preparePhase2Video(v){
+  if(!v)return;
+  v.muted=true;
+  v.loop=false;
+  v.playsInline=true;
+  v.preload='auto';
+}
+
+function resetPhase2VideoPair(){
+  phase2Videos.forEach((v,k)=>{
+    preparePhase2Video(v);
+    v.pause();
+    try{v.currentTime=0}catch(_){}
+    v.classList.toggle('is-visible',k===0);
+    v.style.transition='opacity 160ms linear';
+  });
+  phase2VideoIndex=0;
+  phase2Crossfading=false;
+}
+
+function schedulePhase2SeamlessLoop(){
+  clearTimeout(phase2LoopTimer);
+  const current=activePhase2Video();
+  if(!current)return;
+  const duration=current.duration;
+  if(!Number.isFinite(duration)||duration<=0)return;
+  const remaining=Math.max(0,duration-current.currentTime);
+  const lead=Math.min(0.42,Math.max(0.18,duration*0.025));
+  phase2LoopTimer=setTimeout(()=>crossfadePhase2Video(),Math.max(60,(remaining-lead)*1000));
+}
+
+function crossfadePhase2Video(){
+  if(phase2Crossfading||phase2Videos.length<2)return;
+  const current=activePhase2Video();
+  const nextIndex=(phase2VideoIndex+1)%phase2Videos.length;
+  const next=phase2Videos[nextIndex];
+  if(!current||!next)return;
+  phase2Crossfading=true;
+  clearTimeout(phase2LoopTimer);
+
+  next.pause();
+  try{next.currentTime=0}catch(_){}
+  next.muted=true;
+  next.loop=false;
+  next.classList.add('is-visible');
+  next.play().catch(()=>{});
+
+  requestAnimationFrame(()=>{
+    current.classList.remove('is-visible');
+  });
+
+  setTimeout(()=>{
+    current.pause();
+    try{current.currentTime=0}catch(_){}
+    phase2VideoIndex=nextIndex;
+    phase2Crossfading=false;
+    schedulePhase2SeamlessLoop();
+  },190);
+}
 
 function pausePhase2Song(){
   if(!phase2Song)return;
@@ -306,25 +376,30 @@ function playPhase2Song(){
 }
 
 function playPhase2Video(){
-  if(!phase2Video)return;
-  phase2Video.muted=true;
-  phase2Video.loop=true;
-  phase2Video.playsInline=true;
-  phase2Video.currentTime=0;
-  const p=phase2Video.play();
-  if(p?.catch){
-    p.catch(()=>{
-      const retry=()=>phase2Video.play().catch(()=>{});
-      document.addEventListener('pointerdown',retry,{once:true,passive:true});
-      document.addEventListener('touchstart',retry,{once:true,passive:true});
-    });
-  }
+  if(!phase2Videos.length)return;
+  resetPhase2VideoPair();
+  const first=activePhase2Video();
+  first.muted=true;
+  first.loop=false;
+  first.currentTime=0;
+  const start=()=>{
+    first.play().then(()=>schedulePhase2SeamlessLoop()).catch(()=>{});
+  };
+  start();
+  document.addEventListener('pointerdown',start,{once:true,passive:true});
+  document.addEventListener('touchstart',start,{once:true,passive:true});
 }
 
 function stopPhase2Video(){
-  if(!phase2Video)return;
-  phase2Video.pause();
-  phase2Video.currentTime=0;
+  clearTimeout(phase2LoopTimer);
+  phase2Crossfading=false;
+  phase2Videos.forEach(v=>{
+    v.pause();
+    try{v.currentTime=0}catch(_){}
+    v.classList.remove('is-visible');
+  });
+  if(phase2Videos[0])phase2Videos[0].classList.add('is-visible');
+  phase2VideoIndex=0;
 }
 
 function enterPhase2(){
