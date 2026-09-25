@@ -17,43 +17,36 @@
 <section class="page" id="p6"><div class="top"><span>ONE MORE THING</span><span>19.10.26</span></div><div class="inner"><i class="doodle d1">♡</i><i class="doodle d2">✦</i><div class="kicker">the letter</div><div class="copy" style="font-size:38px;margin-top:12px">there's something<br>in the letter you'll need later.</div><div class="envelope hit" id="secretEnvelope" aria-label="Tap the envelope nine times"><div class="seal">19</div></div><div class="tap-count" id="tapCount">there's something here… <b>♡</b></div><div class="note">open the letter. keep the little code.</div><i class="doodle">⌁</i><button class="btn next">I have it →</button></div></section>
 <section class="page" id="p7"><div class="top"><span>PRIVATE ENTRY</span><span>19.10.26</span></div><div class="inner"><i class="doodle d1">♡</i><i class="doodle d2">⌁</i><div class="kicker">the next chapter is locked</div><div class="copy" style="font-size:39px;margin-top:14px">enter the code<br>from the letter.</div><input id="code" maxlength="20" placeholder="• • • • • • • • •" autocomplete="off"><button class="btn" id="unlock">unlock →</button><div class="error" id="error"></div><div class="tiny">no cheating, bhondu girl.</div></div></section>
 
-<section class="page phase2-room" id="p8">
-  <div class="room-top"><span>THE ROOM THAT REMEMBERS</span><span>19</span></div>
-  <div class="room-scene" id="roomScene">
-    <div class="room-window" id="roomWindow" data-object="window" role="button" tabindex="0" aria-label="Look outside">
-      <div class="window-sky"></div><div class="window-city"></div><div class="window-curtain left"></div><div class="window-curtain right"></div>
-      <span class="hotspot">look outside</span>
-    </div>
-    <div class="room-wall">
-      <div class="photo-cluster">
-        <span class="mini-photo p-a"></span><span class="mini-photo p-b"></span><span class="mini-photo p-c"></span>
-        <span class="mini-note">some things<br>stay here.</span>
-      </div>
-      <button class="room-object wall-object" data-object="wall" aria-label="Look behind the wall collage">✦</button>
-    </div>
-    <div class="room-desk">
-      <div class="desk-lamp" data-object="lamp" role="button" tabindex="0" aria-label="Tap the lamp"><span class="lamp-shade"></span><span class="lamp-stem"></span><span class="lamp-base"></span></div>
-      <div class="turntable" data-object="music" role="button" tabindex="0" aria-label="Play the room's song">
-        <div class="record"></div><div class="tonearm"></div><span class="music-label">play me ♡</span>
-      </div>
-      <button class="drawer" data-object="drawer" aria-label="Open the drawer"><span>drawer</span></button>
-      <div class="desk-line"></div>
-    </div>
-    <div class="room-bed">
-      <div class="blanket"></div>
-      <button class="notebook" data-object="notebook" aria-label="Open the notebook"><span>little things</span><b>♡</b></button>
-    </div>
-    <div class="room-box" data-object="box" role="button" tabindex="0" aria-label="Open the final keepsake box">
-      <div class="box-lid">19 ♡</div><div class="box-body"></div><span class="box-label">one last thing</span>
-    </div>
-    <div class="room-plant"><i></i><i></i><i></i><i></i><span></span></div>
-    <div class="room-rug"></div>
-    <div class="room-copy">things are quieter here.<br><em>look around.</em></div>
-    <div class="room-note" id="roomNote" aria-live="polite"></div>
-    <div class="room-memory" id="roomMemory" aria-hidden="true"></div>
-    <div class="room-audio-status" id="roomAudioStatus">the room has a song.</div>
+<section class="page phase2-film" id="p8">
+  <div class="film-top"><span>PHASE TWO</span><span>19</span></div>
+  <div class="film-stage" id="filmStage">
+    <video id="phase2Animation" playsinline preload="auto" src="phase2-reference-moon-no-lyrics.mp4"></video>
+    <div class="film-wash"></div>
+    <button class="moon-hotspot" id="moonHotspot" aria-label="Look at the moon"></button>
+    <div class="film-line" id="filmLine"></div>
+    <button class="film-continue" id="filmContinue" type="button">there's more →</button>
+    <div class="film-loading" id="filmLoading">phase two</div>
   </div>
-  <div class="room-hint">nothing is labelled. <span>mostly.</span></div>
+</section>
+<section class="page lost-frame-page" id="p9">
+  <div class="lost-stage">
+    <div class="lost-grain"></div>
+    <header class="lost-header"><span>ARCHIVE / 03</span><span>19.10.26</span></header>
+    <section class="lost-intro" id="lostIntro"><div class="lost-kicker">FOUND IN THE WRONG PLACE</div><h1>THE LOST<br>FRAME</h1><div class="lost-sub">some things look different when you come back to them.</div><button class="lost-enter" id="lostEnter">OPEN THE ROLL →</button></section>
+    <section class="lost-rail" id="lostRail">
+      <figure class="lost-frame" style="--r:-2deg"><div class="lost-image i1"><i class="fake a"></i><i class="fake e"></i></div><figcaption><b>FRAME 003</b><span>KEEP</span></figcaption><div class="lost-scribble">hmm.</div></figure>
+      <figure class="lost-frame" style="--r:1.5deg"><div class="lost-image i2"><i class="fake b"></i><i class="fake c"></i></div><figcaption><b>FRAME 007</b><span>04:18 PM</span></figcaption></figure>
+      <figure class="lost-frame" style="--r:-1deg"><div class="lost-image i3"><i class="fake a"></i><i class="fake d"></i></div><figcaption><b>FRAME 011</b><span>UNSORTED</span></figcaption></figure>
+      <figure class="lost-frame" style="--r:2deg"><div class="lost-image i4"><i class="fake b"></i><i class="fake e"></i></div><figcaption><b>FRAME 014</b><span>DON'T DELETE</span></figcaption><div class="lost-scribble">wait...</div></figure>
+      <figure class="lost-frame" style="--r:-2.5deg"><div class="lost-image i5"><i class="fake b"></i><i class="fake a"></i></div><figcaption><b>FRAME 017</b><span>KEEP</span></figcaption></figure>
+      <figure class="lost-frame" style="--r:1deg"><div class="lost-image i6"><i class="fake a"></i><i class="fake c"></i></div><figcaption><b>FRAME 019</b><span>EXPOSED</span></figcaption><div class="lost-scribble">19</div></figure>
+      <figure class="lost-frame lost-special" style="--r:-1.5deg"><div class="lost-image"></div><figcaption><b>FRAME 020</b><span>?</span></figcaption></figure>
+      <figure class="lost-frame" style="--r:2deg"><div class="lost-image i8"><i class="fake e"></i><i class="fake b"></i></div><figcaption><b>FRAME 021</b><span>END?</span></figcaption></figure>
+    </section>
+    <div class="lost-secret" id="lostSecret">okay… you found the frame i didn't label.</div>
+    <div class="lost-tip">DRAG / SWIPE — TAP A FRAME</div>
+    <div class="lost-detail" id="lostDetail"><div class="lost-card"><button class="lost-close" id="lostClose">×</button><div class="lost-big"></div><div class="lost-copy"><b id="lostTitle"></b><span id="lostNote"></span></div></div></div>
+  </div>
 </section>
 <svg class="story-thread" id="storyThread" viewBox="0 0 430 760" preserveAspectRatio="none" aria-hidden="true"><path class="thread-shadow" d="M18 92 C74 132 62 196 29 248 S20 367 76 407 S402 445 402 510 S335 612 389 686"></path><path class="thread-line" d="M18 92 C74 132 62 196 29 248 S20 367 76 407 S402 445 402 510 S335 612 389 686"></path></svg><div class="ambient"><span class="dust a">·</span><span class="dust b">✦</span><span class="dust c">·</span><span class="leaf">⌁</span></div><div class="transition-doodles" id="transitionDoodles"></div></main></div>
 <button class="global-back" id="globalBack" style="display:none" type="button" aria-label="Go back">← back</button><div class="code-reveal" id="codeReveal" aria-hidden="true"><div class="reveal-stack"><div class="reveal-line grant" id="revealGrant">ACCESS GRANTED ♡</div><div class="reveal-line wait" id="revealWait">wait.</div><div class="reveal-line found" id="revealFound">you actually found it.</div><div class="reveal-number" id="revealNumber">19</div><div class="reveal-line reveal-final" id="revealFinal">okay. let’s play.<small>phase one complete</small><button class="reveal-enter" id="enterPhase2">enter the room →</button></div></div></div>
