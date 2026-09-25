@@ -352,3 +352,71 @@ body:has(.phase2-film.active){overflow:hidden!important}
 body.phase2-active{overflow:hidden!important}
 body.phase2-active .card{width:100vw!important;height:100svh!important;max-width:none!important;max-height:none!important;border:0!important;border-radius:0!important;box-shadow:none!important}
 body.phase2-active .shell{padding:0!important}
+
+/* ===== Phase 2 final viewport lock ===== */
+.phase2-film.active{
+  position:fixed!important;
+  inset:0!important;
+  z-index:9999!important;
+  width:100vw!important;
+  height:100svh!important;
+  max-width:none!important;
+  max-height:none!important;
+  overflow:hidden!important;
+  padding:0!important;
+  margin:0!important;
+  border:0!important;
+  border-radius:0!important;
+  transform:none!important;
+}
+.phase2-film.active .film-stage{
+  position:fixed!important;
+  inset:0!important;
+  width:100vw!important;
+  height:100svh!important;
+  overflow:hidden!important;
+  border:0!important;
+  border-radius:0!important;
+}
+.phase2-film.active #phase2Animation{
+  position:fixed!important;
+  inset:0!important;
+  display:block!important;
+  width:100vw!important;
+  height:100svh!important;
+  min-width:100vw!important;
+  min-height:100svh!important;
+  max-width:none!important;
+  max-height:none!important;
+  object-fit:cover!important;
+  object-position:center center!important;
+  margin:0!important;
+  border:0!important;
+  border-radius:0!important;
+}
+body.phase2-active{
+  overflow:hidden!important;
+  width:100%!important;
+  height:100%!important;
+}
+body.phase2-active .shell,
+body.phase2-active main{
+  width:100vw!important;
+  max-width:none!important;
+  padding:0!important;
+  margin:0!important;
+  overflow:hidden!important;
+}
+body.phase2-active .card{
+  position:static!important;
+  width:100vw!important;
+  height:100svh!important;
+  max-width:none!important;
+  max-height:none!important;
+  padding:0!important;
+  margin:0!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  overflow:hidden!important;
+}
