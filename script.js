@@ -426,6 +426,7 @@ function stopPhase2Video(){
   clearTimeout(phase2LoopTimer);
   phase2Crossfading=false;
   phase2VideoStarted=false;
+  resetPhase2Eclipse();
   phase2Videos.forEach(v=>{
     v.pause();
     try{v.currentTime=0}catch(_){}
@@ -659,6 +660,7 @@ function enterPhase2(){
     overlay.classList.remove('show');
     overlay.setAttribute('aria-hidden','true');
   }
+  activatePhase2Eclipse();
   playPhase2Song();
   playPhase2Video();
   go(7);
