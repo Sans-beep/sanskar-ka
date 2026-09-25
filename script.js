@@ -438,11 +438,8 @@ function stopPhase2Video(){
 
 
 
-/* ===== Phase 2 — moonlight interaction =====
-   The film remains the hero. Touch/drag starts on the moon and paints a
-   temporary trail of cold moonlight above the animation. After enough
-   movement the moon gives one subtle "wake" response.
-*/
+
+/* ===== Phase 2 — moonlight interaction ===== */
 const phase2MoonlightHit=document.getElementById('phase2MoonlightHit');
 const phase2MoonlightLayer=document.getElementById('phase2MoonlightLayer');
 const phase2MoonlightTrail=document.getElementById('phase2MoonlightTrail');
@@ -454,10 +451,10 @@ const phase2MoonlightCtx=phase2MoonlightTrail?.getContext('2d');
 
 const phase2MoonlightState={
   pointerId:null,
-  points:[],
   drawing:false,
+  points:[],
   distance:0,
-  last:{x:0,y:0},
+  last:null,
   complete:false,
   raf:0,
   fadeTimer:null
@@ -468,6 +465,19 @@ function phase2MoonPoint(){
     x:phase2Page.clientWidth*.67,
     y:phase2Page.clientHeight*.37
   };
+}
+
+function phase2MoonRadius(){
+  // Deliberately generous: the visual moon varies slightly with object-fit crop
+  // between phone and desktop. The interaction should never require pixel-perfect tapping.
+  return Math.max(72,Math.min(phase2Page.clientWidth,phase2Page.clientHeight)*.16);
+}
+
+function phase2MoonInside(p){
+  const c=phase2MoonPoint();
+  const rx=phase2MoonRadius()*1.35;
+  const ry=phase2MoonRadius()*1.35;
+  return (((p.x-c.x)*(p.x-c.x))/(rx*rx)+((p.y-c.y)*(p.y-c.y))/(ry*ry))<=1;
 }
 
 function resizePhase2MoonlightCanvas(){
@@ -481,7 +491,6 @@ function resizePhase2MoonlightCanvas(){
   phase2MoonlightCtx.setTransform(dpr,0,0,dpr,0,0);
 }
 window.addEventListener('resize',resizePhase2MoonlightCanvas,{passive:true});
-resizePhase2MoonlightCanvas();
 
 function phase2MoonlightPosition(e){
   const r=phase2Page.getBoundingClientRect();
@@ -491,10 +500,11 @@ function phase2MoonlightPosition(e){
 function phase2MoonlightRender(){
   if(!phase2MoonlightCtx)return;
   const ctx=phase2MoonlightCtx;
-  ctx.clearRect(0,0,phase2Page.clientWidth,phase2Page.clientHeight);
+  const w=phase2Page.clientWidth,h=phase2Page.clientHeight;
+  ctx.clearRect(0,0,w,h);
 
   const now=performance.now();
-  phase2MoonlightState.points=phase2MoonlightState.points.filter(p=>now-p.t<1100);
+  phase2MoonlightState.points=phase2MoonlightState.points.filter(p=>now-p.t<1000);
 
   if(phase2MoonlightState.points.length>1){
     ctx.save();
@@ -502,30 +512,28 @@ function phase2MoonlightRender(){
     ctx.lineJoin='round';
 
     for(let k=1;k<phase2MoonlightState.points.length;k++){
-      const a=phase2MoonlightState.points[k-1];
-      const b=phase2MoonlightState.points[k];
-      const age=Math.max(0,now-b.t);
-      const life=Math.max(0,1-age/1100);
+      const prev=phase2MoonlightState.points[k-1];
+      const cur=phase2MoonlightState.points[k];
+      const life=Math.max(0,1-(now-cur.t)/1000);
       const taper=k/phase2MoonlightState.points.length;
 
-      ctx.shadowBlur=18+12*taper;
-      ctx.shadowColor=`rgba(220,241,252,${.20+.34*life})`;
-      ctx.strokeStyle=`rgba(231,247,255,${.08+.68*life})`;
-      ctx.lineWidth=1.5+5.5*taper;
+      ctx.shadowBlur=16+16*taper;
+      ctx.shadowColor=`rgba(225,243,252,${.16+.42*life})`;
+      ctx.strokeStyle=`rgba(239,249,255,${.10+.65*life})`;
+      ctx.lineWidth=1.5+5*taper;
 
       ctx.beginPath();
-      ctx.moveTo(a.x,a.y);
-      ctx.lineTo(b.x,b.y);
+      ctx.moveTo(prev.x,prev.y);
+      ctx.lineTo(cur.x,cur.y);
       ctx.stroke();
     }
 
     const last=phase2MoonlightState.points[phase2MoonlightState.points.length-1];
-    const pulse=.7+.3*Math.sin(now*.012);
-    ctx.shadowBlur=22;
-    ctx.shadowColor='rgba(225,243,252,.45)';
-    ctx.fillStyle='rgba(245,252,255,.88)';
+    ctx.shadowBlur=24;
+    ctx.shadowColor='rgba(226,243,252,.5)';
+    ctx.fillStyle='rgba(246,252,255,.92)';
     ctx.beginPath();
-    ctx.arc(last.x,last.y,2.6+1.4*pulse,0,Math.PI*2);
+    ctx.arc(last.x,last.y,3,0,Math.PI*2);
     ctx.fill();
     ctx.restore();
   }
@@ -548,85 +556,85 @@ function phase2ClearMoonlightCanvas(){
   }
 }
 
-function phase2MoonlightFinish(){
-  if(phase2MoonlightState.complete)return;
-  phase2MoonlightState.complete=true;
-
-  phase2MoonlightAura.classList.add('complete');
-  phase2MoonlightFlash.classList.remove('fire');
-  void phase2MoonlightFlash.offsetWidth;
-  phase2MoonlightFlash.classList.add('fire');
-
-  phase2MoonlightNote.textContent='you left a little light here.';
-  phase2MoonlightNote.classList.remove('show');
-  void phase2MoonlightNote.offsetWidth;
-  phase2MoonlightNote.classList.add('show');
-
-  phase2Page.dispatchEvent(new CustomEvent('phase2:moonlight-complete'));
-
-  setTimeout(()=>{
-    phase2MoonlightAura.classList.remove('complete');
-  },1500);
-}
-
 function phase2MoonlightBegin(e){
-  if(!phase2MoonlightHit || phase2MoonlightState.pointerId!==null)return;
+  if(!phase2MoonlightHit||phase2MoonlightState.pointerId!==null)return;
   e.preventDefault();
 
   phase2MoonlightState.pointerId=e.pointerId;
-  phase2MoonlightState.drawing=true;
-  phase2MoonlightState.distance=0;
+  phase2MoonlightState.drawing=false;
   phase2MoonlightState.points=[];
-  phase2MoonlightState.complete=false;
+  phase2MoonlightState.distance=0;
   phase2MoonlightState.last=phase2MoonlightPosition(e);
+  phase2MoonlightState.complete=false;
 
   try{phase2MoonlightHit.setPointerCapture(e.pointerId)}catch(_){}
 
   phase2MoonlightPrompt.classList.add('hidden');
   phase2MoonlightAura.classList.add('active');
-  phase2MoonlightState.points.push({
-    ...phase2MoonlightState.last,
-    t:performance.now()
-  });
+  phase2MoonlightState.auraStarted=true;
+
   phase2StartMoonlightRender();
 
-  phase2MoonlightNote.textContent='keep drawing…';
+  if(phase2MoonInside(phase2MoonlightState.last)){
+    phase2MoonlightState.drawing=true;
+    phase2MoonlightState.points.push({...phase2MoonlightState.last,t:performance.now()});
+  }
+
+  phase2MoonlightNote.textContent='move across the moon';
   phase2MoonlightNote.classList.remove('show');
   void phase2MoonlightNote.offsetWidth;
   phase2MoonlightNote.classList.add('show');
 }
 
 function phase2MoonlightMove(e){
-  if(!phase2MoonlightHit || phase2MoonlightState.pointerId!==e.pointerId || !phase2MoonlightState.drawing)return;
+  if(!phase2MoonlightHit||phase2MoonlightState.pointerId!==e.pointerId)return;
   e.preventDefault();
 
   const p=phase2MoonlightPosition(e);
-  const last=phase2MoonlightState.last;
+  const last=phase2MoonlightState.last||p;
   const step=Math.hypot(p.x-last.x,p.y-last.y);
+  phase2MoonlightState.last=p;
 
-  if(step<1.5)return;
+  // Gesture can start anywhere. It becomes the actual moonlight interaction
+  // automatically when the finger crosses the generous moon zone.
+  if(!phase2MoonlightState.drawing){
+    if(phase2MoonInside(p)){
+      phase2MoonlightState.drawing=true;
+      phase2MoonlightState.points.push({x:p.x,y:p.y,t:performance.now()});
+      phase2MoonlightNote.textContent='keep drawing…';
+    }else{
+      return;
+    }
+  }
+
+  if(step<1)return;
 
   phase2MoonlightState.distance+=step;
-  phase2MoonlightState.last=p;
-  phase2MoonlightState.points.push({
-    x:p.x,
-    y:p.y,
-    t:performance.now()
-  });
+  phase2MoonlightState.points.push({x:p.x,y:p.y,t:performance.now()});
 
-  // The first threshold gives the moon a gentle living pulse.
-  const needed=Math.max(170,phase2Page.clientWidth*.62);
+  const needed=Math.max(120,phase2Page.clientWidth*.46);
   const ratio=Math.min(1,phase2MoonlightState.distance/needed);
-  phase2MoonlightAura.style.opacity=String(.28+.56*ratio);
-  phase2MoonlightAura.style.transform=`translate(-50%,-50%) scale(${.94+ratio*.12})`;
+  phase2MoonlightAura.style.opacity=String(.26+.62*ratio);
+  phase2MoonlightAura.style.transform=`translate(-50%,-50%) scale(${.94+ratio*.14})`;
 
-  if(!phase2MoonlightState.complete && ratio>=1){
-    phase2MoonlightFinish();
+  if(!phase2MoonlightState.complete&&ratio>=1){
+    phase2MoonlightState.complete=true;
+    phase2MoonlightAura.classList.add('complete');
+    phase2MoonlightFlash.classList.remove('fire');
+    void phase2MoonlightFlash.offsetWidth;
+    phase2MoonlightFlash.classList.add('fire');
+
+    phase2MoonlightNote.textContent='you left a little light here.';
+    phase2MoonlightNote.classList.remove('show');
+    void phase2MoonlightNote.offsetWidth;
+    phase2MoonlightNote.classList.add('show');
+
+    phase2Page.dispatchEvent(new CustomEvent('phase2:moonlight-complete'));
   }
 }
 
 function phase2MoonlightEnd(e){
-  if(!phase2MoonlightHit || phase2MoonlightState.pointerId!==e.pointerId)return;
+  if(!phase2MoonlightHit||phase2MoonlightState.pointerId!==e.pointerId)return;
   e.preventDefault();
 
   phase2MoonlightState.pointerId=null;
@@ -635,32 +643,21 @@ function phase2MoonlightEnd(e){
 
   clearTimeout(phase2MoonlightState.fadeTimer);
   phase2MoonlightState.fadeTimer=setTimeout(()=>{
-    phase2MoonlightAura.classList.remove('active');
+    phase2MoonlightAura.classList.remove('active','complete');
     phase2MoonlightNote.classList.remove('show');
     phase2MoonlightState.points=[];
-    phase2MoonlightClearTrailLater();
-  },phase2MoonlightState.complete?1100:280);
-}
-
-function phase2MoonlightClearTrailLater(){
-  setTimeout(()=>{
-    if(!phase2MoonlightState.drawing){
-      phase2MoonlightState.points=[];
-      if(phase2MoonlightCtx){
-        phase2MoonlightCtx.clearRect(0,0,phase2Page.clientWidth,phase2Page.clientHeight);
-      }
-    }
-  },250);
+    if(phase2MoonlightCtx)phase2MoonlightCtx.clearRect(0,0,phase2Page.clientWidth,phase2Page.clientHeight);
+  },phase2MoonlightState.complete?1100:220);
 }
 
 function resetPhase2Moonlight(){
   if(!phase2MoonlightHit)return;
-
   clearTimeout(phase2MoonlightState.fadeTimer);
   phase2MoonlightState.pointerId=null;
   phase2MoonlightState.drawing=false;
   phase2MoonlightState.points=[];
   phase2MoonlightState.distance=0;
+  phase2MoonlightState.last=null;
   phase2MoonlightState.complete=false;
 
   phase2MoonlightAura.classList.remove('active','complete');
@@ -670,18 +667,14 @@ function resetPhase2Moonlight(){
   phase2MoonlightPrompt.classList.remove('hidden');
   phase2MoonlightNote.classList.remove('show');
   phase2MoonlightNote.textContent='';
-
   phase2ClearMoonlightCanvas();
 
-  if(phase2MoonlightLayer){
-    phase2MoonlightLayer.setAttribute('aria-hidden','true');
-  }
+  if(phase2MoonlightLayer)phase2MoonlightLayer.setAttribute('aria-hidden','true');
 }
 
 function activatePhase2Moonlight(){
   if(!phase2MoonlightHit)return;
   resetPhase2Moonlight();
-
   phase2MoonlightLayer.setAttribute('aria-hidden','false');
   phase2MoonlightPrompt.classList.remove('hidden');
   phase2MoonlightPrompt.style.animation='none';
@@ -703,15 +696,18 @@ if(phase2MoonlightHit){
   });
 
   phase2MoonlightHit.addEventListener('keydown',e=>{
-    if(e.key!=='Enter' && e.key!==' ')return;
+    if(e.key!=='Enter'&&e.key!==' ')return;
     e.preventDefault();
-
-    const c=phase2MoonPoint();
     phase2MoonlightState.complete=false;
-    phase2MoonlightState.distance=Math.max(170,phase2Page.clientWidth*.62);
-    phase2MoonlightState.last=c;
     phase2MoonlightAura.classList.add('active');
-    phase2MoonlightFinish();
+    phase2MoonlightState.drawing=true;
+    phase2MoonlightState.distance=Math.max(120,phase2Page.clientWidth*.46);
+    phase2MoonlightState.last=phase2MoonPoint();
+    phase2MoonlightState.complete=true;
+    phase2MoonlightAura.classList.add('complete');
+    phase2MoonlightFlash.classList.remove('fire');
+    void phase2MoonlightFlash.offsetWidth;
+    phase2MoonlightFlash.classList.add('fire');
   });
 }
 
