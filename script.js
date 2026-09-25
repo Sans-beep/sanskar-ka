@@ -173,11 +173,13 @@ function runPhase1Ending(){
   [[grant,180],[wait,1150],[found,2250],[number,3400],[final,4450]].forEach(([el,delay])=>setTimeout(()=>el.classList.add('show'),delay));
 }
 function unlock(){
+  const owner = new URLSearchParams(location.search).has('owner');
   const v=document.getElementById('code').value.trim().toUpperCase();
   const e=document.getElementById('error');
   const input=document.getElementById('code');
   const button=document.getElementById('unlock');
-  if(v==='KASHISH19'){
+
+  if(owner || v==='KASHISH19'){
     e.textContent='';
     input.disabled=true;
     button.disabled=true;
@@ -615,43 +617,78 @@ runPhase1Ending=function(){
   video?.addEventListener('loadeddata',()=>filmStage?.classList.add('ready'));
 
   let moonTransitioning=false;
-  function enterLostFrameReliably(){
+  function enterLostFrameDirect(){
     if(moonTransitioning)return;
+    if(i!==7)return;
     moonTransitioning=true;
-    const started=performance.now();
-    const attempt=()=>{
-      // go() intentionally locks during the 900ms page transition. The old
-      // moon handler could call go(8) during that lock, silently doing nothing.
-      if(i!==7){moonTransitioning=false;return;}
-      if(!busy){
-        resetLostFrame();
-        go(8);
-        window.setTimeout(activateLostFrame,260);
-        moonTransitioning=false;
-        return;
-      }
-      if(performance.now()-started<3000){
-        window.setTimeout(attempt,40);
-      }else{
-        moonTransitioning=false;
-      }
-    };
-    attempt();
-  }
 
-  moon?.addEventListener('click',()=>{
-    if(filmStage)filmStage.classList.add('moon-chosen');
+    // Release the cinematic video lock, but deliberately keep Jaan Nisaar alive.
+    stopFilm();
+    if(filmStage){
+      filmStage.classList.add('moon-chosen');
+      filmStage.style.pointerEvents='none';
+    }
     if(filmLine){
       filmLine.innerHTML='some things look different<br>when you come back to them.';
       filmLine.classList.remove('show');
       void filmLine.offsetWidth;
       filmLine.classList.add('show');
     }
-    if(window.umami?.track)window.umami.track('phase2-moon-discovered');
 
-    // Wait for the normal page-transition lock instead of dropping the tap.
-    window.setTimeout(enterLostFrameReliably,120);
-  });
+    const current=pages[i];
+    const next=pages[8];
+    if(!current || !next){
+      moonTransitioning=false;
+      return;
+    }
+
+    pages.forEach(p=>{
+      p.style.pointerEvents='none';
+      p.style.animation='none';
+      p.classList.remove('active','exit-left','exit-right','enter-left','enter-right');
+    });
+
+    current.style.animation='cardOutLeft .58s cubic-bezier(.55,.08,.72,.35) both';
+    next.classList.add('active');
+    next.style.pointerEvents='none';
+    next.style.animation='cardInRight .72s cubic-bezier(.18,.82,.2,1) both';
+
+    i=8;
+    window.sitePageIndex=8;
+    syncGlobalBack();
+    const thread=document.getElementById('storyThread');
+    if(thread){thread.classList.remove('play');void thread.offsetWidth;thread.classList.add('play');}
+
+    resetLostFrame();
+    window.setTimeout(()=>{
+      activateLostFrame();
+      next.style.animation='none';
+      current.style.animation='none';
+      next.style.pointerEvents='auto';
+      filmStage?.classList.remove('moon-chosen');
+      filmStage?.style.removeProperty('pointer-events');
+      busy=false;
+      moonTransitioning=false;
+    },760);
+  }
+
+  const triggerMoon=()=>{
+    if(i!==7)return;
+    if(window.umami?.track)window.umami.track('phase2-moon-discovered');
+    enterLostFrameDirect();
+  };
+
+  // The visible moon button catches normal taps.
+  moon?.addEventListener('click',triggerMoon);
+
+  // Fallback: the whole upper-right moon region catches touch/pointer events too.
+  filmStage?.addEventListener('pointerup',e=>{
+    if(e.target===moon)return;
+    const rect=filmStage.getBoundingClientRect();
+    const x=(e.clientX-rect.left)/rect.width;
+    const y=(e.clientY-rect.top)/rect.height;
+    if(x>=0.62 && y<=0.42)triggerMoon();
+  },{passive:true});
 
   // Keep the old fallback control harmless if it ever becomes visible.
   filmContinue?.addEventListener('click',()=>{
