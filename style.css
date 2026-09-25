@@ -266,7 +266,7 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
 .film-top{position:absolute;z-index:20;top:23px;left:25px;right:25px;display:flex;justify-content:space-between;font:9px "DM Mono",monospace;letter-spacing:.17em;color:#eee9;pointer-events:none}
 .film-loading{position:absolute;inset:0;display:grid;place-items:center;font:10px "DM Mono",monospace;letter-spacing:.18em;color:#aaa;pointer-events:none;opacity:.8;transition:opacity .5s}
 .film-stage.ready .film-loading{opacity:0}
-.moon-hotspot{position:absolute;z-index:10;right:13%;top:9%;width:18%;aspect-ratio:1;border:0;border-radius:50%;background:transparent;cursor:pointer;opacity:0}
+.moon-hotspot{position:absolute;z-index:10;right:3%;top:2%;width:34%;height:31%;border:0;border-radius:50%;background:transparent;cursor:pointer;opacity:0}
 .film-line{position:absolute;z-index:12;left:50%;bottom:12%;width:min(500px,82vw);transform:translate(-50%,10px);text-align:center;font:24px/1.05 Caveat,cursive;color:#fff;opacity:0;pointer-events:none;text-shadow:0 2px 14px #000;transition:opacity .45s,transform .55s}
 .film-line.show{opacity:1;transform:translate(-50%,0)}
 .film-continue{position:absolute;z-index:13;right:26px;bottom:24px;border:0;border-bottom:1px solid #fff7;background:none;color:#fff;font:10px "DM Mono",monospace;letter-spacing:.1em;padding:8px 0;opacity:0;pointer-events:none;transition:opacity .5s;cursor:pointer}
@@ -622,4 +622,19 @@ body.phase2-active .card{
   .lost-whisper{top:14%;font-size:21px}
   .lost-rail{padding:0 20vw!important;gap:20px!important}
   .lost-frame{flex-basis:66vw!important;height:60vh!important}
+}
+
+.phase2-film .film-stage.moon-chosen::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:11;
+  pointer-events:none;
+  background:radial-gradient(circle at 74% 16%,rgba(246,238,221,.14),transparent 18%);
+  animation:moonChosenFade .9s ease both;
+}
+@keyframes moonChosenFade{
+  0%{opacity:0}
+  35%{opacity:1}
+  100%{opacity:0}
 }
