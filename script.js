@@ -287,6 +287,7 @@ let phase2VideoIndex=0;
 let phase2SongPlaying=false;
 let phase2LoopTimer=null;
 let phase2Crossfading=false;
+let phase2VideoStarted=false;
 
 function activePhase2Video(){
   return phase2Videos[phase2VideoIndex]||null;
@@ -301,42 +302,26 @@ function preparePhase2Video(v){
 }
 
 function resetPhase2VideoPair(){
+  clearTimeout(phase2LoopTimer);
+  phase2VideoIndex=0;
+  phase2Crossfading=false;
+  phase2VideoStarted=false;
+
   phase2Videos.forEach((v,k)=>{
     preparePhase2Video(v);
     v.pause();
     try{v.currentTime=0}catch(_){}
     v.classList.toggle('is-visible',k===0);
-    v.style.transition='none';
-    // Start loading the hidden copy immediately. Both elements point to the
-    // same cached MP4, so the second pass is already warm when the seam arrives.
-    if(k!==0){
-      try{v.load()}catch(_){}
-    }
+    v.style.transition='opacity 120ms linear';
   });
-  phase2VideoIndex=0;
-  phase2Crossfading=false;
 }
 
-function waitForPhase2Frame(video){
-  return new Promise(resolve=>{
-    let done=false;
-    const finish=()=>{
-      if(done)return;
-      done=true;
-      video.removeEventListener('playing',finish);
-      video.removeEventListener('canplay',finish);
-      resolve();
-    };
-    // Prefer an actually rendered video frame rather than just "play()" resolving.
-    if(typeof video.requestVideoFrameCallback==='function' && video.readyState>=HTMLMediaElement.HAVE_CURRENT_DATA){
-      video.requestVideoFrameCallback(()=>finish());
-    }else{
-      video.addEventListener('playing',finish,{once:true});
-      video.addEventListener('canplay',()=>{
-        if(video.currentTime>0)finish();
-      },{once:true});
-      setTimeout(finish,120);
-    }
+function armPhase2Pair(){
+  phase2Videos.forEach(v=>{
+    preparePhase2Video(v);
+    // Both copies stay warm and decode continuously. The hidden copy is never
+    // started at the seam, which removes the browser's first-frame startup gap.
+    v.play().catch(()=>{});
   });
 }
 
@@ -345,49 +330,42 @@ function schedulePhase2SeamlessLoop(){
   const current=activePhase2Video();
   if(!current)return;
   const duration=current.duration;
-  if(!Number.isFinite(duration)||duration<=0)return;
+  if(!Number.isFinite(duration)||duration<=0){
+    phase2LoopTimer=setTimeout(schedulePhase2SeamlessLoop,120);
+    return;
+  }
   const remaining=Math.max(0,duration-current.currentTime);
-  // Start preparing the next copy well before the end. This prevents a
-  // buffered-seek delay from ever becoming a visible black/blank second.
-  const lead=Math.min(1.05,Math.max(0.85,duration*0.045));
+  // Crossfade before the actual end while both videos are already playing.
+  const lead=Math.min(0.72,Math.max(0.38,duration*0.035));
   phase2LoopTimer=setTimeout(()=>crossfadePhase2Video(),Math.max(80,(remaining-lead)*1000));
 }
 
-async function crossfadePhase2Video(){
+function crossfadePhase2Video(){
   if(phase2Crossfading||phase2Videos.length<2)return;
   const current=activePhase2Video();
   const nextIndex=(phase2VideoIndex+1)%phase2Videos.length;
   const next=phase2Videos[nextIndex];
   if(!current||!next)return;
+
   phase2Crossfading=true;
   clearTimeout(phase2LoopTimer);
 
-  next.pause();
-  try{next.currentTime=0}catch(_){}
-  next.muted=true;
-  next.loop=false;
-
-  try{
-    await next.play();
-    await waitForPhase2Frame(next);
-  }catch(_){
-    // Keep the current frame alive rather than flashing to an unready video.
-    next.classList.remove('is-visible');
-    phase2Crossfading=false;
-    schedulePhase2SeamlessLoop();
-    return;
-  }
-
-  // Swap only after the new video's first real frame exists. No fixed-delay
-  // fade, no blank frame, and no exposure of the hidden loading video.
+  // The next copy has been playing from the start, so its first frame is
+  // already decoded. Crossfade without waiting, seeking, or exposing black.
+  const nextStart=next.currentTime;
   next.classList.add('is-visible');
   current.classList.remove('is-visible');
 
-  requestAnimationFrame(()=>{
+  window.requestAnimationFrame(()=>{
     current.pause();
     try{current.currentTime=0}catch(_){}
+    current.classList.remove('is-visible');
     phase2VideoIndex=nextIndex;
     phase2Crossfading=false;
+
+    // Restart the old copy immediately behind the visible copy so it is warm
+    // for the following seam.
+    current.play().catch(()=>{});
     schedulePhase2SeamlessLoop();
   });
 }
@@ -421,12 +399,18 @@ function playPhase2Video(){
   first.muted=true;
   first.loop=false;
   first.currentTime=0;
-  let started=false;
+
   const start=()=>{
-    if(started)return;
-    started=true;
-    first.play().then(()=>schedulePhase2SeamlessLoop()).catch(()=>{started=false;});
+    if(phase2VideoStarted)return;
+    phase2VideoStarted=true;
+
+    // Start both copies together. Only A is visible, but B is decoding in the
+    // background so every later loop seam has a ready frame.
+    Promise.all(phase2Videos.map(v=>v.play().catch(()=>null))).then(()=>{
+      schedulePhase2SeamlessLoop();
+    });
   };
+
   start();
   document.addEventListener('pointerdown',start,{once:true,passive:true});
   document.addEventListener('touchstart',start,{once:true,passive:true});
@@ -435,6 +419,7 @@ function playPhase2Video(){
 function stopPhase2Video(){
   clearTimeout(phase2LoopTimer);
   phase2Crossfading=false;
+  phase2VideoStarted=false;
   phase2Videos.forEach(v=>{
     v.pause();
     try{v.currentTime=0}catch(_){}
