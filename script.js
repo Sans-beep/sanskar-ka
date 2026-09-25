@@ -510,3 +510,28 @@ runPhase1Ending=function(){
   };
   window.addEventListener('pagehide',markLeft,{once:true});
 })();
+
+/* ===== Phase 2 film + Lost Frame integration ===== */
+(function initPhase2FilmAndLostFrame(){
+  const filmPage=document.getElementById('p8'), video=document.getElementById('phase2Animation');
+  const filmStage=document.getElementById('filmStage'), moon=document.getElementById('moonHotspot');
+  const filmLine=document.getElementById('filmLine'), filmContinue=document.getElementById('filmContinue');
+  const filmLoading=document.getElementById('filmLoading');
+  function playFilm(){ if(!video)return; filmStage?.classList.add('ready'); filmPage?.classList.add('playing'); const p=video.play(); if(p?.catch)p.catch(()=>{if(filmLoading){filmLoading.textContent='tap once to start';filmLoading.style.opacity='.8'}}); }
+  function stopFilm(){ if(!video)return; video.pause(); video.currentTime=0; filmPage?.classList.remove('playing'); filmContinue?.classList.remove('show'); filmLine?.classList.remove('show'); }
+  video?.addEventListener('loadeddata',()=>filmStage?.classList.add('ready'));
+  video?.addEventListener('ended',()=>filmContinue?.classList.add('show'));
+  video?.addEventListener('error',()=>{if(filmLoading){filmLoading.textContent='add phase2-reference-moon-no-lyrics.mp4 to the repo';filmLoading.style.opacity='.8'}});
+  moon?.addEventListener('click',()=>{if(filmLine){filmLine.innerHTML='some things look different<br>when you come back to them.';filmLine.classList.remove('show');void filmLine.offsetWidth;filmLine.classList.add('show')} if(window.umami?.track)window.umami.track('phase2-moon-discovered')});
+  filmContinue?.addEventListener('click',()=>{if(window.umami?.track)window.umami.track('phase2-film-complete');go(8)});
+  const oldGo=go;
+  go=function(n){if(n===7)playFilm();if(i===7&&n!==7)stopFilm();return oldGo(n)};
+  const lostIntro=document.getElementById('lostIntro'), lostRail=document.getElementById('lostRail'), lostEnter=document.getElementById('lostEnter');
+  const lostDetail=document.getElementById('lostDetail'), lostTitle=document.getElementById('lostTitle'), lostNote=document.getElementById('lostNote'), lostSecret=document.getElementById('lostSecret'), lostClose=document.getElementById('lostClose');
+  const notes=['you always notice the quiet ones.','three years later and this one still feels familiar.','not everything needs a reason.','there is something hiding here.','you nearly skipped this one.','19. that\'s all.','okay… you found the frame i didn\'t label.','maybe the last frame isn\'t actually the last.'];
+  lostEnter?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();lostIntro?.classList.add('hidden');setTimeout(()=>lostRail?.classList.add('show'),250);if(window.umami?.track)window.umami.track('lost-frame-opened')});
+  document.querySelectorAll('#p9 .lost-frame').forEach((frame,index)=>frame.addEventListener('click',()=>{if(index===6){lostSecret?.classList.add('show');if(window.umami?.track)window.umami.track('lost-frame-found');return}if(lostTitle)lostTitle.textContent=frame.querySelector('b')?.textContent||'FRAME';if(lostNote)lostNote.textContent=notes[index]||'some things are worth keeping.';lostDetail?.classList.add('open');if(window.umami?.track)window.umami.track('lost-frame-viewed',{frame:index+1})}));
+  lostClose?.addEventListener('click',()=>lostDetail?.classList.remove('open'));
+  lostDetail?.addEventListener('click',e=>{if(e.target===lostDetail)lostDetail.classList.remove('open')});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')lostDetail?.classList.remove('open')});
+})();
