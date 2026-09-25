@@ -277,132 +277,87 @@ env.addEventListener('click',()=>{
 });
 
 
-/* ===== Phase 2 interaction layer ===== */
+/* ===== Phase 2 — cinematic video + Jaan Nisaar only ===== */
 const phase2Song=document.getElementById('phase2Song');
 const phase2Page=document.getElementById('p8');
-const roomNote=document.getElementById('roomNote');
-const roomMemory=document.getElementById('roomMemory');
-const roomScene=document.getElementById('roomScene');
-const roomAudioStatus=document.getElementById('roomAudioStatus');
+const phase2Video=document.getElementById('phase2Animation');
 let phase2SongPlaying=false;
 
 function pausePhase2Song(){
   if(!phase2Song)return;
   fadeOutAudio(phase2Song,650,true);
   phase2SongPlaying=false;
-  if(phase2Page)phase2Page.classList.remove('playing');
 }
-function showRoomNote(text){
-  if(!roomNote)return;
-  roomNote.innerHTML=text;
-  roomNote.classList.remove('show'); void roomNote.offsetWidth; roomNote.classList.add('show');
-  clearTimeout(window.roomNoteTimer);
-  window.roomNoteTimer=setTimeout(()=>roomNote.classList.remove('show'),4200);
-}
-function openMemory(html){
-  if(!roomMemory)return;
-  roomMemory.innerHTML='<div class="memory-paper">'+html+'<button class="memory-close" type="button">okay, close</button></div>';
-  roomMemory.classList.add('show');
-  roomMemory.setAttribute('aria-hidden','false');
-}
-function closeMemory(){
-  if(!roomMemory)return;
-  roomMemory.classList.remove('show');
-  roomMemory.setAttribute('aria-hidden','true');
-}
+
 function playPhase2Song(){
   if(!phase2Song)return;
   phase2Song.loop=true;
-  phase2Song.autoplay=true;
-  phase2Song.muted=false;
   phase2Song.volume=.46;
   phase2Song.currentTime=0;
   phase2SongPlaying=true;
-  if(phase2Page)phase2Page.classList.add('playing');
-  if(roomAudioStatus)roomAudioStatus.textContent='Jaan Nisaar — for this room ♡';
-  try{ phase2Song.load(); }catch(e){}
-  const promise=phase2Song.play();
-  if(promise?.catch)promise.catch(()=>{
-    const retry=()=>{phase2Song.play().catch(()=>{});document.removeEventListener('pointerdown',retry);document.removeEventListener('touchstart',retry);};
-    document.addEventListener('pointerdown',retry,{once:true,passive:true});
-    document.addEventListener('touchstart',retry,{once:true,passive:true});
-  });
-  setTimeout(()=>{
-    if(!phase2SongPlaying)return;
-    if(phase2Song.readyState<2 && roomAudioStatus)roomAudioStatus.textContent='add jaan-nisaar.mp3 to the repo to hear this ♡';
-  },900);
-}
-function enterRoom(){
-  phase1Ending=false;
-  // The Phase 1 button click is the user gesture that unlocks audio autoplay on mobile.
-  if(phase2Song){
-    phase2Song.muted=false;
-    phase2Song.autoplay=true;
+  const p=phase2Song.play();
+  if(p?.catch){
+    p.catch(()=>{
+      const retry=()=>phase2Song.play().catch(()=>{});
+      document.addEventListener('pointerdown',retry,{once:true,passive:true});
+      document.addEventListener('touchstart',retry,{once:true,passive:true});
+    });
   }
-  playPhase2Song();
+}
+
+function playPhase2Video(){
+  if(!phase2Video)return;
+  phase2Video.muted=true;
+  phase2Video.loop=true;
+  phase2Video.playsInline=true;
+  phase2Video.currentTime=0;
+  const p=phase2Video.play();
+  if(p?.catch){
+    p.catch(()=>{
+      const retry=()=>phase2Video.play().catch(()=>{});
+      document.addEventListener('pointerdown',retry,{once:true,passive:true});
+      document.addEventListener('touchstart',retry,{once:true,passive:true});
+    });
+  }
+}
+
+function stopPhase2Video(){
+  if(!phase2Video)return;
+  phase2Video.pause();
+  phase2Video.currentTime=0;
+}
+
+function enterPhase2(){
+  phase1Ending=false;
   const overlay=document.getElementById('codeReveal');
   if(overlay){
     overlay.classList.remove('show');
     overlay.setAttribute('aria-hidden','true');
   }
+  playPhase2Song();
+  playPhase2Video();
   go(7);
 }
-const enterPhase2=document.getElementById('enterPhase2');
-if(enterPhase2)enterPhase2.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();enterRoom();});
 
-if(phase2Page){
-  const activate=(el)=>el&&el.click();
-  phase2Page.querySelectorAll('[data-object]').forEach(el=>{
-    const obj=el.dataset.object;
-    el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();activate(el);}});
-    el.addEventListener('click',()=>{
-      if(obj==='lamp'){
-        phase2Page.classList.toggle('lamp-on');
-        showRoomNote(phase2Page.classList.contains('lamp-on')
-          ? 'you always liked soft light better.<br><span style="font-size:16px">apparently that still counts.</span>'
-          : 'okay. back to the soft light.');
-      }
-      if(obj==='music'){
-        if(phase2SongPlaying){pausePhase2Song();if(roomAudioStatus)roomAudioStatus.textContent='the room went quiet.';}
-        else playPhase2Song();
-      }
-      if(obj==='drawer'){
-        openMemory('<h3>little things.</h3><p>some memories don\'t need a date.</p><p>the weird jokes.<br>the random screenshots.<br>the things you almost forgot.</p><p>they still made it here. ♡</p>');
-      }
-      if(obj==='window'){
-        phase2Page.classList.toggle('night');
-        showRoomNote(phase2Page.classList.contains('night')
-          ? 'the same room.<br>a completely different memory.'
-          : 'look at that sky.');
-      }
-      if(obj==='wall'){
-        showRoomNote('hidden between all the noise:<br><strong style="font-size:24px">you.</strong>');
-      }
-      if(obj==='notebook'){
-        openMemory('<h3>from the notebook.</h3><p>things i would probably never say out loud:</p><p>your laugh is still contagious.<br>you make ordinary days less ordinary.<br>and somehow, you are still very you.</p><p>— a note left here ♡</p>');
-      }
-      if(obj==='box'){
-        phase2Page.classList.add('open-box','found-all');
-        showRoomNote('you found the last thing.<br><span style="font-size:17px">phase three can wait one second.</span>');
-        setTimeout(()=>openMemory('<h3>19.</h3><p>not a clue this time.</p><p>just a tiny reminder that this room was made for one very specific person.</p><p>happy birthday, Kashish. ♡</p>'),500);
-      }
-    });
+const enterPhase2Button=document.getElementById('enterPhase2');
+if(enterPhase2Button){
+  enterPhase2Button.addEventListener('click',e=>{
+    e.preventDefault();
+    e.stopPropagation();
+    enterPhase2();
   });
-  roomMemory.addEventListener('click',e=>{if(e.target===roomMemory||e.target.closest('.memory-close'))closeMemory();});
 }
 
-const _originalGo=go;
+// One clean Phase 2 wrapper: leaving Phase 2 stops both media.
+// No room/Lost Frame/fullscreen navigation layer.
+const phase2BaseGo=go;
 go=function(n){
-  if(i===7 && n!==8 && n!==7)pausePhase2Song();
-  return _originalGo(n);
+  if(i===7 && n!==7){
+    pausePhase2Song();
+    stopPhase2Video();
+  }
+  return phase2BaseGo(n);
 };
-
-const _originalRunPhase1Ending=runPhase1Ending;
-runPhase1Ending=function(){
-  _originalRunPhase1Ending();
-  setTimeout(()=>document.getElementById('revealFinal')?.classList.add('show'),4450);
-};
-
 
 /* ===== Umami analytics: birthday experience instrumentation =====
    Privacy boundary:
@@ -505,14 +460,7 @@ runPhase1Ending=function(){
     observer.observe(letter,{attributes:true,attributeFilter:['class']});
   }
 
-  // Phase 2 room: track which objects were actually explored.
-  const room= document.getElementById('p8');
-  if(room){
-    room.querySelectorAll('[data-object]').forEach(el=>{
-      el.addEventListener('click',()=>send('room-interaction',{object:el.dataset.object}));
-    });
-  }
-
+  // Phase 2 is intentionally just the cinematic video + song for now.
   // Back navigation is useful for understanding exploration.
   const back=document.getElementById('globalBack');
   if(back)back.addEventListener('click',()=>send('back-navigation',{from_page:window.sitePageIndex+1}));
@@ -528,255 +476,3 @@ runPhase1Ending=function(){
   window.addEventListener('pagehide',markLeft,{once:true});
 })();
 
-/* ===== Phase 2 film + Lost Frame integration ===== */
-(function initPhase2FilmAndLostFrame(){
-  const filmPage=document.getElementById('p8');
-  const video=document.getElementById('phase2Animation');
-  const filmStage=document.getElementById('filmStage');
-  const moon=document.getElementById('moonHotspot');
-  const filmLine=document.getElementById('filmLine');
-  const filmContinue=document.getElementById('filmContinue');
-
-  const lostPage=document.getElementById('p9');
-  const lostRail=document.getElementById('lostRail');
-  const lostWhisper=document.getElementById('lostWhisper');
-  const lostDetail=document.getElementById('lostDetail');
-  const lostTitle=document.getElementById('lostTitle');
-  const lostNote=document.getElementById('lostNote');
-  const lostSecret=document.getElementById('lostSecret');
-  const lostClose=document.getElementById('lostClose');
-  const lostBigImage=document.getElementById('lostBigImage');
-
-  const lostPhotoNames=[
-    'throwback-photo.jpg',
-    'kashish-01.jpg',
-    'kashish-02.jpg',
-    'kashish-03.jpg',
-    'kashish-04.jpg',
-    'kashish-05.jpg'
-  ];
-
-  const lostNotes=[
-    'you always notice the quiet ones.',
-    'three years later and this one still feels familiar.',
-    'not everything needs a reason.',
-    'there is something hiding here.',
-    'you nearly skipped this one.',
-    '19. that’s all.',
-    'okay… you found the frame i didn’t label.',
-    'maybe the last frame isn’t actually the last.'
-  ];
-
-  const activateLostFrame=()=>{
-    lostPage?.classList.add('moon-entered');
-    window.setTimeout(()=>{
-      lostRail?.classList.add('show');
-      lostWhisper?.classList.add('show');
-    },180);
-  };
-
-  const resetLostFrame=()=>{
-    lostPage?.classList.remove('moon-entered');
-    lostRail?.classList.remove('show');
-    lostDetail?.classList.remove('open');
-    lostSecret?.classList.remove('show');
-    if(lostBigImage)lostBigImage.removeAttribute('src');
-  };
-
-  function playFilm(){
-    if(!video)return;
-    video.loop=true;
-    video.muted=true;
-    video.playsInline=true;
-    video.setAttribute('playsinline','');
-    video.setAttribute('webkit-playsinline','');
-    filmPage?.classList.add('playing');
-    document.body.classList.add('phase2-active');
-    try{video.load();}catch(e){}
-    const p=video.play();
-    if(p?.then)p.then(()=>filmStage?.classList.add('ready')).catch(()=>{
-      filmStage?.classList.add('ready');
-      const retry=()=>{
-        video.play().catch(()=>{});
-        document.removeEventListener('pointerdown',retry);
-        document.removeEventListener('touchstart',retry);
-      };
-      document.addEventListener('pointerdown',retry,{once:true,passive:true});
-      document.addEventListener('touchstart',retry,{once:true,passive:true});
-    });
-  }
-
-  function stopFilm(){
-    if(!video)return;
-    video.pause();
-    video.currentTime=0;
-    filmPage?.classList.remove('playing');
-    document.body.classList.remove('phase2-active');
-    filmContinue?.classList.remove('show');
-    filmLine?.classList.remove('show');
-    if(filmStage)filmStage.style.pointerEvents='';
-  }
-
-  video?.addEventListener('loadeddata',()=>filmStage?.classList.add('ready'));
-
-  let moonTransitioning=false;
-  function enterLostFrameDirect(){
-    if(moonTransitioning || i!==7)return;
-    moonTransitioning=true;
-
-    const current=pages[7];
-    const next=pages[8];
-    if(!current || !next){moonTransitioning=false;return;}
-
-    // Stop only the visual film. Jaan Nisaar continues underneath.
-    stopFilm();
-
-    pages.forEach(p=>{
-      p.classList.remove('active','exit-left','exit-right','enter-left','enter-right');
-      p.style.animation='none';
-      p.style.pointerEvents='none';
-    });
-
-    current.classList.add('exit-left');
-    current.style.pointerEvents='none';
-
-    next.classList.add('active');
-    next.style.pointerEvents='auto';
-    next.style.animation='cardInRight .72s cubic-bezier(.18,.82,.2,1) both';
-
-    i=8;
-    window.sitePageIndex=8;
-    syncGlobalBack();
-    resetLostFrame();
-
-    requestAnimationFrame(()=>{
-      requestAnimationFrame(()=>{
-        activateLostFrame();
-      });
-    });
-
-    window.setTimeout(()=>{
-      next.style.animation='none';
-      current.classList.remove('exit-left');
-      current.style.animation='none';
-      moonTransitioning=false;
-    },760);
-  }
-
-  const triggerMoon=()=>{
-    if(i!==7)return;
-    if(window.umami?.track)window.umami.track('phase2-moon-discovered');
-    enterLostFrameDirect();
-  };
-
-  moon?.addEventListener('click',triggerMoon);
-  moon?.addEventListener('touchend',e=>{
-    e.preventDefault();
-    triggerMoon();
-  },{passive:false});
-
-  filmStage?.addEventListener('click',e=>{
-    if(i!==7 || e.target===moon)return;
-    // The moon occupies the upper-right portion of the film.
-    const rect=filmStage.getBoundingClientRect();
-    const x=(e.clientX-rect.left)/rect.width;
-    const y=(e.clientY-rect.top)/rect.height;
-    if(x>.45 && y<.55)triggerMoon();
-  });
-
-  filmStage?.addEventListener('touchend',e=>{
-    if(i!==7)return;
-    const touch=e.changedTouches?.[0];
-    if(!touch)return;
-    const rect=filmStage.getBoundingClientRect();
-    const x=(touch.clientX-rect.left)/rect.width;
-    const y=(touch.clientY-rect.top)/rect.height;
-    if(x>.45 && y<.55){
-      e.preventDefault();
-      triggerMoon();
-    }
-  },{passive:false});
-
-  // Keep the old fallback control harmless if it ever becomes visible.
-  filmContinue?.addEventListener('click',()=>{
-    if(window.umami?.track)window.umami.track('phase2-film-complete');
-    go(8);
-  });
-
-  const oldGo=go;
-  go=function(n){
-    // Enter Phase 2 from the reveal.
-    if(n===7)playFilm();
-
-    // Any exit from the cinematic Phase 2 screen must release its fixed
-    // viewport lock. The song is intentionally allowed to continue only
-    // when moving between Phase 2 and Lost Frame.
-    if(i===7 && n!==7)stopFilm();
-
-    // Leaving the Lost Frame for Phase 1 stops the Phase 2 song.
-    if(i===8 && n!==7 && n!==8){
-      pausePhase2Song();
-      resetLostFrame();
-    }
-
-    return oldGo(n);
-  };
-
-  // Load any real Kashish photos that are present. Missing slots stay elegant
-  // instead of showing broken-image UI; upload the matching filenames later.
-  document.querySelectorAll('#p9 .photo-frame').forEach((frame,index)=>{
-    const img=frame.querySelector('img');
-    if(!img)return;
-    const wanted=frame.dataset.photo||lostPhotoNames[index];
-    img.src=wanted;
-    img.addEventListener('load',()=>frame.querySelector('.lost-image')?.classList.add('has-photo'),{once:true});
-    img.addEventListener('error',()=>{
-      frame.classList.add('photo-missing');
-      frame.querySelector('.lost-image')?.classList.remove('has-photo');
-      img.removeAttribute('src');
-    },{once:true});
-  });
-
-  document.querySelectorAll('#p9 .lost-frame').forEach((frame,index)=>{
-    frame.addEventListener('click',()=>{
-      const img=frame.querySelector('img');
-      const src=img?.currentSrc||img?.src||'';
-      if(lostBigImage){
-        if(src){
-          lostBigImage.src=src;
-          lostBigImage.alt=img?.alt||'Kashish memory';
-          lostBigImage.style.display='block';
-        }else{
-          lostBigImage.removeAttribute('src');
-          lostBigImage.style.display='none';
-        }
-      }
-      if(lostTitle)lostTitle.textContent=frame.querySelector('b')?.textContent||'FRAME';
-      if(lostNote)lostNote.textContent=lostNotes[index]||'some things are worth keeping.';
-      lostDetail?.classList.add('open');
-
-      if(index===6){
-        lostSecret?.classList.remove('show');
-        void lostSecret?.offsetWidth;
-        lostSecret?.classList.add('show');
-        clearTimeout(window.lostSecretTimer);
-        window.lostSecretTimer=window.setTimeout(()=>lostSecret?.classList.remove('show'),3800);
-        if(window.umami?.track)window.umami.track('lost-frame-found');
-      }else if(window.umami?.track){
-        window.umami.track('lost-frame-viewed',{frame:index+1});
-      }
-    });
-  });
-
-  lostClose?.addEventListener('click',()=>lostDetail?.classList.remove('open'));
-  lostDetail?.addEventListener('click',e=>{
-    if(e.target===lostDetail)lostDetail.classList.remove('open');
-  });
-  document.addEventListener('keydown',e=>{
-    if(e.key==='Escape')lostDetail?.classList.remove('open');
-  });
-
-  if(window.umami?.track){
-    lostRail?.addEventListener('scroll',()=>{});
-  }
-})();
