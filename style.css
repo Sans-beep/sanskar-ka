@@ -437,3 +437,189 @@ body.phase2-active .card{
   content:none!important;
   display:none!important;
 }
+
+
+/* ===== Phase 2 — Moon → Lost Frame integration ===== */
+.lost-frame-page.active{
+  position:fixed!important;
+  inset:0!important;
+  z-index:10000!important;
+  width:100vw!important;
+  height:100svh!important;
+  max-width:none!important;
+  max-height:none!important;
+  padding:0!important;
+  margin:0!important;
+  border:0!important;
+  border-radius:0!important;
+  overflow:hidden!important;
+  background:#090909!important;
+}
+.card:has(.lost-frame-page.active){
+  width:100vw!important;
+  height:100svh!important;
+  max-width:none!important;
+  max-height:none!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  overflow:visible!important;
+}
+.lost-frame-page.active .lost-stage{
+  width:100vw!important;
+  height:100svh!important;
+}
+.lost-moon-wash{
+  position:absolute;
+  inset:-20%;
+  z-index:1;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 72% 17%,rgba(224,214,190,.12),transparent 15%),
+    radial-gradient(circle at 74% 18%,rgba(255,247,228,.07),transparent 22%),
+    radial-gradient(circle at 50% 56%,rgba(150,145,136,.045),transparent 48%);
+  opacity:.95;
+  animation:lostMoonBreath 7s ease-in-out infinite;
+}
+@keyframes lostMoonBreath{0%,100%{transform:scale(1);opacity:.76}50%{transform:scale(1.025);opacity:1}}
+.lost-whisper{
+  position:absolute;
+  z-index:8;
+  left:50%;
+  top:16%;
+  transform:translate(-50%,10px);
+  width:min(520px,84vw);
+  text-align:center;
+  font:24px/1.05 Caveat,cursive;
+  color:#cfc4b7;
+  opacity:0;
+  transition:opacity .9s ease,transform .9s ease;
+  pointer-events:none;
+}
+.lost-frame-page.active .lost-whisper{
+  opacity:.9;
+  transform:translate(-50%,0);
+}
+.lost-rail{
+  z-index:5!important;
+  opacity:0!important;
+  transform:translateY(12px) scale(.99)!important;
+  transition:opacity .9s ease,transform 1s cubic-bezier(.18,.84,.2,1)!important;
+}
+.lost-rail.show{
+  opacity:1!important;
+  transform:none!important;
+}
+.lost-frame{
+  flex:0 0 clamp(260px,29vw,405px)!important;
+  height:clamp(350px,64vh,565px)!important;
+  filter:saturate(.68) contrast(1.02)!important;
+}
+.lost-frame:hover{
+  filter:saturate(.95) contrast(1.03)!important;
+}
+.lost-image{
+  background:
+    linear-gradient(145deg,#777066,#353331 56%,#151515)!important;
+}
+.photo-frame .lost-image{
+  isolation:isolate;
+}
+.photo-frame .lost-image img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  opacity:0;
+  filter:grayscale(.18) saturate(.72) contrast(1.04);
+  transform:scale(1.015);
+  transition:opacity .65s ease,transform .8s cubic-bezier(.18,.84,.2,1),filter .4s ease;
+}
+.photo-frame .lost-image.has-photo img{
+  opacity:1;
+}
+.photo-frame:hover .lost-image.has-photo img{
+  transform:scale(1.04);
+  filter:grayscale(.05) saturate(.88) contrast(1.04);
+}
+.photo-frame .lost-image::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.05),transparent 24%,transparent 72%,rgba(0,0,0,.22)),
+    radial-gradient(circle at 72% 20%,rgba(255,241,218,.08),transparent 24%);
+  mix-blend-mode:screen;
+}
+.photo-frame.photo-missing .lost-image{
+  background:
+    radial-gradient(circle at 68% 28%,rgba(226,214,193,.22),transparent 18%),
+    linear-gradient(145deg,#55514c,#252525 60%,#111);
+}
+.photo-frame.photo-missing .lost-image::before{
+  content:"";
+  position:absolute;
+  width:34%;
+  aspect-ratio:1;
+  right:13%;
+  top:13%;
+  border-radius:50%;
+  background:#ddd6c8;
+  opacity:.16;
+  box-shadow:0 0 50px rgba(226,214,193,.16);
+}
+.moon-frame .moon-mark{
+  position:absolute;
+  z-index:3;
+  width:22px;
+  height:22px;
+  border-radius:50%;
+  right:22px;
+  top:20px;
+  border:1px solid rgba(241,232,215,.35);
+  box-shadow:inset -5px 0 0 rgba(241,232,215,.14),0 0 20px rgba(241,232,215,.08);
+  opacity:.7;
+}
+.moon-frame .lost-scribble{
+  color:#d7c9b8;
+}
+.lost-secret{
+  z-index:9!important;
+  bottom:13%!important;
+  color:#d7cab9!important;
+  font-size:21px!important;
+}
+.lost-tip{
+  z-index:9!important;
+  bottom:20px!important;
+  color:#777!important;
+}
+.lost-detail{
+  background:rgba(6,6,6,.92)!important;
+  backdrop-filter:blur(4px);
+}
+.lost-big{
+  background:#171717!important;
+  overflow:hidden;
+}
+.lost-big img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  filter:grayscale(.1) saturate(.78) contrast(1.04);
+}
+.lost-copy{
+  color:#aaa!important;
+}
+.lost-copy b{
+  color:#eee!important;
+}
+@media(max-width:650px){
+  .lost-whisper{top:14%;font-size:21px}
+  .lost-rail{padding:0 20vw!important;gap:20px!important}
+  .lost-frame{flex-basis:66vw!important;height:60vh!important}
+}
