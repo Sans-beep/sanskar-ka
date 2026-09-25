@@ -382,8 +382,11 @@ function playPhase2Video(){
   first.muted=true;
   first.loop=false;
   first.currentTime=0;
+  let started=false;
   const start=()=>{
-    first.play().then(()=>schedulePhase2SeamlessLoop()).catch(()=>{});
+    if(started)return;
+    started=true;
+    first.play().then(()=>schedulePhase2SeamlessLoop()).catch(()=>{started=false;});
   };
   start();
   document.addEventListener('pointerdown',start,{once:true,passive:true});
