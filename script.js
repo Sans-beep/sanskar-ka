@@ -310,18 +310,16 @@ function resetPhase2VideoPair(){
   phase2Videos.forEach((v,k)=>{
     preparePhase2Video(v);
     v.pause();
-    try{v.currentTime=0}catch(_){}
+    try{v.currentTime=0}catch(_){} 
     v.classList.toggle('is-visible',k===0);
-    v.style.transition='opacity 120ms linear';
+    v.style.transition='opacity 420ms cubic-bezier(.22,.72,.2,1)';
   });
 }
 
 function armPhase2Pair(){
   phase2Videos.forEach(v=>{
     preparePhase2Video(v);
-    // Both copies stay warm and decode continuously. The hidden copy is never
-    // started at the seam, which removes the browser's first-frame startup gap.
-    v.play().catch(()=>{});
+    v.load();
   });
 }
 
@@ -329,19 +327,23 @@ function schedulePhase2SeamlessLoop(){
   clearTimeout(phase2LoopTimer);
   const current=activePhase2Video();
   if(!current)return;
+
   const duration=current.duration;
   if(!Number.isFinite(duration)||duration<=0){
-    phase2LoopTimer=setTimeout(schedulePhase2SeamlessLoop,120);
+    phase2LoopTimer=setTimeout(schedulePhase2SeamlessLoop,100);
     return;
   }
+
   const remaining=Math.max(0,duration-current.currentTime);
-  // Crossfade before the actual end while both videos are already playing.
-  const lead=Math.min(0.72,Math.max(0.38,duration*0.035));
-  phase2LoopTimer=setTimeout(()=>crossfadePhase2Video(),Math.max(80,(remaining-lead)*1000));
+  // Start the replacement before the source clip ends. The replacement
+  // always starts at 0s; it is never allowed to inherit the old clip's time.
+  const lead=Math.min(0.72,Math.max(0.48,duration*0.04));
+  phase2LoopTimer=setTimeout(()=>crossfadePhase2Video(),Math.max(120,(remaining-lead)*1000));
 }
 
-function crossfadePhase2Video(){
+async function crossfadePhase2Video(){
   if(phase2Crossfading||phase2Videos.length<2)return;
+
   const current=activePhase2Video();
   const nextIndex=(phase2VideoIndex+1)%phase2Videos.length;
   const next=phase2Videos[nextIndex];
@@ -350,26 +352,31 @@ function crossfadePhase2Video(){
   phase2Crossfading=true;
   clearTimeout(phase2LoopTimer);
 
-  // The next copy has been playing from the start, so its first frame is
-  // already decoded. Crossfade without waiting, seeking, or exposing black.
-  const nextStart=next.currentTime;
+  // Critical fix: the standby copy must be restarted from the FIRST FRAME.
+  // Previously both copies played continuously, so at the seam the "next"
+  // copy was also near the end of the clip. Swapping to it caused a visible
+  // jump/flicker. Now only the visible copy runs until the seam.
+  next.pause();
+  try{next.currentTime=0}catch(_){}
   next.classList.add('is-visible');
+
+  const playPromise=next.play();
+  if(playPromise?.catch)await playPromise.catch(()=>{});
+
+  // Give the browser at least two paint opportunities to decode/show frame 0
+  // before fading the old layer away. This avoids a black/blank compositor frame.
+  await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+
   current.classList.remove('is-visible');
 
-  window.requestAnimationFrame(()=>{
+  setTimeout(()=>{
     current.pause();
     try{current.currentTime=0}catch(_){}
-    current.classList.remove('is-visible');
     phase2VideoIndex=nextIndex;
     phase2Crossfading=false;
-
-    // Restart the old copy immediately behind the visible copy so it is warm
-    // for the following seam.
-    current.play().catch(()=>{});
     schedulePhase2SeamlessLoop();
-  });
+  },460);
 }
-
 function pausePhase2Song(){
   if(!phase2Song)return;
   fadeOutAudio(phase2Song,650,true);
@@ -404,11 +411,10 @@ function playPhase2Video(){
     if(phase2VideoStarted)return;
     phase2VideoStarted=true;
 
-    // Start both copies together. Only A is visible, but B is decoding in the
-    // background so every later loop seam has a ready frame.
-    Promise.all(phase2Videos.map(v=>v.play().catch(()=>null))).then(()=>{
-      schedulePhase2SeamlessLoop();
-    });
+    // Only the visible copy starts. The second copy is kept loaded but paused;
+    // it is restarted at 0s at each seam and crossfaded in before the old copy ends.
+    first.play().catch(()=>{});
+    schedulePhase2SeamlessLoop();
   };
 
   start();
