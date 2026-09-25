@@ -87,8 +87,7 @@ function go(n){
     '2-3':'photoIn .78s cubic-bezier(.18,.86,.2,1) both',
     '3-4':'liftIn .82s cubic-bezier(.2,.85,.18,1) both',
     '4-5':'softPushIn .72s cubic-bezier(.2,.82,.2,1) both',
-    '5-6':'paperIn .86s cubic-bezier(.18,.86,.18,1) both',
-    '6-7':'roomIn .95s cubic-bezier(.2,.8,.2,1) both'
+    '5-6':'paperIn .86s cubic-bezier(.18,.86,.18,1) both'
   };
   const outgoing=forward
     ? 'cardOutLeft .58s cubic-bezier(.55,.08,.72,.35) both'
