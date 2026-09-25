@@ -619,56 +619,44 @@ runPhase1Ending=function(){
 
   let moonTransitioning=false;
   function enterLostFrameDirect(){
-    if(moonTransitioning)return;
-    if(i!==7)return;
+    if(moonTransitioning || i!==7)return;
     moonTransitioning=true;
 
-    // Release the cinematic video lock, but deliberately keep Jaan Nisaar alive.
-    stopFilm();
-    if(filmStage){
-      filmStage.classList.add('moon-chosen');
-      filmStage.style.pointerEvents='none';
-    }
-    if(filmLine){
-      filmLine.innerHTML='some things look different<br>when you come back to them.';
-      filmLine.classList.remove('show');
-      void filmLine.offsetWidth;
-      filmLine.classList.add('show');
-    }
-
-    const current=pages[i];
+    const current=pages[7];
     const next=pages[8];
-    if(!current || !next){
-      moonTransitioning=false;
-      return;
-    }
+    if(!current || !next){moonTransitioning=false;return;}
+
+    // Stop only the visual film. Jaan Nisaar continues underneath.
+    stopFilm();
 
     pages.forEach(p=>{
-      p.style.pointerEvents='none';
-      p.style.animation='none';
       p.classList.remove('active','exit-left','exit-right','enter-left','enter-right');
+      p.style.animation='none';
+      p.style.pointerEvents='none';
     });
 
-    current.style.animation='cardOutLeft .58s cubic-bezier(.55,.08,.72,.35) both';
+    current.classList.add('exit-left');
+    current.style.pointerEvents='none';
+
     next.classList.add('active');
-    next.style.pointerEvents='none';
+    next.style.pointerEvents='auto';
     next.style.animation='cardInRight .72s cubic-bezier(.18,.82,.2,1) both';
 
     i=8;
     window.sitePageIndex=8;
     syncGlobalBack();
-    const thread=document.getElementById('storyThread');
-    if(thread){thread.classList.remove('play');void thread.offsetWidth;thread.classList.add('play');}
-
     resetLostFrame();
+
+    requestAnimationFrame(()=>{
+      requestAnimationFrame(()=>{
+        activateLostFrame();
+      });
+    });
+
     window.setTimeout(()=>{
-      activateLostFrame();
       next.style.animation='none';
+      current.classList.remove('exit-left');
       current.style.animation='none';
-      next.style.pointerEvents='auto';
-      filmStage?.classList.remove('moon-chosen');
-      filmStage?.style.removeProperty('pointer-events');
-      busy=false;
       moonTransitioning=false;
     },760);
   }
@@ -679,17 +667,21 @@ runPhase1Ending=function(){
     enterLostFrameDirect();
   };
 
-  // The visible moon button catches normal taps.
   moon?.addEventListener('click',triggerMoon);
+  moon?.addEventListener('touchend',e=>{
+    e.preventDefault();
+    triggerMoon();
+  },{passive:false});
 
-  // Fallback: the whole upper-right moon region catches touch/pointer events too.
-  filmStage?.addEventListener('pointerup',e=>{
-    if(e.target===moon)return;
+  filmStage?.addEventListener('click',e=>{
+    if(i!==7 || e.target===moon)return;
+    // The moon occupies the upper-right portion of the film.
     const rect=filmStage.getBoundingClientRect();
     const x=(e.clientX-rect.left)/rect.width;
     const y=(e.clientY-rect.top)/rect.height;
-    if(x>=0.62 && y<=0.42)triggerMoon();
-  },{passive:true});
+    if(x>.45 && y<.55)triggerMoon();
+  });
+
   filmStage?.addEventListener('touchend',e=>{
     if(i!==7)return;
     const touch=e.changedTouches?.[0];
@@ -697,21 +689,11 @@ runPhase1Ending=function(){
     const rect=filmStage.getBoundingClientRect();
     const x=(touch.clientX-rect.left)/rect.width;
     const y=(touch.clientY-rect.top)/rect.height;
-    if(x>=0.55 && y<=0.48){
+    if(x>.45 && y<.55){
       e.preventDefault();
       triggerMoon();
     }
   },{passive:false});
-
-  // Last-resort compatibility path for browsers that don't deliver pointer
-  // events reliably over a playing fullscreen video.
-  filmStage?.addEventListener('click',e=>{
-    if(i!==7 || e.target===moon)return;
-    const rect=filmStage.getBoundingClientRect();
-    const x=(e.clientX-rect.left)/rect.width;
-    const y=(e.clientY-rect.top)/rect.height;
-    if(x>=0.55 && y<=0.48)triggerMoon();
-  });
 
   // Keep the old fallback control harmless if it ever becomes visible.
   filmContinue?.addEventListener('click',()=>{
