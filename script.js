@@ -557,12 +557,14 @@ runPhase1Ending=function(){
   ];
 
   const lostNotes=[
-    'saved because i liked the light.',
-    'this one stayed.',
-    'somewhere between ordinary and you.',
-    'couldn’t bring myself to delete this.',
-    'same light.',
-    'still here.'
+    'you always notice the quiet ones.',
+    'three years later and this one still feels familiar.',
+    'not everything needs a reason.',
+    'there is something hiding here.',
+    'you nearly skipped this one.',
+    '19. that’s all.',
+    'okay… you found the frame i didn’t label.',
+    'maybe the last frame isn’t actually the last.'
   ];
 
   const activateLostFrame=()=>{
@@ -753,7 +755,7 @@ runPhase1Ending=function(){
       if(lostNote)lostNote.textContent=lostNotes[index]||'some things are worth keeping.';
       lostDetail?.classList.add('open');
 
-      if(index===4){
+      if(index===6){
         lostSecret?.classList.remove('show');
         void lostSecret?.offsetWidth;
         lostSecret?.classList.add('show');
