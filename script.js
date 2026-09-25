@@ -614,6 +614,31 @@ runPhase1Ending=function(){
 
   video?.addEventListener('loadeddata',()=>filmStage?.classList.add('ready'));
 
+  let moonTransitioning=false;
+  function enterLostFrameReliably(){
+    if(moonTransitioning)return;
+    moonTransitioning=true;
+    const started=performance.now();
+    const attempt=()=>{
+      // go() intentionally locks during the 900ms page transition. The old
+      // moon handler could call go(8) during that lock, silently doing nothing.
+      if(i!==7){moonTransitioning=false;return;}
+      if(!busy){
+        resetLostFrame();
+        go(8);
+        window.setTimeout(activateLostFrame,260);
+        moonTransitioning=false;
+        return;
+      }
+      if(performance.now()-started<3000){
+        window.setTimeout(attempt,40);
+      }else{
+        moonTransitioning=false;
+      }
+    };
+    attempt();
+  }
+
   moon?.addEventListener('click',()=>{
     if(filmStage)filmStage.classList.add('moon-chosen');
     if(filmLine){
@@ -624,12 +649,8 @@ runPhase1Ending=function(){
     }
     if(window.umami?.track)window.umami.track('phase2-moon-discovered');
 
-    // The moon is the only cue: no extra button, no hard cut.
-    window.setTimeout(()=>{
-      resetLostFrame();
-      go(8);
-      window.setTimeout(activateLostFrame,260);
-    },720);
+    // Wait for the normal page-transition lock instead of dropping the tap.
+    window.setTimeout(enterLostFrameReliably,120);
   });
 
   // Keep the old fallback control harmless if it ever becomes visible.
