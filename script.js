@@ -324,6 +324,12 @@ function playPhase2Song(){
 }
 function enterRoom(){
   phase1Ending=false;
+  // The Phase 1 button click is the user gesture that unlocks audio autoplay on mobile.
+  if(phase2Song){
+    phase2Song.muted=false;
+    phase2Song.autoplay=true;
+  }
+  playPhase2Song();
   const overlay=document.getElementById('codeReveal');
   if(overlay){
     overlay.classList.remove('show');
@@ -517,19 +523,26 @@ runPhase1Ending=function(){
   const filmPage=document.getElementById('p8'), video=document.getElementById('phase2Animation');
   const filmStage=document.getElementById('filmStage'), moon=document.getElementById('moonHotspot');
   const filmLine=document.getElementById('filmLine'), filmContinue=document.getElementById('filmContinue');
-  const filmLoading=document.getElementById('filmLoading');
   function playFilm(){
-  if(!video)return;
-  video.loop=true;
-  video.muted=true;
-  video.playsInline=true;
-  filmPage?.classList.add('playing'); document.body.classList.add('phase2-active');
-  const p=video.play();
-  if(p?.then)p.then(()=>filmStage?.classList.add('ready')).catch(()=>{ filmStage?.classList.add('ready'); });
-}
+    if(!video)return;
+    video.loop=true;
+    video.muted=true;
+    video.playsInline=true;
+    video.setAttribute('playsinline','');
+    video.setAttribute('webkit-playsinline','');
+    filmPage?.classList.add('playing');
+    document.body.classList.add('phase2-active');
+    try{ video.load(); }catch(e){}
+    const p=video.play();
+    if(p?.then)p.then(()=>filmStage?.classList.add('ready')).catch(()=>{
+      filmStage?.classList.add('ready');
+      const retry=()=>{video.play().catch(()=>{});document.removeEventListener('pointerdown',retry);document.removeEventListener('touchstart',retry);};
+      document.addEventListener('pointerdown',retry,{once:true,passive:true});
+      document.addEventListener('touchstart',retry,{once:true,passive:true});
+    });
+  }
   function stopFilm(){ if(!video)return; video.pause(); video.currentTime=0; filmPage?.classList.remove('playing'); document.body.classList.remove('phase2-active'); filmContinue?.classList.remove('show'); filmLine?.classList.remove('show'); }
   video?.addEventListener('loadeddata',()=>filmStage?.classList.add('ready'));
-  video?.addEventListener('error',()=>{if(filmLoading){filmLoading.textContent='add phase2-reference-moon-no-lyrics.mp4 to the repo';filmLoading.style.opacity='.8'}});
   moon?.addEventListener('click',()=>{if(filmLine){filmLine.innerHTML='some things look different<br>when you come back to them.';filmLine.classList.remove('show');void filmLine.offsetWidth;filmLine.classList.add('show')} if(window.umami?.track)window.umami.track('phase2-moon-discovered')});
   filmContinue?.addEventListener('click',()=>{if(window.umami?.track)window.umami.track('phase2-film-complete');go(8)});
   const oldGo=go;
