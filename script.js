@@ -391,7 +391,7 @@ if(phase2Page){
 
 const _originalGo=go;
 go=function(n){
-  if(i===7 && n!==7)pausePhase2Song();
+  if(i===7 && n!==8 && n!==7)pausePhase2Song();
   return _originalGo(n);
 };
 
