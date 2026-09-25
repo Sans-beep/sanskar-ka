@@ -638,18 +638,14 @@ if(phase2EclipseHit){
   phase2EclipseHit.addEventListener('keydown',e=>{
     if(e.key!=='Enter' && e.key!==' ')return;
     e.preventDefault();
-    phase2EclipseBegin({
-      pointerId:-1,
-      clientX:phase2MoonCenter().x,
-      clientY:phase2MoonCenter().y,
-      preventDefault:()=>{}
-    });
+    phase2EclipseState.pointerId=null;
     phase2EclipseState.direction=1;
-    phase2SetEclipseProgress(.55);
-    phase2EclipseEnd({
-      pointerId:-1,
-      preventDefault:()=>{}
-    });
+    phase2EclipseDisc.classList.add('active');
+    phase2EclipseAura.classList.add('active');
+    const g=phase2EclipseGeometry();
+    phase2EclipseDisc.style.left=g.center.x+'px';
+    phase2EclipseDisc.style.top=g.center.y+'px';
+    phase2SetEclipseProgress(.5);
   });
 }
 
