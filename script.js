@@ -612,6 +612,7 @@ runPhase1Ending=function(){
     document.body.classList.remove('phase2-active');
     filmContinue?.classList.remove('show');
     filmLine?.classList.remove('show');
+    if(filmStage)filmStage.style.pointerEvents='';
   }
 
   video?.addEventListener('loadeddata',()=>filmStage?.classList.add('ready'));
@@ -689,6 +690,28 @@ runPhase1Ending=function(){
     const y=(e.clientY-rect.top)/rect.height;
     if(x>=0.62 && y<=0.42)triggerMoon();
   },{passive:true});
+  filmStage?.addEventListener('touchend',e=>{
+    if(i!==7)return;
+    const touch=e.changedTouches?.[0];
+    if(!touch)return;
+    const rect=filmStage.getBoundingClientRect();
+    const x=(touch.clientX-rect.left)/rect.width;
+    const y=(touch.clientY-rect.top)/rect.height;
+    if(x>=0.55 && y<=0.48){
+      e.preventDefault();
+      triggerMoon();
+    }
+  },{passive:false});
+
+  // Last-resort compatibility path for browsers that don't deliver pointer
+  // events reliably over a playing fullscreen video.
+  filmStage?.addEventListener('click',e=>{
+    if(i!==7 || e.target===moon)return;
+    const rect=filmStage.getBoundingClientRect();
+    const x=(e.clientX-rect.left)/rect.width;
+    const y=(e.clientY-rect.top)/rect.height;
+    if(x>=0.55 && y<=0.48)triggerMoon();
+  });
 
   // Keep the old fallback control harmless if it ever becomes visible.
   filmContinue?.addEventListener('click',()=>{
