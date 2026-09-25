@@ -647,7 +647,7 @@ runPhase1Ending=function(){
     if(i===7 && n===8)stopFilm();
 
     // Leaving the Lost Frame entirely stops the song.
-    if(i===8 && n!==8){
+    if(i===8 && n!==7 && n!==8){
       pausePhase2Song();
       resetLostFrame();
     }
