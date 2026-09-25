@@ -420,3 +420,20 @@ body.phase2-active .card{
   box-shadow:none!important;
   overflow:hidden!important;
 }
+
+/* Phase 2: absolutely no frame, border, outline, or shadow. */
+.phase2-film.active,
+.phase2-film.active .film-stage,
+.phase2-film.active #phase2Animation{
+  border:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+  border-radius:0!important;
+}
+.phase2-film.active::before,
+.phase2-film.active::after,
+.phase2-film.active .film-stage::before,
+.phase2-film.active .film-stage::after{
+  content:none!important;
+  display:none!important;
+}
