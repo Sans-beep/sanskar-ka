@@ -310,6 +310,7 @@ function closeMemory(){
 }
 function playPhase2Song(){
   if(!phase2Song)return;
+  phase2Song.loop=true;
   phase2Song.currentTime=0;
   phase2SongPlaying=true;
   if(phase2Page)phase2Page.classList.add('playing');
@@ -517,10 +518,9 @@ runPhase1Ending=function(){
   const filmStage=document.getElementById('filmStage'), moon=document.getElementById('moonHotspot');
   const filmLine=document.getElementById('filmLine'), filmContinue=document.getElementById('filmContinue');
   const filmLoading=document.getElementById('filmLoading');
-  function playFilm(){ if(!video)return; filmStage?.classList.add('ready'); filmPage?.classList.add('playing'); const p=video.play(); if(p?.catch)p.catch(()=>{if(filmLoading){filmLoading.textContent='tap once to start';filmLoading.style.opacity='.8'}}); }
+  function playFilm(){ if(!video)return; video.loop=true; filmStage?.classList.add('ready'); filmPage?.classList.add('playing'); const p=video.play(); if(p?.catch)p.catch(()=>{if(filmLoading){filmLoading.textContent='tap once to start';filmLoading.style.opacity='.8'}}); }
   function stopFilm(){ if(!video)return; video.pause(); video.currentTime=0; filmPage?.classList.remove('playing'); filmContinue?.classList.remove('show'); filmLine?.classList.remove('show'); }
   video?.addEventListener('loadeddata',()=>filmStage?.classList.add('ready'));
-  video?.addEventListener('ended',()=>filmContinue?.classList.add('show'));
   video?.addEventListener('error',()=>{if(filmLoading){filmLoading.textContent='add phase2-reference-moon-no-lyrics.mp4 to the repo';filmLoading.style.opacity='.8'}});
   moon?.addEventListener('click',()=>{if(filmLine){filmLine.innerHTML='some things look different<br>when you come back to them.';filmLine.classList.remove('show');void filmLine.offsetWidth;filmLine.classList.add('show')} if(window.umami?.track)window.umami.track('phase2-moon-discovered')});
   filmContinue?.addEventListener('click',()=>{if(window.umami?.track)window.umami.track('phase2-film-complete');go(8)});
