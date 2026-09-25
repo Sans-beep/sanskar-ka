@@ -260,3 +260,163 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
     object-position:50% 50%!important;
   }
 }
+
+
+/* ===== Phase 2 — interactive moon eclipse ===== */
+.phase2-film{
+  touch-action:none;
+  user-select:none;
+  -webkit-user-select:none;
+}
+.phase2-eclipse-layer{
+  position:absolute!important;
+  inset:0!important;
+  z-index:20!important;
+  pointer-events:none;
+  overflow:hidden;
+}
+.phase2-eclipse-hit{
+  position:absolute;
+  left:67%;
+  top:37%;
+  width:min(38vw,240px);
+  max-width:240px;
+  aspect-ratio:1;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  pointer-events:auto;
+  cursor:ew-resize;
+  touch-action:none;
+  -webkit-tap-highlight-color:transparent;
+  outline:none;
+}
+.phase2-eclipse-hit:focus-visible{
+  box-shadow:0 0 0 1px rgba(224,241,250,.24),0 0 38px rgba(205,232,247,.12);
+}
+.phase2-eclipse-disc{
+  position:absolute;
+  left:calc(67% - 18%);
+  top:37%;
+  width:min(20vw,154px);
+  max-width:154px;
+  aspect-ratio:1;
+  transform:translate(-50%,-50%) scale(.94);
+  border-radius:50%;
+  background:#01050a;
+  opacity:0;
+  pointer-events:none;
+  will-change:left,opacity,transform;
+  box-shadow:
+    0 0 0 1px rgba(226,241,248,.08),
+    0 0 18px rgba(224,240,247,.12),
+    0 0 42px rgba(224,240,247,.08);
+  transition:opacity .28s ease,transform .42s cubic-bezier(.2,.8,.2,1);
+}
+.phase2-eclipse-disc.active{
+  opacity:1;
+  transform:translate(-50%,-50%) scale(1);
+}
+.phase2-eclipse-aura{
+  position:absolute;
+  left:67%;
+  top:37%;
+  width:min(21vw,164px);
+  max-width:164px;
+  aspect-ratio:1;
+  transform:translate(-50%,-50%) scale(.86);
+  border-radius:50%;
+  border:1px solid rgba(224,241,250,.13);
+  box-shadow:
+    0 0 28px rgba(212,235,248,.08),
+    inset 0 0 18px rgba(212,235,248,.05);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .45s ease,transform .65s cubic-bezier(.2,.85,.2,1);
+}
+.phase2-eclipse-aura.active{
+  opacity:.75;
+  transform:translate(-50%,-50%) scale(1);
+}
+.phase2-eclipse-aura.complete{
+  opacity:1;
+  transform:translate(-50%,-50%) scale(1.08);
+  animation:phase2EclipseRing 1.35s ease-out both;
+}
+@keyframes phase2EclipseRing{
+  0%{box-shadow:0 0 10px rgba(224,241,250,.04),0 0 0 rgba(224,241,250,0)}
+  45%{box-shadow:0 0 34px rgba(224,241,250,.2),0 0 70px rgba(224,241,250,.08)}
+  100%{box-shadow:0 0 16px rgba(224,241,250,.07),0 0 32px rgba(224,241,250,.02)}
+}
+.phase2-eclipse-flash{
+  position:absolute;
+  inset:0;
+  background:rgba(234,245,250,.08);
+  opacity:0;
+  pointer-events:none;
+}
+.phase2-eclipse-flash.fire{
+  animation:phase2EclipseFlash .7s ease-out both;
+}
+@keyframes phase2EclipseFlash{
+  0%{opacity:0}
+  18%{opacity:.15}
+  100%{opacity:0}
+}
+.phase2-eclipse-prompt{
+  position:absolute;
+  left:50%;
+  top:57%;
+  transform:translate(-50%,10px);
+  padding:7px 11px;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:999px;
+  background:rgba(3,8,13,.32);
+  color:rgba(240,246,249,.72);
+  font:500 9px "DM Sans",sans-serif;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  white-space:nowrap;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .55s ease,transform .7s cubic-bezier(.2,.8,.2,1);
+  backdrop-filter:blur(6px);
+}
+.phase2-film.active .phase2-eclipse-prompt{
+  animation:phase2PromptIn 1.5s .8s ease both;
+}
+@keyframes phase2PromptIn{
+  0%{opacity:0;transform:translate(-50%,10px)}
+  35%{opacity:.72;transform:translate(-50%,0)}
+  100%{opacity:0;transform:translate(-50%,-4px)}
+}
+.phase2-eclipse-prompt.hidden{opacity:0!important}
+.phase2-eclipse-note{
+  position:absolute;
+  left:50%;
+  top:59%;
+  transform:translate(-50%,10px);
+  color:rgba(240,246,249,.82);
+  font:500 11px "DM Sans",sans-serif;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  white-space:nowrap;
+  opacity:0;
+  pointer-events:none;
+  text-shadow:0 3px 20px #000;
+}
+.phase2-eclipse-note.show{
+  animation:phase2EclipseNote 1.8s cubic-bezier(.2,.8,.2,1) both;
+}
+@keyframes phase2EclipseNote{
+  0%{opacity:0;transform:translate(-50%,12px)}
+  18%{opacity:.9;transform:translate(-50%,0)}
+  70%{opacity:.9;transform:translate(-50%,-2px)}
+  100%{opacity:0;transform:translate(-50%,-12px)}
+}
+@media(max-width:700px){
+  .phase2-eclipse-hit{width:46vw}
+  .phase2-eclipse-disc{width:25vw}
+  .phase2-eclipse-aura{width:27vw}
+  .phase2-eclipse-prompt{top:54%;font-size:8px}
+  .phase2-eclipse-note{top:56%;font-size:9px}
+}
