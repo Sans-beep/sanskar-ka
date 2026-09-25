@@ -778,3 +778,32 @@ body.phase2-active .card{
   pointer-events:none!important;
   z-index:90!important;
 }
+
+/* ===== LOST FRAME PROTOTYPE VISUAL SYSTEM ===== */
+.lost-stage{background:radial-gradient(circle at 50% 45%,#292929,#101010 70%)!important}
+.lost-rail{gap:34px!important;padding:0 9vw!important}
+.lost-frame{flex:0 0 clamp(250px,27vw,390px)!important;height:clamp(330px,61vh,540px)!important;position:relative!important;cursor:pointer!important;scroll-snap-align:center!important;transform:rotate(var(--r))!important;transition:.4s!important;filter:saturate(.7)!important}
+.lost-frame:hover{transform:rotate(0) translateY(-9px)!important;filter:saturate(1)!important}
+.lost-frame .lost-image{height:86%!important;position:relative!important;overflow:hidden!important;background:linear-gradient(145deg,#b8ab9b,#514b47 60%,#171717)!important}
+.lost-frame:nth-child(2) .lost-image{background:linear-gradient(120deg,#d5c2a7,#7f7368 45%,#282727 46%)!important}
+.lost-frame:nth-child(3) .lost-image{background:radial-gradient(circle at 60% 35%,#e7bd98 0 8%,#776257 9% 18%,#242323 19%)!important}
+.lost-frame:nth-child(4) .lost-image{background:linear-gradient(160deg,#7c8883,#d0c9b7 42%,#404542 43%,#181a19)!important}
+.lost-frame:nth-child(5) .lost-image{background:linear-gradient(135deg,#d2cfc2 0 35%,#927666 36% 62%,#292827 63%)!important}
+.lost-frame:nth-child(6) .lost-image{background:radial-gradient(ellipse at 30% 65%,#ddb27e 0 5%,#725647 6% 20%,#222 21%)!important}
+.lost-frame:nth-child(8) .lost-image{background:linear-gradient(145deg,#191a1b,#536067 50%,#b7a78e)!important}
+.lost-frame .fake{position:absolute;border:1px solid #ffffff44;box-shadow:0 15px 35px #0005}
+.lost-frame .fake.a{width:42%;height:34%;left:31%;top:28%;border-radius:50%}
+.lost-frame .fake.b{width:48%;height:12%;left:26%;bottom:17%;transform:rotate(-7deg)}
+.lost-frame .fake.c{width:24%;height:42%;right:15%;top:18%}
+.lost-frame .fake.d{width:24%;height:45%;left:22%;top:20%;transform:rotate(10deg)}
+.lost-frame .fake.e{width:3px;height:70%;left:50%;top:15%}
+.lost-frame figcaption{height:14%!important;padding:12px 4px!important;display:flex!important;justify-content:space-between!important;color:#999!important;font:10px "DM Mono",monospace!important}
+.lost-frame figcaption b{font-weight:400!important;color:#ddd!important}
+.lost-frame .lost-image img{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important;display:block!important;opacity:1!important;filter:saturate(.82) contrast(.98)!important}
+.lost-special .lost-image{background:#e5ddd0!important;color:#222!important}
+.lost-special .lost-image:after{content:"you missed\A one."!important;white-space:pre!important;position:absolute!important;inset:15%!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;font:28px Caveat,cursive!important;color:#222!important;transform:rotate(-5deg)!important}
+.lost-frame .lost-scribble{position:absolute!important;right:-5px!important;top:-18px!important;font:22px Caveat,cursive!important;color:#c8b9a5!important;transform:rotate(-8deg)!important}
+.moon-frame .lost-scribble{color:#d7c9b8!important}
+.lost-secret{bottom:11%!important;font:22px Caveat,cursive!important;color:#d5c2a8!important}
+.lost-tip{bottom:22px!important;font:9px "DM Mono",monospace!important;letter-spacing:.08em!important;color:#666!important}
+@media(max-width:650px){.lost-rail{padding:0 22vw!important;gap:22px!important}.lost-frame{flex-basis:62vw!important;height:59vh!important}.lost-whisper{font-size:20px!important}.lost-secret{font-size:18px!important}}
