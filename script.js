@@ -674,6 +674,20 @@ function resetPhase2Moonlight(){
 
 function activatePhase2Moonlight(){
   if(!phase2MoonlightHit)return;
+  // Make the gesture target full-screen at runtime so mobile browser hit-testing
+  // cannot miss because of video cropping or a small moon hit-circle.
+  phase2MoonlightHit.style.position='absolute';
+  phase2MoonlightHit.style.inset='0';
+  phase2MoonlightHit.style.left='0';
+  phase2MoonlightHit.style.top='0';
+  phase2MoonlightHit.style.width='100%';
+  phase2MoonlightHit.style.height='100%';
+  phase2MoonlightHit.style.maxWidth='none';
+  phase2MoonlightHit.style.transform='none';
+  phase2MoonlightHit.style.borderRadius='0';
+  phase2MoonlightHit.style.zIndex='6';
+  phase2MoonlightHit.style.pointerEvents='auto';
+  phase2MoonlightHit.style.touchAction='none';
   resetPhase2Moonlight();
   phase2MoonlightLayer.setAttribute('aria-hidden','false');
   phase2MoonlightPrompt.classList.remove('hidden');
