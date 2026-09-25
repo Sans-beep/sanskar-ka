@@ -435,6 +435,223 @@ function stopPhase2Video(){
   phase2VideoIndex=0;
 }
 
+
+/* ===== Phase 2 — moon eclipse interaction =====
+   The film remains untouched. This layer sits over the moon and turns a
+   horizontal touch/drag into a controlled eclipse. The completion moment is
+   intentionally non-navigational so the cinematic loop can continue.
+*/
+const phase2EclipseHit=document.getElementById('phase2EclipseHit');
+const phase2EclipseDisc=document.getElementById('phase2EclipseDisc');
+const phase2EclipseAura=document.getElementById('phase2EclipseAura');
+const phase2EclipseFlash=document.getElementById('phase2EclipseFlash');
+const phase2EclipsePrompt=document.getElementById('phase2EclipsePrompt');
+const phase2EclipseNote=document.getElementById('phase2EclipseNote');
+const phase2EclipseLayer=document.getElementById('phase2EclipseLayer');
+
+const phase2EclipseState={
+  pointerId:null,
+  startX:0,
+  direction:1,
+  progress:0,
+  travel:160,
+  moved:false,
+  completed:false
+};
+
+function phase2MoonCenter(){
+  return {
+    x:phase2Page.clientWidth*.67,
+    y:phase2Page.clientHeight*.37
+  };
+}
+
+function phase2EclipseGeometry(){
+  const center=phase2MoonCenter();
+  const discW=phase2EclipseDisc.getBoundingClientRect().width || Math.min(phase2Page.clientWidth*.20,154);
+  const radius=discW/2;
+  // Enough travel to move the shadow from completely outside the moon,
+  // through its center, and to the opposite side.
+  const travel=Math.max(radius*3.0,Math.min(phase2Page.clientWidth*.42,phase2Page.clientWidth*.56));
+  phase2EclipseState.travel=travel;
+  return {center,radius,travel};
+}
+
+function phase2SetEclipseProgress(progress){
+  const g=phase2EclipseGeometry();
+  const p=Math.max(0,Math.min(1,progress));
+  phase2EclipseState.progress=p;
+
+  const x=g.center.x + phase2EclipseState.direction*(p-.5)*g.travel;
+  phase2EclipseDisc.style.left=x+'px';
+  phase2EclipseDisc.style.top=g.center.y+'px';
+
+  // The closer the shadow is to the middle, the more pronounced the lunar halo.
+  const coverage=Math.max(0,1-Math.abs(p-.5)*2);
+  phase2EclipseAura.style.left=g.center.x+'px';
+  phase2EclipseAura.style.top=g.center.y+'px';
+  phase2EclipseAura.style.opacity=String(.18 + coverage*.68);
+  phase2EclipseAura.style.transform=`translate(-50%,-50%) scale(${1 + coverage*.12})`;
+
+  // The hidden completion moment is the point where the shadow sits over the moon.
+  if(!phase2EclipseState.completed && coverage>.88){
+    phase2CompleteEclipse();
+  }
+}
+
+function phase2CompleteEclipse(){
+  phase2EclipseState.completed=true;
+  phase2EclipseAura.classList.add('complete');
+  phase2EclipseFlash.classList.remove('fire');
+  void phase2EclipseFlash.offsetWidth;
+  phase2EclipseFlash.classList.add('fire');
+
+  phase2EclipseNote.textContent='night, for a second.';
+  phase2EclipseNote.classList.remove('show');
+  void phase2EclipseNote.offsetWidth;
+  phase2EclipseNote.classList.add('show');
+
+  // Small internal event hook for the final experience: this can later unlock
+  // the next visual/message without changing the interaction itself.
+  phase2Page.dispatchEvent(new CustomEvent('phase2:eclipse-complete'));
+
+  setTimeout(()=>{
+    phase2EclipseAura.classList.remove('complete');
+  },1400);
+}
+
+function resetPhase2Eclipse(){
+  if(!phase2EclipseHit)return;
+  phase2EclipseState.pointerId=null;
+  phase2EclipseState.startX=0;
+  phase2EclipseState.direction=1;
+  phase2EclipseState.progress=0;
+  phase2EclipseState.moved=false;
+  phase2EclipseState.completed=false;
+
+  phase2EclipseDisc.classList.remove('active');
+  phase2EclipseAura.classList.remove('active','complete');
+  phase2EclipseAura.style.opacity='';
+  phase2EclipseAura.style.transform='';
+  phase2EclipseDisc.style.left='';
+  phase2EclipseDisc.style.top='';
+  phase2EclipseFlash.classList.remove('fire');
+  phase2EclipseNote.classList.remove('show');
+  phase2EclipseNote.textContent='';
+  phase2EclipsePrompt.classList.remove('hidden');
+
+  if(phase2EclipseLayer){
+    phase2EclipseLayer.setAttribute('aria-hidden','true');
+  }
+}
+
+function activatePhase2Eclipse(){
+  if(!phase2EclipseHit)return;
+  resetPhase2Eclipse();
+  if(phase2EclipseLayer){
+    phase2EclipseLayer.setAttribute('aria-hidden','false');
+  }
+
+  // Restart the subtle instruction animation each time Phase 2 is entered.
+  phase2EclipsePrompt.classList.remove('hidden');
+  phase2EclipsePrompt.style.animation='none';
+  void phase2EclipsePrompt.offsetWidth;
+  phase2EclipsePrompt.style.animation='';
+}
+
+function phase2EclipseBegin(e){
+  if(!phase2EclipseHit || phase2EclipseState.pointerId!==null)return;
+  e.preventDefault();
+  phase2EclipseState.pointerId=e.pointerId;
+  phase2EclipseState.startX=e.clientX;
+  phase2EclipseState.direction=1;
+  phase2EclipseState.progress=0;
+  phase2EclipseState.moved=false;
+  phase2EclipseState.completed=false;
+
+  phase2EclipseHit.setPointerCapture?.(e.pointerId);
+  phase2EclipsePrompt.classList.add('hidden');
+  phase2EclipseDisc.classList.add('active');
+  phase2EclipseAura.classList.add('active');
+
+  const g=phase2EclipseGeometry();
+  phase2EclipseDisc.style.left=(g.center.x - g.travel*.5)+'px';
+  phase2EclipseDisc.style.top=g.center.y+'px';
+  phase2EclipseAura.style.left=g.center.x+'px';
+  phase2EclipseAura.style.top=g.center.y+'px';
+  phase2EclipseAura.style.opacity='.2';
+}
+
+function phase2EclipseMove(e){
+  if(!phase2EclipseHit || phase2EclipseState.pointerId!==e.pointerId)return;
+  e.preventDefault();
+
+  const dx=e.clientX-phase2EclipseState.startX;
+  if(Math.abs(dx)>5 && !phase2EclipseState.moved){
+    phase2EclipseState.moved=true;
+    phase2EclipseState.direction=dx>=0?1:-1;
+  }
+  if(!phase2EclipseState.moved)return;
+
+  const p=Math.abs(dx)/phase2EclipseState.travel;
+  phase2SetEclipseProgress(p);
+}
+
+function phase2EclipseEnd(e){
+  if(!phase2EclipseHit || phase2EclipseState.pointerId!==e.pointerId)return;
+  e.preventDefault();
+
+  phase2EclipseState.pointerId=null;
+  try{phase2EclipseHit.releasePointerCapture?.(e.pointerId)}catch(_){}
+
+  // Let the shadow sit for a beat after a completed eclipse, otherwise return
+  // smoothly to the untouched moon so the film never gets permanently altered.
+  const hold=phase2EclipseState.completed?900:180;
+  setTimeout(()=>{
+    phase2EclipseDisc.classList.remove('active');
+    phase2EclipseAura.classList.remove('active');
+    phase2EclipseNote.classList.remove('show');
+    phase2EclipseDisc.style.transition='left .65s cubic-bezier(.2,.82,.2,1),opacity .55s ease,transform .42s cubic-bezier(.2,.8,.2,1)';
+    phase2EclipseDisc.style.left='';
+    phase2EclipseDisc.style.top='';
+    phase2EclipseAura.style.opacity='';
+    phase2EclipseAura.style.transform='';
+    setTimeout(()=>{phase2EclipseDisc.style.transition='';},700);
+    phase2EclipseState.progress=0;
+    phase2EclipseState.completed=false;
+  },hold);
+}
+
+if(phase2EclipseHit){
+  phase2EclipseHit.addEventListener('pointerdown',phase2EclipseBegin,{passive:false});
+  phase2EclipseHit.addEventListener('pointermove',phase2EclipseMove,{passive:false});
+  phase2EclipseHit.addEventListener('pointerup',phase2EclipseEnd,{passive:false});
+  phase2EclipseHit.addEventListener('pointercancel',phase2EclipseEnd,{passive:false});
+  phase2EclipseHit.addEventListener('lostpointercapture',()=>{
+    if(phase2EclipseState.pointerId!==null){
+      phase2EclipseState.pointerId=null;
+      phase2EclipseDisc.classList.remove('active');
+      phase2EclipseAura.classList.remove('active');
+    }
+  });
+  phase2EclipseHit.addEventListener('keydown',e=>{
+    if(e.key!=='Enter' && e.key!==' ')return;
+    e.preventDefault();
+    phase2EclipseBegin({
+      pointerId:-1,
+      clientX:phase2MoonCenter().x,
+      clientY:phase2MoonCenter().y,
+      preventDefault:()=>{}
+    });
+    phase2EclipseState.direction=1;
+    phase2SetEclipseProgress(.55);
+    phase2EclipseEnd({
+      pointerId:-1,
+      preventDefault:()=>{}
+    });
+  });
+}
+
 function enterPhase2(){
   phase1Ending=false;
   const overlay=document.getElementById('codeReveal');
