@@ -311,12 +311,20 @@ function closeMemory(){
 function playPhase2Song(){
   if(!phase2Song)return;
   phase2Song.loop=true;
+  phase2Song.autoplay=true;
+  phase2Song.muted=false;
+  phase2Song.volume=.46;
   phase2Song.currentTime=0;
   phase2SongPlaying=true;
   if(phase2Page)phase2Page.classList.add('playing');
   if(roomAudioStatus)roomAudioStatus.textContent='Jaan Nisaar — for this room ♡';
-  const promise=fadeInAudio(phase2Song,.46,1100);
-  void promise;
+  try{ phase2Song.load(); }catch(e){}
+  const promise=phase2Song.play();
+  if(promise?.catch)promise.catch(()=>{
+    const retry=()=>{phase2Song.play().catch(()=>{});document.removeEventListener('pointerdown',retry);document.removeEventListener('touchstart',retry);};
+    document.addEventListener('pointerdown',retry,{once:true,passive:true});
+    document.addEventListener('touchstart',retry,{once:true,passive:true});
+  });
   setTimeout(()=>{
     if(!phase2SongPlaying)return;
     if(phase2Song.readyState<2 && roomAudioStatus)roomAudioStatus.textContent='add jaan-nisaar.mp3 to the repo to hear this ♡';
