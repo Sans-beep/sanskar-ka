@@ -198,7 +198,7 @@ function unlock(){
   const input=document.getElementById('code');
   const button=document.getElementById('unlock');
 
-  if(unlocked || owner || v==='KASHISH19'){
+  if(unlocked || owner || v===activeUnlockCode()){
     const firstCeremony=!unlocked;
     markUnlocked(!owner);
     e.textContent='';
@@ -956,7 +956,7 @@ go=function(n){
   const unlock=document.getElementById('unlock');
   if(unlock)unlock.addEventListener('click',()=>{
     const value=(code?.value||'').trim().toUpperCase();
-    send('code-attempt',{result:value==='KASHISH19'?'correct':'incorrect'});
+    send('code-attempt',{result:value===activeUnlockCode()?'correct':'incorrect'});
   });
 
   const enter2=document.getElementById('enterPhase2');
@@ -1387,3 +1387,139 @@ function drawConstProgress(){
     svg.appendChild(ln);
   }
 }
+
+
+/* ===== Make your own — customizable copies for followers =====
+   A follower opens "make your own ♡", fills in names / code / date /
+   memories, and gets a personalized link (details live in the URL hash).
+   Opening such a link swaps the personal content in place. The default
+   experience (no hash) stays exactly the user's own.
+   Privacy: the hash is stripped from the address bar right after reading,
+   so personal names never reach Umami pageview URLs. */
+function escHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function readCustomParams(){
+  const out={mems:[]};
+  try{
+    const h=location.hash.replace(/^#/,'');
+    if(!h)return out;
+    const q=new URLSearchParams(h);
+    ['to','from','code','date'].forEach(k=>{const v=(q.get(k)||'').trim();if(v)out[k]=v;});
+    for(let k=1;k<=7;k++){
+      const v=q.get('m'+k);
+      if(v==null)continue;
+      const i=v.indexOf('|');
+      out.mems.push([i<0?v:v.slice(0,i),i<0?'':v.slice(i+1)]);
+    }
+  }catch(e){}
+  return out;
+}
+const customParams=readCustomParams();
+const customCodeValue=(customParams.code||'').toUpperCase().slice(0,16)||null;
+function activeUnlockCode(){return customCodeValue||'KASHISH19';}
+function applyCustomization(){
+  const cp=customParams;
+  const has=cp.to||cp.from||cp.date||cp.mems.length;
+  if(location.hash){try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}}
+  if(!has)return;
+  if(cp.to){
+    document.title='For '+cp.to+' ♡';
+    const hero=document.querySelector('#p1 .script.hero');
+    if(hero)hero.innerHTML='Hey<br>'+escHtml(cp.to);
+    const fk=document.querySelector('#p1 .top span:first-child');
+    if(fk)fk.textContent='FOR '+cp.to.toUpperCase();
+    const lt=document.querySelector('.letter-title');
+    if(lt)lt.textContent='For '+cp.to+', ♡';
+    const ta=document.querySelector('.throwback-photo img');
+    if(ta)ta.alt='A childhood birthday memory of '+cp.to;
+  }
+  if(cp.from){
+    const sig=document.getElementById('letterSig');
+    if(sig)sig.textContent='— '+cp.from+' ♡';
+  }
+  if(cp.date){
+    const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(cp.date);
+    if(m){
+      const disp=m[3]+'.'+m[2]+'.'+m[1].slice(2);
+      document.querySelectorAll('.top span').forEach(s=>{
+        if(s.textContent.trim()==='19.10.26')s.textContent=disp;
+      });
+    }
+  }
+  cp.mems.forEach((pair,k)=>{
+    if(k<CONSTELLATION_MEMORIES.length){
+      if(pair[0])CONSTELLATION_MEMORIES[k].title=pair[0];
+      if(pair[1])CONSTELLATION_MEMORIES[k].caption=pair[1];
+    }
+  });
+}
+applyCustomization();
+
+/* The "make your own" form overlay. */
+const memInputs=[];
+(function buildMakeOwnForm(){
+  const wrap=document.getElementById('mkMems');
+  if(!wrap)return;
+  for(let k=0;k<7;k++){
+    const row=document.createElement('div');
+    row.className='make-mem';
+    const num=document.createElement('span');
+    num.textContent=(k+1);
+    const t=document.createElement('input');
+    t.placeholder='memory title';t.maxLength=40;t.autocomplete='off';
+    const c=document.createElement('input');
+    c.placeholder='one line about it';c.maxLength=90;c.autocomplete='off';
+    row.appendChild(num);row.appendChild(t);row.appendChild(c);
+    wrap.appendChild(row);
+    memInputs.push([t,c]);
+  }
+})();
+const makeOwn=document.getElementById('makeOwn');
+function openMakeOwn(){
+  if(customParams.to)document.getElementById('mkTo').value=customParams.to;
+  if(customParams.from)document.getElementById('mkFrom').value=customParams.from;
+  if(customCodeValue)document.getElementById('mkCode').value=customCodeValue;
+  if(customParams.date)document.getElementById('mkDate').value=customParams.date;
+  memInputs.forEach((pr,k)=>{pr[0].value=CONSTELLATION_MEMORIES[k].title;pr[1].value=CONSTELLATION_MEMORIES[k].caption;});
+  document.getElementById('mkLinkRow').classList.add('hidden');
+  makeOwn.classList.add('open');
+  makeOwn.setAttribute('aria-hidden','false');
+  if(window.trackStoryEvent)window.trackStoryEvent('make-own-opened',{});
+}
+function closeMakeOwn(){
+  makeOwn.classList.remove('open');
+  makeOwn.setAttribute('aria-hidden','true');
+}
+const openMakeBtn=document.getElementById('openMakeOwn');
+if(openMakeBtn)openMakeBtn.addEventListener('click',openMakeOwn);
+document.getElementById('makeClose').addEventListener('click',closeMakeOwn);
+makeOwn.addEventListener('click',e=>{if(e.target===makeOwn)closeMakeOwn();});
+document.getElementById('mkGenerate').addEventListener('click',()=>{
+  const p=new URLSearchParams();
+  const to=document.getElementById('mkTo').value.trim();
+  if(to)p.set('to',to);
+  const from=document.getElementById('mkFrom').value.trim();
+  if(from)p.set('from',from);
+  const code=document.getElementById('mkCode').value.trim().toUpperCase();
+  if(code)p.set('code',code);
+  const date=document.getElementById('mkDate').value;
+  if(date)p.set('date',date);
+  memInputs.forEach((pr,k)=>{
+    const t=pr[0].value.trim(),c=pr[1].value.trim();
+    if(t||c)p.set('m'+(k+1),t+'|'+c);
+  });
+  const link=location.origin+location.pathname+'#'+p.toString();
+  const row=document.getElementById('mkLinkRow');
+  const inp=document.getElementById('mkLink');
+  inp.value=link;
+  row.classList.remove('hidden');
+  inp.focus();inp.select();
+  if(window.trackStoryEvent)window.trackStoryEvent('custom-link-generated',{});
+});
+document.getElementById('mkCopy').addEventListener('click',async()=>{
+  const inp=document.getElementById('mkLink');
+  const btn=document.getElementById('mkCopy');
+  try{await navigator.clipboard.writeText(inp.value);}
+  catch(e){inp.select();try{document.execCommand('copy');}catch(_){}}
+  btn.textContent='copied ✓';
+  setTimeout(()=>{btn.textContent='copy';},1600);
+});

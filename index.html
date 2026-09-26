@@ -9,7 +9,7 @@
 </head>
 <body>
 <div class="shell"><main class="card">
-<section class="page active" id="p1"><div class="top"><span>FOR KASHISH</span><span>19.10.26</span></div><div class="inner"><i class="doodle d1">♡</i><i class="doodle d2">✦</i><i class="doodle d3">⌁</i><div class="script hero">Hey<br>Kashish</div><div class="note" style="margin-top:25px">glad you exist :)</div><button class="btn next">tap to continue →</button></div></section>
+<section class="page active" id="p1"><div class="top"><span>FOR KASHISH</span><span>19.10.26</span></div><div class="inner"><i class="doodle d1">♡</i><i class="doodle d2">✦</i><i class="doodle d3">⌁</i><div class="script hero">Hey<br>Kashish</div><div class="note" style="margin-top:25px">glad you exist :)</div><button class="btn next">tap to continue →</button><button class="make-link" id="openMakeOwn" type="button">make your own ♡</button></div></section>
 <section class="page" id="p2"><div class="weather-scene" aria-hidden="true"><div class="weather-cloud cloud-a"></div><div class="weather-cloud cloud-b"></div><div class="weather-cloud cloud-c"></div><div class="rain"></div><div class="sun"></div><div class="sun-glow"></div></div><div class="top"><span>TODAY, JUST FOR YOU</span><span>19.10.26</span></div><div class="inner"><i class="doodle d1">♡</i><i class="doodle d2">☆</i><div class="kicker">a tiny interruption to your day</div><div class="script birthday" style="margin-top:22px">Happy<br>Birthday ♡</div><div class="note" style="margin-top:25px">today gets to be a little brighter.</div><div class="scribble" style="margin-top:9px">let the weather do its thing.</div><button class="btn next">okay, come on →</button></div></section>
 <section class="page" id="p3"><div class="top"><span>THE ARCHIVES</span><span>19.10.26</span></div><div class="inner throwback-inner"><i class="doodle d1">♡</i><i class="doodle d2">✦</i><div class="kicker">a little throwback</div><div class="throwback-note">found this again.</div><div class="archive-meta"><span>saved · three years ago</span><span>kept for later ♡</span></div><div class="throwback-photo"><div class="tape"></div><img src="throwback-photo.jpg" alt="A childhood birthday memory of Kashish"></div><div class="throwback-copy">you sent me this three years ago.<br><span>look at you. ♡</span></div><div class="throwback-small">still somehow very you.</div><i class="doodle">♡</i><button class="btn next">continue →</button></div></section>
 <section class="page" id="p4"><div class="top"><span>FIRST THINGS FIRST</span><span>19.10.26</span></div><div class="inner"><i class="doodle d1">↗</i><i class="doodle d4">♡</i><div class="kicker">there's a little something</div><div class="copy" style="margin-top:15px">waiting for you.</div><div class="delivery-slip"><div class="slip-head">DELIVERY</div><div class="slip-rule"></div><div class="slip-row"><span>1 × something sweet</span><span>♡</span></div><div class="slip-row" style="margin-top:5px"><span>for</span><span>the bhondu girl</span></div><div class="slip-note">status: outside</div><div class="slip-code">19</div></div><div class="scribble">yes, this one :)</div><div class="note" style="margin-top:10px">check your door.</div><button class="btn next">I found it →</button></div></section>
@@ -108,7 +108,25 @@
     <p>Some things are easier to say when they're written down.</p>
     <p>So I thought I'd leave you this little piece of me here.</p>
     <p>Read it slowly. There's no hurry.<br>Will complete this later 🕺🏻</p>
-    <p style="text-align:right;margin-top:28px">— Sanskar ♡</p>
+    <p style="text-align:right;margin-top:28px" id="letterSig">— Sanskar ♡</p>
   </article>
 </div>
-<script src="script.js?v=20260926-31"></script><audio id="letterSong" preload="auto" src="tune-jo-na-kaha.mp3"></audio><audio id="throwbackSong" preload="auto" loop src="throwback-music.mp3"></audio></body></html>
+<div class="make-own" id="makeOwn" aria-hidden="true">
+  <article class="make-card">
+    <button class="make-close" id="makeClose" aria-label="Close">×</button>
+    <div class="make-title">make your own ♡</div>
+    <p class="make-sub">fill this in and get a link — your own copy of the whole journey, with your names and memories. mine stays mine.</p>
+    <label>her name<input id="mkTo" maxlength="24" placeholder="Kashish" autocomplete="off"></label>
+    <label>your name<input id="mkFrom" maxlength="24" placeholder="Sanskar" autocomplete="off"></label>
+    <label>secret code<input id="mkCode" maxlength="16" placeholder="KASHISH19" autocomplete="off" style="text-transform:uppercase"></label>
+    <label>her birthday<input id="mkDate" type="date" value="2026-10-19"></label>
+    <div class="make-memtitle">the 7 memories</div>
+    <div class="make-mems" id="mkMems"></div>
+    <button class="btn" id="mkGenerate" type="button">get my link →</button>
+    <div class="make-linkrow hidden" id="mkLinkRow">
+      <input id="mkLink" readonly>
+      <button class="btn" id="mkCopy" type="button">copy</button>
+    </div>
+  </article>
+</div>
+<script src="script.js?v=20260926-32"></script><audio id="letterSong" preload="auto" src="tune-jo-na-kaha.mp3"></audio><audio id="throwbackSong" preload="auto" loop src="throwback-music.mp3"></audio></body></html>
