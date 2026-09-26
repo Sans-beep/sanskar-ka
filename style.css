@@ -674,3 +674,10 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
 @keyframes heartGlow{0%{opacity:0;transform:scale(.6)}25%{opacity:1;transform:scale(1.06)}55%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.14)}}
 .g-grass{position:absolute;opacity:.9;animation:grassSway 4s ease-in-out infinite;pointer-events:none}
 @keyframes grassSway{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
+
+/* ===== Phase 3 illustrated blooms (no photos — matches the animated mockup) ===== */
+.g-drawn{position:absolute;top:20px;left:50%;width:150px;height:150px;margin-left:-75px;transform:scale(0);pointer-events:none;z-index:2;filter:drop-shadow(0 0 26px rgba(255,190,110,.45))}
+.g-petal{position:absolute;left:50%;top:50%;border-radius:72% 28% 66% 34%;opacity:0;will-change:transform,opacity}
+.g-core{position:absolute;left:50%;top:50%;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;opacity:0}
+.g-pol-vid{width:168px;height:220px;object-fit:cover;border-radius:2px;display:block;background:#1a1430}
+.g-sound-hint{font-family:Caveat,cursive;font-size:19px;color:#a08b74;margin-top:4px}

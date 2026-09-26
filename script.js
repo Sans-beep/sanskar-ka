@@ -1749,6 +1749,13 @@ function gardenInitSky(){
       bed0.appendChild(s);
     }
   }
+  buildDrawnBloom('gDrawnHim','him');buildDrawnBloom('gDrawnHer','her');
+  const pv=document.getElementById('gPolVid');
+  if(pv&&!pv.dataset.tapped){pv.dataset.tapped='1';
+    pv.addEventListener('click',()=>{
+      pv.muted=!pv.muted;pv.play().catch(()=>{});
+      const h=document.getElementById('gSoundHint');if(h)h.hidden=!pv.muted;
+    });}
   const ff=document.getElementById('gFireflies');
   if(ff)for(let k=0;k<7;k++){
     const s=document.createElement('span');
@@ -1794,7 +1801,7 @@ function gardenBloom(who){
   const st=gardenState[who];if(!st||st.done)return;
   st.done=true;st.holding=false;
   const el=document.getElementById(who==='him'?'gFlowerHim':'gFlowerHer');
-  if(el){el.classList.remove('holding');el.classList.add('bloomed');gardenSparkBurst(el,who);gardenPetalRing(el,who);}
+  if(el){el.classList.remove('holding');el.classList.add('bloomed');gardenSparkBurst(el,who);gardenBloomDrawn(who);}
   const hint=document.getElementById('gardenHint');
   if(hint&&(gardenState.him.done!==gardenState.her.done))
     hint.textContent=who==='him'?'one down ♡ now her':'one down ♡ now him';
@@ -1804,24 +1811,47 @@ function gardenBloom(who){
     setTimeout(()=>{if(window.sitePageIndex===GARDEN_INDEX)gardenPetalHeart();},1100);
   }
 }
-/* Outer petal ring unfurls around the photo as it blooms — the lush marigold look. */
-function gardenPetalRing(el,who){
-  const bed=document.getElementById('gardenBed');if(!bed||!el)return;
-  const r=el.getBoundingClientRect(),br=bed.getBoundingClientRect();
-  const cx=r.left-br.left+r.width/2,cy=r.top-br.top+73;
-  const cols=who==='him'?['#ffb066','#e07b1f']:['#ffe27a','#eaa90f'];
-  for(let k=0;k<12;k++){
-    const a=(k/12)*Math.PI*2+Math.random()*.2,dist=60+Math.random()*10;
-    const s=document.createElement('span');s.className='g-ring-petal';
-    s.style.background=`linear-gradient(135deg,${cols[0]},${cols[1]})`;
-    s.style.left=cx.toFixed(0)+'px';s.style.top=cy.toFixed(0)+'px';
-    bed.appendChild(s);
-    const deg=(a*180/Math.PI).toFixed(0);
-    s.animate([
-      {transform:'translate(-50%,-50%) rotate(0deg) scale(.2)',opacity:0},
-      {transform:`translate(calc(-50% + ${(Math.cos(a)*dist).toFixed(0)}px),calc(-50% + ${(Math.sin(a)*dist).toFixed(0)}px)) rotate(${deg}deg) scale(1)`,opacity:1}
-    ],{duration:850,delay:120+k*65,easing:'cubic-bezier(.2,.9,.3,1.25)',fill:'forwards'});
-  }
+/* Illustrated marigold blooms (no photos) — built once, unfurled on bloom. */
+const DRAWN_PAL={
+  him:{lo:'#ffb35c',ld:'#e07b1f',li:'#ffc879',ld2:'#ef8a1f',cc:'#f7c05a',cd:'#b34d0e'},
+  her:{lo:'#ffe066',ld:'#eaa90f',li:'#fff3a0',ld2:'#f5b81e',cc:'#ffe97a',cd:'#b57e04'}
+};
+function buildDrawnBloom(id,who){
+  const c=document.getElementById(id);if(!c||c.dataset.built)return;c.dataset.built='1';
+  const pal=DRAWN_PAL[who];
+  const mk=(n,w,h,dist,c0,c1)=>{
+    for(let k=0;k<n;k++){
+      const a=(k/n)*Math.PI*2+(k%2?0.13:-0.06);
+      const p=document.createElement('span');p.className='g-petal';
+      const t=`rotate(${(a*180/Math.PI).toFixed(1)}deg) translateY(${(-dist).toFixed(0)}px)`;
+      p.dataset.t=t;
+      p.style.width=w+'px';p.style.height=h+'px';
+      p.style.margin=`${(-h/2).toFixed(0)}px 0 0 ${(-w/2).toFixed(0)}px`;
+      p.style.background=`linear-gradient(180deg,${c0},${c1})`;
+      p.style.transform=t+' scale(.2)';
+      c.appendChild(p);
+    }
+  };
+  mk(13,30,46,44,pal.lo,pal.ld);
+  mk(9,24,36,26,pal.li,pal.ld2);
+  const core=document.createElement('span');core.className='g-core';
+  core.style.background=`radial-gradient(circle at 38% 32%,${pal.cc},${pal.cd} 72%)`;
+  core.style.transform='scale(0)';
+  c.appendChild(core);
+}
+function gardenBloomDrawn(who){
+  const c=document.getElementById(who==='him'?'gDrawnHim':'gDrawnHer');
+  if(!c||c.dataset.done)return;c.dataset.done='1';
+  c.animate([{transform:'scale(0)'},{transform:'scale(1.12)'},{transform:'scale(1)'}],
+    {duration:800,easing:'ease-out',fill:'forwards'});
+  c.querySelectorAll('.g-petal').forEach((p,k)=>{
+    p.animate([{transform:p.dataset.t+' scale(.15)',opacity:0},
+               {transform:p.dataset.t+' scale(1)',opacity:1}],
+      {duration:550,delay:150+k*40,easing:'cubic-bezier(.2,.9,.3,1.3)',fill:'forwards'});
+  });
+  const core=c.querySelector('.g-core');
+  if(core)core.animate([{transform:'scale(0)',opacity:0},{transform:'scale(1)',opacity:1}],
+    {duration:500,delay:650,easing:'cubic-bezier(.2,.9,.3,1.4)',fill:'forwards'});
 }
 /* A glowing heart outline lingers where the petals gathered, then dissolves. */
 function gardenHeartGlow(cx,cy,s){
@@ -1890,6 +1920,9 @@ function gardenFinale(){
   if(bed){bed.classList.add('garden-bed-done');setTimeout(()=>{bed.style.display='none';},950);}
   if(f)f.hidden=false;
   if(hint){hint.style.opacity='0';setTimeout(()=>{hint.style.display='none';},850);}
+  const gv=document.getElementById('gPolVid');
+  if(gv){gv.muted=true;try{gv.currentTime=0;}catch(e){}gv.play().catch(()=>{});
+    const sh=document.getElementById('gSoundHint');if(sh)sh.hidden=false;}
   if(ahead)ahead.disabled=false;
   if(window.trackStoryEvent)window.trackStoryEvent('garden-complete');
 }
@@ -1902,6 +1935,7 @@ function startGarden(){
   }
 }
 function stopGarden(){
+  const gv=document.getElementById('gPolVid');if(gv)gv.pause();
   if(gardenRaf){cancelAnimationFrame(gardenRaf);gardenRaf=0;}
   ['him','her'].forEach(who=>{gardenState[who].holding=false;});
   document.querySelectorAll('.g-flower.holding').forEach(el=>el.classList.remove('holding'));
