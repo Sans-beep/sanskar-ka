@@ -1015,6 +1015,7 @@ function openLostFrame(){
 function closeLostFrame(){
   if(!lostFrame||!lostFrameOpen)return;
   lostFrameOpen=false;
+  phase2LostDone=true;maybeShowPhase3Cta();
   lfDetail.classList.remove('open');
   lostFrame.classList.remove('open');
   lostFrame.setAttribute('aria-hidden','true');
@@ -1035,9 +1036,18 @@ if(lfDetail)lfDetail.addEventListener('click',e=>{
   if(e.target===lfDetail)lfDetail.classList.remove('open');
 });
 /* "there's more" is reserved for future slides/phases — parked for now. */
-/* "there's more" button: unparked — carries her from phase 2 (p8) to phase 3 (p9) */
+/* "there's more" button: gated — it appears only after she finishes the moonlight
+   drawing AND has opened + closed the Lost Frame (phase 2 fully explored). */
 const lostFrameCta=document.getElementById('lostFrameCta');
 if(lostFrameCta)lostFrameCta.addEventListener('click',e=>{e.stopPropagation();go(8);});
+let phase2MoonDone=false,phase2LostDone=false;
+function maybeShowPhase3Cta(){
+  if(phase2MoonDone&&phase2LostDone&&lostFrameCta)lostFrameCta.classList.add('show');
+}
+const phase2PageEl=document.getElementById('p8');
+if(phase2PageEl)phase2PageEl.addEventListener('phase2:moonlight-complete',()=>{
+  phase2MoonDone=true;maybeShowPhase3Cta();
+});
 const lfCloseBtn=document.getElementById('lfClose');
 if(lfCloseBtn)lfCloseBtn.addEventListener('click',e=>{
   e.stopPropagation();

@@ -489,9 +489,10 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
 .lostframe .lf-close:active{transform:scale(.94)}
 @media(max-width:650px){.lostframe .header{left:16px;right:16px}.lostframe .rail{padding:0 22vw;gap:22px}.lostframe .frame{flex-basis:62vw;height:59vh}.lostframe .sub{font-size:20px}.lostframe .secret{font-size:18px}}
 
-/* ===== Phase 2 — Lost Frame entry button (unparked: carries her from phase 2 to phase 3) ===== */
-.lostframe-cta{position:absolute!important;left:50%!important;bottom:78px!important;transform:translateX(-50%)!important;z-index:30!important;margin:0!important;box-shadow:0 12px 32px #000b;white-space:nowrap}
-.lostframe-cta:hover{transform:translateX(-50%) translateY(-2px)!important}
+/* ===== Phase 2 — Lost Frame entry button (gated: appears only after phase 2 is fully explored) ===== */
+.lostframe-cta{position:absolute!important;left:50%!important;bottom:78px!important;transform:translateX(-50%)!important;z-index:30!important;margin:0!important;box-shadow:0 12px 32px #000b;white-space:nowrap;opacity:0;pointer-events:none!important;transition:opacity .8s ease}
+.lostframe-cta.show{opacity:1;pointer-events:auto!important}
+.lostframe-cta.show:hover{transform:translateX(-50%) translateY(-2px)!important}
 
 /* ===== Phase 3 — Constellation ===== */
 .phase3-sky{background:#060a18!important;overflow:hidden}
