@@ -424,6 +424,15 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
 .lostframe .frame:hover{transform:rotate(0) translateY(-9px);filter:saturate(1)}
 .lostframe .image{height:86%;position:relative;overflow:hidden;background:linear-gradient(145deg,#b8ab9b,#514b47 60%,#171717)}
 .lostframe .image img{width:100%;height:100%;object-fit:cover;display:block}
+/* FRAME 019 — landscape feature frame for the real photo */
+.lostframe .frame-wide{flex:0 0 clamp(340px,62vw,600px);height:clamp(300px,48vh,430px)}
+.lostframe .frame-wide .image{height:80%}
+.lostframe .frame-wide .tape{position:absolute;top:-13px;left:38px;width:96px;height:26px;background:rgba(232,221,210,.85);transform:rotate(-5deg);box-shadow:0 4px 12px #0005;z-index:3}
+.lostframe .frame-wide .fd{position:absolute;font-family:Caveat,cursive;pointer-events:none;z-index:3}
+.lostframe .frame-wide .f1{top:-26px;right:34px;font-size:30px;color:#e8b8bb;transform:rotate(10deg)}
+.lostframe .frame-wide .f2{bottom:-4px;left:-18px;font-size:24px;color:#d9c8bd;transform:rotate(-12deg)}
+.lostframe .frame-wide .f3{top:44%;right:-20px;font-size:22px;color:#c8b9a5;transform:rotate(8deg)}
+.lostframe .frame-wide .f4{bottom:-16px;right:60px;font-size:20px;color:#e8b8bb;transform:rotate(-6deg)}
 .lostframe .frame:nth-child(2) .image{background:linear-gradient(120deg,#d5c2a7,#7f7368 45%,#282727 46%)}
 .lostframe .frame:nth-child(3) .image{background:radial-gradient(circle at 60% 35%,#e7bd98 0 8%,#776257 9% 18%,#242323 19%)}
 .lostframe .frame:nth-child(4) .image{background:linear-gradient(160deg,#7c8883,#d0c9b7 42%,#404542 43%,#181a19)}
