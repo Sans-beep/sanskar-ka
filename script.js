@@ -708,6 +708,7 @@ function phase2MoonlightMove(e){
     phase2MoonlightNote.classList.add('show');
 
     phase2Page.dispatchEvent(new CustomEvent('phase2:moonlight-complete'));
+    if(window.trackStoryEvent)window.trackStoryEvent('moonlight-complete',{});
   }
 }
 
@@ -878,12 +879,41 @@ go=function(n){
    - Owner/test mode is excluded so your own testing does not pollute production data.
 */
 (function initBirthdayAnalytics(){
+  // Our script runs before Umami's deferred tracker, so events fired early
+  // would be silently dropped. Queue them and flush once Umami is ready.
+  const queue=[];
+  let umamiReady=false,identified=false;
+  const isOwner=new URLSearchParams(location.search).has('owner');
   const send=(name,data={})=>{
     try{
-      if(new URLSearchParams(location.search).has('owner') || !window.umami || typeof window.umami.track!=='function') return;
-      window.umami.track(name,data);
+      if(isOwner)return;
+      if(umamiReady&&window.umami&&typeof window.umami.track==='function'){
+        window.umami.track(name,data);
+      }else{
+        queue.push([name,data]);
+        if(queue.length>60)queue.shift();
+      }
     }catch(_){}
   };
+  const flush=()=>{
+    try{
+      if(isOwner||!window.umami||typeof window.umami.track!=='function')return;
+      umamiReady=true;
+      if(!identified&&typeof window.umami.identify==='function'){
+        identified=true;
+        window.umami.identify({experience:'kashish-birthday',version:'phase-3'});
+      }
+      while(queue.length){
+        const item=queue.shift();
+        try{window.umami.track(item[0],item[1]);}catch(_){}
+      }
+    }catch(_){}
+  };
+  let polls=0;
+  const pollTimer=setInterval(()=>{flush();if(umamiReady||++polls>40)clearInterval(pollTimer);},250);
+  window.addEventListener('load',flush);
+  // Interaction code later in this file reports milestones through this.
+  window.trackStoryEvent=send;
 
   const safeSource=()=>{
     const q=new URLSearchParams(location.search);
@@ -900,12 +930,7 @@ go=function(n){
   const source=safeSource();
   if(Object.keys(source).length)send('link-source',source);
 
-  // Keep the current session labeled without assigning a persistent identity.
-  try{
-    if(!new URLSearchParams(location.search).has('owner') && window.umami && typeof window.umami.identify==='function'){
-      window.umami.identify({experience:'kashish-birthday',version:'phase-1'});
-    }
-  }catch(_){}
+  // Session labeling happens inside flush(), once Umami is actually ready.
 
   // Navigation: record every story page reached.
   const previousGo=window.go;
@@ -965,14 +990,18 @@ go=function(n){
   });
   const letter=document.getElementById('letterPop');
   if(letter){
+    let letterOpened=false;
     const observer=new MutationObserver(()=>{
-      if(letter.classList.contains('open'))send('letter-opened',{});
+      if(letter.classList.contains('open')&&!letterOpened){
+        letterOpened=true;
+        send('letter-opened',{});
+      }
     });
     observer.observe(letter,{attributes:true,attributeFilter:['class']});
   }
 
-  // Phase 2 is intentionally just the cinematic video + song for now.
-  // Back navigation is useful for understanding exploration.
+  // Phase 2 interactions (moonlight drawing, Lost Frame) are tracked at their
+  // source via window.trackStoryEvent. Back navigation is still useful here.
   const back=document.getElementById('globalBack');
   if(back)back.addEventListener('click',()=>send('back-navigation',{from_page:window.sitePageIndex+1}));
 
@@ -1012,10 +1041,12 @@ function openLostFrame(){
   lfDetail.classList.remove('open');
   lostFrame.classList.add('open');
   lostFrame.setAttribute('aria-hidden','false');
+  if(window.trackStoryEvent)window.trackStoryEvent('lost-frame-opened',{});
 }
 function closeLostFrame(){
   if(!lostFrame||!lostFrameOpen)return;
   lostFrameOpen=false;
+  if(window.trackStoryEvent)window.trackStoryEvent('lost-frame-closed',{});
   phase2LostDone=true;maybeShowPhase3Cta();
   lfDetail.classList.remove('open');
   lostFrame.classList.remove('open');
@@ -1040,7 +1071,7 @@ if(lfDetail)lfDetail.addEventListener('click',e=>{
 /* "there's more" button: gated — it appears only after she finishes the moonlight
    drawing AND has opened + closed the Lost Frame (phase 2 fully explored). */
 const lostFrameCta=document.getElementById('lostFrameCta');
-if(lostFrameCta)lostFrameCta.addEventListener('click',e=>{e.stopPropagation();go(8);});
+if(lostFrameCta)lostFrameCta.addEventListener('click',e=>{e.stopPropagation();if(window.trackStoryEvent)window.trackStoryEvent('phase3-cta-click',{});go(8);});
 let phase2MoonDone=false,phase2LostDone=false;
 function maybeShowPhase3Cta(){
   if(phase2MoonDone&&phase2LostDone&&lostFrameCta)lostFrameCta.classList.add('show');
@@ -1132,6 +1163,7 @@ function openConstMemory(idx){
       sky.appendChild(lab);
     }
     document.getElementById('constCount').textContent=constFound.size+' / '+CONSTELLATION_STARS.length;
+    if(window.trackStoryEvent)window.trackStoryEvent('memory-found',{star:idx+1});
     drawConstProgress();
   }
   const left=CONSTELLATION_STARS.length-constFound.size;
@@ -1171,6 +1203,7 @@ function runConstFinale(){
   path.getBoundingClientRect();
   path.style.transition='stroke-dashoffset 2.6s ease-in-out';
   path.style.strokeDashoffset='0';
+  if(window.trackStoryEvent)window.trackStoryEvent('constellation-complete',{stars:CONSTELLATION_STARS.length});
   CONSTELLATION_HEART.forEach((k,i)=>{
     const s=CONSTELLATION_STARS[k];
     setTimeout(()=>constBurst(s.x/100*W,s.y/100*H,true),900+i*160);
