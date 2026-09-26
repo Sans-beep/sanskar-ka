@@ -105,12 +105,7 @@ function go(n){
   i=n;
   window.sitePageIndex=i;
   syncGlobalBack();
-  if(n===6){
-    const codeInput=document.getElementById('code'),unlockBtn=document.getElementById('unlock'),codeErr=document.getElementById('error');
-    if(codeInput){codeInput.disabled=false;codeInput.value='';}
-    if(unlockBtn)unlockBtn.disabled=false;
-    if(codeErr)codeErr.textContent='';
-  }
+  if(n===6)renderUnlockPage();
   const thread=document.getElementById('storyThread');
   if(thread){thread.classList.remove('play');void thread.offsetWidth;thread.classList.add('play');}
   if(n===1){
@@ -177,6 +172,24 @@ function runPhase1Ending(){
   [grant,wait,found,number,final].forEach(el=>el.classList.remove('show'));
   [[grant,180],[wait,1150],[found,2250],[number,3400],[final,4450]].forEach(([el,delay])=>setTimeout(()=>el.classList.add('show'),delay));
 }
+let unlocked=false;
+try{unlocked=sessionStorage.getItem('sanskar_unlocked')==='1';}catch(_){}
+function markUnlocked(){unlocked=true;try{sessionStorage.setItem('sanskar_unlocked','1');}catch(_){}}
+const unlockBtnEl=document.getElementById('unlock');
+const unlockLabel0=unlockBtnEl?unlockBtnEl.textContent:'unlock \u2192';
+const codePlaceholder0='\u2022 \u2022 \u2022 \u2022 \u2022 \u2022 \u2022 \u2022 \u2022';
+function renderUnlockPage(){
+  const input=document.getElementById('code'),button=document.getElementById('unlock'),e=document.getElementById('error');
+  if(unlocked){
+    if(input){input.disabled=true;input.value='';input.placeholder='already unlocked \u2661';}
+    if(button){button.disabled=false;button.textContent='continue \u2192';}
+    if(e)e.textContent='';
+  }else{
+    if(input){input.disabled=false;input.value='';input.placeholder=codePlaceholder0;}
+    if(button){button.disabled=false;button.textContent=unlockLabel0;}
+    if(e)e.textContent='';
+  }
+}
 function unlock(){
   const owner = new URLSearchParams(location.search).has('owner');
   const v=document.getElementById('code').value.trim().toUpperCase();
@@ -184,13 +197,20 @@ function unlock(){
   const input=document.getElementById('code');
   const button=document.getElementById('unlock');
 
-  if(owner || v==='KASHISH19'){
+  if(unlocked || owner || v==='KASHISH19'){
+    const firstCeremony=!unlocked;
+    markUnlocked();
     e.textContent='';
-    input.disabled=true;
-    button.disabled=true;
-    runPhase1Ending();
+    renderUnlockPage();
+    if(firstCeremony){
+      input.disabled=true;
+      button.disabled=true;
+      runPhase1Ending();
+    }else{
+      enterPhase2();
+    }
   }else{
-    e.textContent='Oh my bhondu girl not today 😭🫶🏻';
+    e.textContent='Oh my bhondu girl not today \u{1F62D}\u{1FAF6}';
     input.value='';
   }
 }document.getElementById('unlock').onclick=unlock;
