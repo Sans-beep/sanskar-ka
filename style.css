@@ -233,7 +233,7 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
   height:100%!important;
   margin:0!important;
   transform:translate3d(-50%,-50%,0)!important;
-  object-fit:cover!important;
+  object-fit:contain!important;
   object-position:50% 50%!important;
   display:block!important;
   border:0!important;

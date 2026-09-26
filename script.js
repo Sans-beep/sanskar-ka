@@ -486,17 +486,43 @@ const phase2MoonlightState={
   fadeTimer:null
 };
 
+// The video is 720x1280 portrait and displays with object-fit:contain, so the
+// whole frame is always visible on phone and laptop. This maps a point in the
+// video (as fractions) to its on-screen position under contain.
+function phase2VideoFrame(){
+  const W=phase2Page.clientWidth,H=phase2Page.clientHeight,vr=720/1280;
+  let dw,dh,ox,oy;
+  if(W/H>vr){dh=H;dw=vr*H;ox=(W-dw)/2;oy=0;}
+  else{dw=W;dh=W/vr;ox=0;oy=(H-dh)/2;}
+  return {x:ox,y:oy,w:dw,h:dh};
+}
+
 function phase2MoonPoint(){
+  // Crescent moon sits top-right in the video frame (~72% across, ~9% down).
+  const f=phase2VideoFrame();
   return {
-    x:phase2Page.clientWidth*.67,
-    y:phase2Page.clientHeight*.37
+    x:f.x+f.w*.72,
+    y:f.y+f.h*.09
   };
 }
 
 function phase2MoonRadius(){
-  // Deliberately generous: the visual moon varies slightly with object-fit crop
-  // between phone and desktop. The interaction should never require pixel-perfect tapping.
-  return Math.max(72,Math.min(phase2Page.clientWidth,phase2Page.clientHeight)*.16);
+  // Deliberately generous and scaled to the displayed video: the interaction
+  // should never require pixel-perfect tapping.
+  return Math.max(60,phase2VideoFrame().w*.12);
+}
+
+function positionPhase2MoonEffects(){
+  const c=phase2MoonPoint();
+  if(phase2MoonlightAura){
+    phase2MoonlightAura.style.left=c.x+'px';
+    phase2MoonlightAura.style.top=c.y+'px';
+  }
+  if(phase2MoonlightFlash){
+    const W=phase2Page.clientWidth||1,H=phase2Page.clientHeight||1;
+    phase2MoonlightFlash.style.background=
+      'radial-gradient(circle at '+(c.x/W*100).toFixed(2)+'% '+(c.y/H*100).toFixed(2)+'%,rgba(237,247,251,.18),transparent 27%)';
+  }
 }
 
 function phase2MoonInside(p){
@@ -516,7 +542,7 @@ function resizePhase2MoonlightCanvas(){
   phase2MoonlightTrail.style.height=rect.height+'px';
   phase2MoonlightCtx.setTransform(dpr,0,0,dpr,0,0);
 }
-window.addEventListener('resize',resizePhase2MoonlightCanvas,{passive:true});
+window.addEventListener('resize',()=>{resizePhase2MoonlightCanvas();positionPhase2MoonEffects();},{passive:true});
 
 function phase2MoonlightPosition(e){
   const r=phase2Page.getBoundingClientRect();
@@ -737,6 +763,7 @@ function activatePhase2Moonlight(){
   void phase2MoonlightPrompt.offsetWidth;
   phase2MoonlightPrompt.style.animation='';
   resizePhase2MoonlightCanvas();
+  positionPhase2MoonEffects();
   clearTimeout(phase2MoonlightState.hintTimer);
   phase2MoonlightState.hintTimer=setTimeout(()=>{
     if(!phase2MoonlightState.complete&&!phase2MoonlightState.drawing&&lostFrame&&!lostFrame.classList.contains('open')){
