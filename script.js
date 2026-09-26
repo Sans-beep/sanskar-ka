@@ -486,14 +486,24 @@ const phase2MoonlightState={
   fadeTimer:null
 };
 
-// The video is 720x1280 portrait and displays with object-fit:contain, so the
-// whole frame is always visible on phone and laptop. This maps a point in the
-// video (as fractions) to its on-screen position under contain.
+// Video fit is device-specific: cover on phones (old behavior, no bars),
+// contain on laptop (whole animation visible on a paper-light stage).
+function phase2VideoFit(){
+  return window.matchMedia('(min-width:700px)').matches?'contain':'cover';
+}
+
+// The video is 720x1280 portrait. Maps a point in the video (as fractions)
+// to its on-screen position under the active fit mode.
 function phase2VideoFrame(){
   const W=phase2Page.clientWidth,H=phase2Page.clientHeight,vr=720/1280;
   let dw,dh,ox,oy;
-  if(W/H>vr){dh=H;dw=vr*H;ox=(W-dw)/2;oy=0;}
-  else{dw=W;dh=W/vr;ox=0;oy=(H-dh)/2;}
+  if(phase2VideoFit()==='contain'){
+    if(W/H>vr){dh=H;dw=vr*H;ox=(W-dw)/2;oy=0;}
+    else{dw=W;dh=W/vr;ox=0;oy=(H-dh)/2;}
+  }else{
+    if(W/H>vr){dw=W;dh=W/vr;ox=0;oy=(H-dh)/2;}
+    else{dh=H;dw=vr*H;ox=(W-dw)/2;oy=0;}
+  }
   return {x:ox,y:oy,w:dw,h:dh};
 }
 
@@ -520,8 +530,9 @@ function positionPhase2MoonEffects(){
   }
   if(phase2MoonlightFlash){
     const W=phase2Page.clientWidth||1,H=phase2Page.clientHeight||1;
+    const glow=phase2VideoFit()==='contain'?'rgba(212,175,55,.22)':'rgba(237,247,251,.18)';
     phase2MoonlightFlash.style.background=
-      'radial-gradient(circle at '+(c.x/W*100).toFixed(2)+'% '+(c.y/H*100).toFixed(2)+'%,rgba(237,247,251,.18),transparent 27%)';
+      'radial-gradient(circle at '+(c.x/W*100).toFixed(2)+'% '+(c.y/H*100).toFixed(2)+'%,'+glow+',transparent 27%)';
   }
 }
 
@@ -570,8 +581,9 @@ function phase2MoonlightRender(){
       const taper=k/phase2MoonlightState.points.length;
 
       ctx.shadowBlur=16+16*taper;
-      ctx.shadowColor=`rgba(225,243,252,${.16+.42*life})`;
-      ctx.strokeStyle=`rgba(239,249,255,${.10+.65*life})`;
+      const lightStage=phase2VideoFit()==='contain';
+      ctx.shadowColor=lightStage?`rgba(212,175,55,${.18+.40*life})`:`rgba(225,243,252,${.16+.42*life})`;
+      ctx.strokeStyle=lightStage?`rgba(198,148,44,${.12+.60*life})`:`rgba(239,249,255,${.10+.65*life})`;
       ctx.lineWidth=1.5+5*taper;
 
       ctx.beginPath();
