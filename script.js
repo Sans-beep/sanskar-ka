@@ -1316,10 +1316,14 @@ function closeHerVideo(){
     phase2SongPausedForVideo=false;
     if(phase2Song)fadeInAudio(phase2Song,.46,650);
   }
-  // She watched her video and came back: the heart's bottom star blazes now.
+  // She watched her video and came back: the whole constellation ignites —
+  // alternating gold and pink, pulsing in a wave.
   if(herVideoPlayed){
-    const bs=document.querySelectorAll('#constSky .const-star')[4];
-    if(bs)bs.classList.add('blaze');
+    document.querySelectorAll('#constSky .const-star').forEach((b,k)=>{
+      b.classList.add('blaze');
+      if(k%2===1)b.classList.add('rose');
+      b.style.animationDelay=(k*0.22)+'s';
+    });
   }
 }
 (function wireHerVideo(){
