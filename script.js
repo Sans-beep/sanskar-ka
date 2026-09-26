@@ -957,6 +957,11 @@ if(lfDetailClose)lfDetailClose.addEventListener('click',e=>{
 if(lfDetail)lfDetail.addEventListener('click',e=>{
   if(e.target===lfDetail)lfDetail.classList.remove('open');
 });
+const lostFrameCta=document.getElementById('lostFrameCta');
+if(lostFrameCta)lostFrameCta.addEventListener('click',e=>{
+  e.stopPropagation();
+  openLostFrame();
+});
 const lfCloseBtn=document.getElementById('lfClose');
 if(lfCloseBtn)lfCloseBtn.addEventListener('click',e=>{
   e.stopPropagation();
