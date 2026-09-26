@@ -108,6 +108,8 @@ function go(n){
   if(n===6)renderUnlockPage();
   if(n===8)startConstSky();else if(oldIndex===8)stopConstSky();
   if(n===9&&window.trackStoryEvent)window.trackStoryEvent('say-shown');
+  if(n===10)startGarden();else if(oldIndex===10)stopGarden();
+  if(n===10&&window.trackStoryEvent)window.trackStoryEvent('phase3-shown');
   const thread=document.getElementById('storyThread');
   if(thread){thread.classList.remove('play');void thread.offsetWidth;thread.classList.add('play');}
   if(n===1){
@@ -1581,7 +1583,7 @@ applyCustomization();
    Her words travel to him through a tiny form backend (FormSubmit). The message
    body itself NEVER touches analytics — only metadata events (shown/yes/no/sent). */
 const SAY_SOMETHING_EMAIL='beyondsanskar@gmail.com'; // real address; activate once via FormSubmit's mail
-const PHASE3_INDEX=10; // first page of phase 3, once it exists
+const PHASE3_INDEX=10; // first page of phase 3: "two flowers, one garden"
 let sayAnswered=false,saySending=false;
 
 function setSayLine(t){
@@ -1687,3 +1689,174 @@ function wireSayPage(){
   });
 }
 wireSayPage();
+
+/* ===== Phase 3: "two flowers, one garden" (p11, index 10) =====
+   She holds each bud to bloom it (real photos: orange = him, yellow = her).
+   When both bloom, petals swirl up into a heart, then her photo appears.
+   All motion is transform/opacity-only (WAAPI + CSS) — GPU-cheap. */
+const GARDEN_INDEX=10;
+const HOLD_MS=1400, RING_C=339.3;
+let gardenInit=false, gardenHeartDone=false, gardenFinaleShown=false, gardenRaf=0, gardenLast=0;
+const gardenState={him:{p:0,done:false,holding:false},her:{p:0,done:false,holding:false}};
+
+function gardenInitSky(){
+  if(gardenInit)return;gardenInit=true;
+  const mk=(id,n,sz)=>{
+    const el=document.getElementById(id);if(!el)return;
+    const sh=[];
+    for(let k=0;k<n;k++){
+      sh.push(`${(Math.random()*100).toFixed(1)}vw ${(Math.random()*68).toFixed(1)}vh 0 ${(Math.random()*1.3+.5).toFixed(1)}px rgba(255,250,235,${(Math.random()*.5+.45).toFixed(2)})`);
+    }
+    el.style.width=sz+'px';el.style.height=sz+'px';el.style.boxShadow=sh.join(',');
+  };
+  mk('gStarsA',70,2);mk('gStarsB',45,3);
+  const ff=document.getElementById('gFireflies');
+  if(ff)for(let k=0;k<7;k++){
+    const s=document.createElement('span');
+    s.style.left=(8+Math.random()*84)+'%';s.style.top=(32+Math.random()*52)+'%';
+    s.style.animationDelay=(Math.random()*7).toFixed(1)+'s';
+    s.style.animationDuration=(5+Math.random()*5).toFixed(1)+'s';
+    ff.appendChild(s);
+  }
+}
+function gardenHoldTick(ts){
+  if(window.sitePageIndex!==GARDEN_INDEX){gardenRaf=0;return;}
+  const dt=Math.min(60,ts-(gardenLast||ts));gardenLast=ts;
+  ['him','her'].forEach(who=>{
+    const st=gardenState[who];if(!st||st.done||!st.holding)return;
+    st.p+=dt/HOLD_MS;
+    const fg=document.querySelector('#gFlower'+(who==='him'?'Him':'Her')+' .g-ring-fg');
+    if(fg)fg.style.strokeDashoffset=(RING_C*(1-Math.min(1,st.p))).toFixed(1);
+    if(st.p>=1)gardenBloom(who);
+  });
+  gardenRaf=requestAnimationFrame(gardenHoldTick);
+}
+function gardenEnsureTick(){
+  if(!gardenRaf&&window.sitePageIndex===GARDEN_INDEX){gardenLast=0;gardenRaf=requestAnimationFrame(gardenHoldTick);}
+}
+/* Little sparkle burst when a flower opens (fixed-position, WAAPI). */
+function gardenSparkBurst(el,who){
+  const r=el.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+72;
+  const glyphs=['✦','♡','❋','✦','♡','✦','❋','♡','✦','♡'];
+  glyphs.forEach((g,k)=>{
+    const s=document.createElement('span');s.textContent=g;
+    s.style.cssText=`position:fixed;left:${cx}px;top:${cy}px;font-size:${(14+Math.random()*10).toFixed(0)}px;color:${who==='him'?'#ffb066':'#ffe27a'};pointer-events:none;z-index:60;`;
+    document.body.appendChild(s);
+    const ang=(k/glyphs.length)*Math.PI*2+Math.random()*.5,dist=60+Math.random()*70;
+    const dx=Math.cos(ang)*dist,dy=Math.sin(ang)*dist;
+    s.animate([
+      {transform:'translate(-50%,-50%) scale(.4)',opacity:0},
+      {transform:`translate(calc(-50% + ${dx.toFixed(0)}px),calc(-50% + ${dy.toFixed(0)}px)) scale(1.1)`,opacity:1,offset:.35},
+      {transform:`translate(calc(-50% + ${(dx*1.25).toFixed(0)}px),calc(-50% + ${(dy*1.25).toFixed(0)}px)) scale(.7)`,opacity:0}
+    ],{duration:900+Math.random()*500,easing:'cubic-bezier(.2,.7,.3,1)'}).onfinish=()=>s.remove();
+  });
+}
+function gardenBloom(who){
+  const st=gardenState[who];if(!st||st.done)return;
+  st.done=true;st.holding=false;
+  const el=document.getElementById(who==='him'?'gFlowerHim':'gFlowerHer');
+  if(el){el.classList.remove('holding');el.classList.add('bloomed');gardenSparkBurst(el,who);}
+  const hint=document.getElementById('gardenHint');
+  if(hint&&(gardenState.him.done!==gardenState.her.done))
+    hint.textContent=who==='him'?'one down ♡ now her':'one down ♡ now him';
+  if(window.trackStoryEvent)window.trackStoryEvent('flower-bloomed',{flower:who});
+  if(gardenState.him.done&&gardenState.her.done&&!gardenHeartDone){
+    gardenHeartDone=true;
+    setTimeout(()=>{if(window.sitePageIndex===GARDEN_INDEX)gardenPetalHeart();},1100);
+  }
+}
+function heartXY(t,cx,cy,s){
+  return{x:cx+16*Math.pow(Math.sin(t),3)*s,
+         y:cy-(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t))*s};
+}
+/* Petals rise from both blooms and gather into a heart in the sky. */
+function gardenPetalHeart(){
+  if(window.sitePageIndex!==GARDEN_INDEX){gardenHeartDone=false;return;}
+  const layer=document.getElementById('gardenPetals'),bed=document.getElementById('gardenBed'),
+        page=document.getElementById('p11'),hint=document.getElementById('gardenHint');
+  if(!layer||!bed||!page)return;
+  const pr=page.getBoundingClientRect();
+  const starts=[...bed.querySelectorAll('.g-flower')].map(f=>{
+    const r=f.getBoundingClientRect();
+    return{x:r.left-pr.left+r.width/2,y:r.top-pr.top+72};
+  });
+  // Heart sits in the open sky between the hint and the flower bed.
+  let cy=pr.height*0.36;
+  if(hint){
+    const hr=hint.getBoundingClientRect(),br=bed.getBoundingClientRect();
+    cy=(hr.bottom-pr.top+br.top-pr.top)/2;
+  }
+  const cx=pr.width/2,s=Math.min(pr.width,pr.height)*0.016;
+  const N=44;
+  for(let k=0;k<N;k++){
+    const tp=heartXY((k/N)*Math.PI*2+Math.random()*.12,cx,cy,s);
+    const st=starts[k%2];
+    const mx=st.x+(Math.random()*120-60),my=st.y-110-Math.random()*60;
+    const el=document.createElement('span'),him=k%2===0;
+    el.style.background=him?'linear-gradient(135deg,#ffb066,#f08a2d)':'linear-gradient(135deg,#ffe27a,#f5b81e)';
+    layer.appendChild(el);
+    const rot=(Math.random()*260-130).toFixed(0);
+    el.animate([
+      {transform:`translate(${st.x.toFixed(0)}px,${st.y.toFixed(0)}px) rotate(0deg) scale(.5)`,opacity:0},
+      {transform:`translate(${mx.toFixed(0)}px,${my.toFixed(0)}px) rotate(${rot}deg) scale(1)`,opacity:1,offset:.42},
+      {transform:`translate(${tp.x.toFixed(0)}px,${tp.y.toFixed(0)}px) rotate(${rot}deg) scale(1)`,opacity:1,offset:.78},
+      {transform:`translate(${tp.x.toFixed(0)}px,${tp.y.toFixed(0)}px) rotate(${rot}deg) scale(.55)`,opacity:0}
+    ],{duration:2300+Math.random()*700,delay:Math.random()*600,easing:'ease-in-out',fill:'forwards'});
+  }
+  if(hint)hint.textContent='look what you grew ♡';
+  if(window.trackStoryEvent)window.trackStoryEvent('garden-heart');
+  setTimeout(gardenFinale,3600);
+}
+function gardenFinale(){
+  if(window.sitePageIndex!==GARDEN_INDEX||gardenFinaleShown)return;
+  gardenFinaleShown=true;
+  const f=document.getElementById('gardenFinale'),bed=document.getElementById('gardenBed'),
+        hint=document.getElementById('gardenHint'),ahead=document.getElementById('gardenAhead');
+  if(bed){bed.classList.add('garden-bed-done');setTimeout(()=>{bed.style.display='none';},950);}
+  if(f)f.hidden=false;
+  if(hint){hint.style.opacity='0';setTimeout(()=>{hint.style.display='none';},850);}
+  if(ahead)ahead.disabled=false;
+  if(window.trackStoryEvent)window.trackStoryEvent('garden-complete');
+}
+function startGarden(){
+  gardenInitSky();
+  // She bloomed both but left before the heart/finale: replay on return.
+  if(gardenState.him.done&&gardenState.her.done&&!gardenFinaleShown){
+    gardenHeartDone=false;
+    setTimeout(()=>{if(window.sitePageIndex===GARDEN_INDEX&&!gardenFinaleShown){gardenHeartDone=true;gardenPetalHeart();}},800);
+  }
+}
+function stopGarden(){
+  if(gardenRaf){cancelAnimationFrame(gardenRaf);gardenRaf=0;}
+  ['him','her'].forEach(who=>{gardenState[who].holding=false;});
+  document.querySelectorAll('.g-flower.holding').forEach(el=>el.classList.remove('holding'));
+  const layer=document.getElementById('gardenPetals');
+  if(layer)layer.innerHTML='';
+}
+function wireGarden(){
+  const pairs=[['him',document.getElementById('gFlowerHim')],['her',document.getElementById('gFlowerHer')]];
+  if(!pairs[0][1]||!pairs[1][1])return;
+  pairs.forEach(([who,el])=>{
+    el.addEventListener('pointerdown',e=>{
+      e.preventDefault();
+      const st=gardenState[who];if(!st||st.done)return;
+      st.holding=true;el.classList.add('holding');gardenEnsureTick();
+    });
+    const release=()=>{const st=gardenState[who];if(st)st.holding=false;el.classList.remove('holding');};
+    el.addEventListener('pointerup',release);
+    el.addEventListener('pointercancel',release);
+    el.addEventListener('pointerleave',release);
+    el.addEventListener('keydown',e=>{
+      if(e.key===' '||e.key==='Enter'){e.preventDefault();const st=gardenState[who];if(st&&!st.done){st.holding=true;el.classList.add('holding');gardenEnsureTick();}}
+    });
+    el.addEventListener('keyup',release);
+  });
+  const ahead=document.getElementById('gardenAhead');
+  if(ahead)ahead.addEventListener('click',()=>{
+    if(ahead.disabled)return;
+    const PHASE4_INDEX=11;
+    if(pages.length>PHASE4_INDEX)go(PHASE4_INDEX);
+    else{const s=document.getElementById('gardenSoon');if(s)s.hidden=false;}
+  });
+}
+wireGarden();

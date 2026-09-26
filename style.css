@@ -604,3 +604,54 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
 .const-onward{margin-top:16px;border:1px solid rgba(255,217,138,.55);background:rgba(255,217,138,.1);color:#ffe9bd;border-radius:999px;padding:11px 24px;font:600 12px "DM Sans";letter-spacing:.08em;cursor:pointer;transition:.2s}
 .const-onward:hover{transform:translateY(-2px);background:rgba(255,217,138,.18)}
 .const-onward[hidden]{display:none}
+
+/* ===== Phase 3: "two flowers, one garden" (p11) ===== */
+#p11{overflow:hidden}
+.garden-sky{position:absolute;inset:0;z-index:0;background:linear-gradient(180deg,#0c0f2e 0%,#191441 45%,#37234e 72%,#543049 100%)}
+.garden-sky::after{content:'';position:absolute;left:-5%;right:-5%;bottom:-6%;height:34%;background:radial-gradient(120% 135% at 50% 135%,#223b2c 0%,#172a1f 52%,rgba(23,42,31,0) 72%)}
+.g-moon{position:absolute;top:9%;right:9%;width:52px;height:52px;border-radius:50%;box-shadow:11px 7px 0 0 #f7ead0;transform:rotate(-18deg);filter:drop-shadow(0 0 14px rgba(247,234,208,.55))}
+.g-stars{position:absolute;inset:0;border-radius:50%}
+.g-stars-a{animation:starTwinkle 3.4s ease-in-out infinite}
+.g-stars-b{animation:starTwinkle 4.7s ease-in-out infinite reverse}
+@keyframes starTwinkle{0%,100%{opacity:.45}50%{opacity:1}}
+.g-fireflies span{position:absolute;width:5px;height:5px;border-radius:50%;background:#ffe9a3;box-shadow:0 0 9px 3px rgba(255,233,163,.75);animation:firefly 7s ease-in-out infinite}
+@keyframes firefly{0%,100%{transform:translate(0,0);opacity:.25}50%{transform:translate(26px,-34px);opacity:1}}
+.garden-inner{z-index:1}
+.garden-title{font-size:48px;margin-top:10px;color:#f6ecd9;line-height:1.02}
+.garden-hint{font-family:Caveat,cursive;font-size:25px;color:#d9c8bd;margin-top:10px;animation:hintPulse 2.6s ease-in-out infinite}
+@keyframes hintPulse{0%,100%{opacity:.75}50%{opacity:1}}
+.garden-bed{position:relative;display:flex;justify-content:space-around;align-items:flex-end;margin-top:26px;min-height:250px}
+.g-flower{position:relative;width:140px;height:252px;touch-action:none;cursor:pointer;outline:none;animation:flowerSway 5.2s ease-in-out infinite;transform-origin:50% 100%}
+.g-flower:nth-child(2){animation-delay:-2.6s}
+@keyframes flowerSway{0%,100%{transform:rotate(-1.4deg)}50%{transform:rotate(1.4deg)}}
+.g-stem{position:absolute;bottom:36px;left:50%;width:7px;height:128px;margin-left:-3.5px;background:linear-gradient(180deg,#4a8a5a,#2a5a38);border-radius:4px}
+.g-bud{position:absolute;top:42px;left:50%;width:56px;height:68px;margin-left:-28px;border-radius:50% 50% 50% 50%/58% 58% 42% 42%;background:radial-gradient(circle at 35% 28%,#8fd08a,#3f7a4e 72%);transition:transform .45s ease,box-shadow .3s ease}
+.g-bud-him{box-shadow:0 0 20px rgba(255,170,90,.4)}
+.g-bud-her{box-shadow:0 0 20px rgba(255,225,130,.4)}
+.g-flower.holding .g-bud{box-shadow:0 0 34px rgba(255,222,150,.85)}
+.g-flower.bloomed .g-bud{transform:scale(0)}
+.g-bloom{position:absolute;top:20px;left:50%;width:106px;height:106px;margin-left:-53px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,253,248,.92);box-shadow:0 0 36px rgba(255,200,120,.6);transform:scale(0);transition:transform 1.05s cubic-bezier(.18,1.35,.32,1)}
+.g-flower.bloomed .g-bloom{transform:scale(1)}
+.g-ring{position:absolute;top:8px;left:50%;width:130px;height:130px;margin-left:-65px;opacity:0;transition:opacity .3s;pointer-events:none}
+.g-flower.holding .g-ring{opacity:1}
+.g-flower.bloomed .g-ring{opacity:0!important}
+.g-ring-bg{fill:none;stroke:rgba(255,255,255,.16);stroke-width:5}
+.g-ring-fg{fill:none;stroke:#ffd98a;stroke-width:5;stroke-linecap:round;stroke-dasharray:339.3;stroke-dashoffset:339.3;transform:rotate(-90deg);transform-origin:60px 60px}
+.g-label{position:absolute;bottom:4px;left:0;right:0;font-family:Caveat,cursive;font-size:27px;color:#ecdfcd}
+.garden-petals{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden}
+.garden-petals span{position:absolute;left:0;top:0;width:15px;height:19px;border-radius:72% 28% 66% 34%;opacity:0;will-change:transform,opacity}
+.garden-finale{margin-top:6px}
+.g-polaroid{position:relative;display:inline-block;background:#fffdf8;padding:12px 12px 10px;border-radius:4px;box-shadow:0 18px 50px rgba(0,0,0,.45);animation:polIn .9s cubic-bezier(.2,1.3,.3,1) both}
+.g-polaroid img{width:168px;height:168px;object-fit:cover;border-radius:2px;display:block}
+.g-tape{position:absolute;top:-12px;left:50%;transform:translateX(-50%) rotate(-4deg);width:92px;height:26px;background:rgba(255,217,138,.55);border-left:1px dashed rgba(255,255,255,.65);border-right:1px dashed rgba(255,255,255,.65)}
+.g-cap{font-size:28px;color:#8a6f5c;margin-top:6px}
+@keyframes polIn{from{opacity:0;transform:rotate(-3deg) translateY(46px) scale(.9)}to{opacity:1;transform:rotate(-3deg) translateY(0) scale(1)}}
+.g-polaroid{transform:rotate(-3deg)}
+.garden-ahead{margin-top:24px}
+.garden-soon{margin-top:14px;font-family:Caveat,cursive;font-size:23px;color:#c9a9a0}
+.garden-bed{transition:opacity .9s ease,transform .9s ease}
+.garden-bed-done{opacity:0;transform:translateY(46px);pointer-events:none}
+.garden-hint{transition:opacity .8s ease}
+.g-stem::before,.g-stem::after{content:'';position:absolute;top:46px;width:26px;height:14px;background:#3f7a4e;border-radius:50% 50% 50% 50%/62% 62% 38% 38%}
+.g-stem::before{left:-23px;transform:rotate(-30deg)}
+.g-stem::after{right:-23px;transform:rotate(30deg)}
