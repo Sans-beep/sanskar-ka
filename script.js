@@ -1269,15 +1269,17 @@ function openHerVideo(){
   const ov=document.getElementById('herVideo');
   const v=document.getElementById('herVideoEl');
   if(!ov||!v)return;
-  document.getElementById('herEnd').classList.add('hidden');
-  document.getElementById('herPlay').classList.add('hidden');
+  document.getElementById('herMuted').classList.add('hidden');
   ov.classList.add('open');
   ov.setAttribute('aria-hidden','false');
   try{v.currentTime=0;}catch(e){}
+  v.muted=false;
   const pr=v.play();
   if(pr&&typeof pr.catch==='function')pr.catch(()=>{
-    // Autoplay with sound was blocked — let her tap to play.
-    document.getElementById('herPlay').classList.remove('hidden');
+    // Browser blocked sound: keep it looping muted; tapping the video unmutes.
+    v.muted=true;
+    try{v.play();}catch(e){}
+    document.getElementById('herMuted').classList.remove('hidden');
   });
   if(!herVideoPlayed){
     herVideoPlayed=true;
@@ -1294,29 +1296,18 @@ function closeHerVideo(){
   if(p9)p9.classList.remove('zooming','cine');
   const sky=document.getElementById('constSky');
   if(sky){sky.style.transform='';sky.style.transformOrigin='';}
-  const hp=document.getElementById('herPlay');
-  if(hp)hp.classList.add('hidden');
   if(typeof syncGlobalBack==='function')syncGlobalBack();
 }
 (function wireHerVideo(){
   const v=document.getElementById('herVideoEl');
-  if(v)v.addEventListener('ended',()=>{
-    document.getElementById('herEnd').classList.remove('hidden');
-  });
-  const hp=document.getElementById('herPlay');
-  if(hp)hp.addEventListener('click',()=>{
-    hp.classList.add('hidden');
-    if(v){try{v.play();}catch(e){}}
-  });
-  const rp=document.getElementById('herReplay');
-  if(rp)rp.addEventListener('click',()=>{
-    document.getElementById('herEnd').classList.add('hidden');
-    if(v){try{v.currentTime=0;v.play();}catch(e){}}
+  if(v)v.addEventListener('click',()=>{
+    if(v.muted){
+      v.muted=false;
+      document.getElementById('herMuted').classList.add('hidden');
+    }
   });
   const hb=document.getElementById('herBack');
   if(hb)hb.addEventListener('click',closeHerVideo);
-  const hc=document.getElementById('herClose');
-  if(hc)hc.addEventListener('click',closeHerVideo);
 })();
 
 initConstellation();
