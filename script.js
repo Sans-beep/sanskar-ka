@@ -174,7 +174,7 @@ function runPhase1Ending(){
 }
 let unlocked=false;
 try{unlocked=sessionStorage.getItem('sanskar_unlocked')==='1';}catch(_){}
-function markUnlocked(){unlocked=true;try{sessionStorage.setItem('sanskar_unlocked','1');}catch(_){}}
+function markUnlocked(persist){unlocked=true;if(persist===false)return;try{sessionStorage.setItem('sanskar_unlocked','1');}catch(_){}}
 const unlockBtnEl=document.getElementById('unlock');
 const unlockLabel0=unlockBtnEl?unlockBtnEl.textContent:'unlock \u2192';
 const codePlaceholder0='\u2022 \u2022 \u2022 \u2022 \u2022 \u2022 \u2022 \u2022 \u2022';
@@ -199,7 +199,7 @@ function unlock(){
 
   if(unlocked || owner || v==='KASHISH19'){
     const firstCeremony=!unlocked;
-    markUnlocked();
+    markUnlocked(!owner);
     e.textContent='';
     renderUnlockPage();
     if(firstCeremony){
@@ -218,6 +218,10 @@ document.getElementById('code').onkeydown=e=>{if(e.key==='Enter')unlock()};
 const ownerMode=new URLSearchParams(location.search).has('owner');
 const proofUpload=document.getElementById('proofUpload'), proofPhoto=document.getElementById('proofPhoto'), proofImage=document.getElementById('proofImage'), uploadStatus=document.getElementById('uploadStatus'), p4Next=document.getElementById('p4Next');
 if(ownerMode){
+  /* Owner mode is sandboxed: never read or keep a saved unlock, so testing
+     here can never leave the normal link unlocked in the same tab. */
+  unlocked=false;
+  try{sessionStorage.removeItem('sanskar_unlocked');}catch(_){}
   proofUploaded=true;
   proofFile=null;
   proofUpload.disabled=true;
