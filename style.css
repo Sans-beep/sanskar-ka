@@ -1,5 +1,5 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600&family=DM+Sans:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600&family=DM+Mono:wght@400&family=DM+Sans:wght@400;500;600&display=swap');
 :root{--ink:#f4eee7;--muted:#aaa099;--pink:#e8b8bb;--paper:#e9ddd1;--bg:#100f0e}
 *{box-sizing:border-box} body{margin:0;background:#080807;color:var(--ink);font-family:"DM Sans",sans-serif}
 body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.07;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
@@ -404,3 +404,54 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
   .phase2-moonlight-prompt{top:53%;font-size:8px}
   .phase2-moonlight-note{top:55%;font-size:9px}
 }
+
+/* ===== Phase 2 — The Lost Frame (tap the moon) ===== */
+.lostframe{position:absolute!important;inset:0!important;z-index:40!important;overflow:hidden;background:radial-gradient(circle at 50% 45%,#292929,#101010 70%);color:#eee;font-family:"DM Sans",sans-serif;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .6s ease,visibility 0s linear .6s;touch-action:pan-y}
+.lostframe.open{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .6s ease}
+.lostframe .grain{position:absolute;inset:-50%;opacity:.08;pointer-events:none;z-index:20;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");animation:lf-g .2s steps(2) infinite}
+@keyframes lf-g{50%{transform:translate(2%,-1%)}}
+.lostframe .header{position:absolute;top:24px;left:28px;right:28px;display:flex;justify-content:space-between;font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.15em;color:#888;z-index:5}
+.lostframe .intro{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;transition:.7s;z-index:4;width:90%}
+.lostframe .intro.hidden{opacity:0;transform:translate(-50%,-48%) scale(.98);pointer-events:none}
+.lostframe .kicker{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.25em;color:#888;margin-bottom:18px}
+.lostframe h1{font-family:"DM Sans",sans-serif;font-weight:600;font-size:clamp(44px,9vw,96px);line-height:.82;letter-spacing:-.065em;margin:0;color:#eee}
+.lostframe .sub{font-family:Caveat,cursive;font-size:24px;color:#bcb3a6;margin-top:22px}
+.lostframe .enter{margin-top:30px;background:none;border:0;border-bottom:1px solid #666;color:#ddd;padding:10px 0;font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.1em;cursor:pointer}
+.lostframe .rail{position:absolute;inset:0;display:flex;align-items:center;gap:34px;padding:0 9vw;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:none;opacity:0;transform:scale(.985);transition:1s;touch-action:pan-x pan-y}
+.lostframe .rail.show{opacity:1;transform:none}
+.lostframe .rail::-webkit-scrollbar{display:none}
+.lostframe .frame{flex:0 0 clamp(250px,27vw,390px);height:clamp(330px,61vh,540px);position:relative;cursor:pointer;scroll-snap-align:center;transform:rotate(var(--r));transition:.4s;filter:saturate(.7);margin:0}
+.lostframe .frame:hover{transform:rotate(0) translateY(-9px);filter:saturate(1)}
+.lostframe .image{height:86%;position:relative;overflow:hidden;background:linear-gradient(145deg,#b8ab9b,#514b47 60%,#171717)}
+.lostframe .frame:nth-child(2) .image{background:linear-gradient(120deg,#d5c2a7,#7f7368 45%,#282727 46%)}
+.lostframe .frame:nth-child(3) .image{background:radial-gradient(circle at 60% 35%,#e7bd98 0 8%,#776257 9% 18%,#242323 19%)}
+.lostframe .frame:nth-child(4) .image{background:linear-gradient(160deg,#7c8883,#d0c9b7 42%,#404542 43%,#181a19)}
+.lostframe .frame:nth-child(5) .image{background:linear-gradient(135deg,#d2cfc2 0 35%,#927666 36% 62%,#292827 63%)}
+.lostframe .frame:nth-child(6) .image{background:radial-gradient(ellipse at 30% 65%,#ddb27e 0 5%,#725647 6% 20%,#222 21%)}
+.lostframe .frame:nth-child(7) .image{background:#e2d9cb}
+.lostframe .frame:nth-child(8) .image{background:linear-gradient(145deg,#191a1b,#536067 50%,#b7a78e)}
+.lostframe .fake{position:absolute;border:1px solid #ffffff44;box-shadow:0 15px 35px #0005}
+.lostframe .a{width:42%;height:34%;left:31%;top:28%;border-radius:50%}
+.lostframe .b{width:48%;height:12%;left:26%;bottom:17%;transform:rotate(-7deg)}
+.lostframe .c{width:24%;height:42%;right:15%;top:18%}
+.lostframe .d{width:24%;height:45%;left:22%;top:20%;transform:rotate(10deg)}
+.lostframe .e{width:3px;height:70%;left:50%;top:15%}
+.lostframe .frame figcaption{height:14%;padding:12px 4px;display:flex;justify-content:space-between;color:#999;font-family:"DM Mono",monospace;font-size:10px}
+.lostframe .frame figcaption b{font-weight:400;color:#ddd}
+.lostframe .scribble{position:absolute;right:-5px;top:-18px;font-family:Caveat,cursive;font-size:22px;color:#c8b9a5;transform:rotate(-8deg)}
+.lostframe .special .image{background:#e5ddd0;color:#222}
+.lostframe .special .image:after{content:"you missed\A one.";white-space:pre;position:absolute;inset:15%;display:flex;align-items:center;justify-content:center;text-align:center;font-family:Caveat,cursive;font-size:28px;transform:rotate(-5deg)}
+.lostframe .tip{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);font-family:"DM Mono",monospace;font-size:9px;letter-spacing:.08em;color:#666;z-index:6;white-space:nowrap}
+.lostframe .secret{position:absolute;left:50%;bottom:11%;transform:translateX(-50%);font-family:Caveat,cursive;font-size:22px;color:#d5c2a8;opacity:0;transition:.6s;z-index:7;white-space:nowrap}
+.lostframe .secret.show{opacity:1}
+.lostframe .detail{position:absolute;inset:0;background:#090909ee;z-index:30;display:flex;align-items:center;justify-content:center;padding:25px;opacity:0;pointer-events:none;transition:.35s}
+.lostframe .detail.open{opacity:1;pointer-events:auto}
+.lostframe .card{width:min(700px,94vw);position:relative}
+.lostframe .big{height:min(58vh,620px);background:linear-gradient(145deg,#c5b8a5,#4c4640 60%,#171717);position:relative}
+.lostframe .big:after{content:"";position:absolute;width:40%;height:40%;left:30%;top:27%;border:1px solid #fff5;border-radius:50%}
+.lostframe .copy{display:flex;justify-content:space-between;gap:20px;margin-top:14px;font-family:"DM Mono",monospace;font-size:11px;color:#999}
+.lostframe .copy b{font-weight:400;color:#eee}
+.lostframe .close{position:absolute;right:0;top:-30px;border:0;background:none;color:#aaa;font-size:22px;cursor:pointer}
+.lostframe .lf-close{position:absolute;top:14px;right:16px;z-index:50;width:38px;height:38px;border-radius:50%;border:1px solid #ffffff2e;background:#00000055;color:#ddd;font-size:20px;line-height:1;cursor:pointer;backdrop-filter:blur(4px)}
+.lostframe .lf-close:active{transform:scale(.94)}
+@media(max-width:650px){.lostframe .header{left:16px;right:16px}.lostframe .rail{padding:0 22vw;gap:22px}.lostframe .frame{flex-basis:62vw;height:59vh}.lostframe .sub{font-size:20px}.lostframe .secret{font-size:18px}}

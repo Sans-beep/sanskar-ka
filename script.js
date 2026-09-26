@@ -565,6 +565,10 @@ function phase2MoonlightBegin(e){
   phase2MoonlightState.points=[];
   phase2MoonlightState.distance=0;
   phase2MoonlightState.last=phase2MoonlightPosition(e);
+  phase2MoonlightState.downX=phase2MoonlightState.last.x;
+  phase2MoonlightState.downY=phase2MoonlightState.last.y;
+  phase2MoonlightState.downT=performance.now();
+  clearTimeout(phase2MoonlightState.hintTimer);
   phase2MoonlightState.complete=false;
 
   try{phase2MoonlightHit.setPointerCapture(e.pointerId)}catch(_){}
@@ -635,6 +639,14 @@ function phase2MoonlightMove(e){
 
 function phase2MoonlightEnd(e){
   if(!phase2MoonlightHit||phase2MoonlightState.pointerId!==e.pointerId)return;
+  if(e.type==='pointerup'){
+    const tapDt=performance.now()-(phase2MoonlightState.downT||0);
+    const tapUp=phase2MoonlightPosition(e);
+    const tapMoved=Math.hypot(tapUp.x-(phase2MoonlightState.downX||0),tapUp.y-(phase2MoonlightState.downY||0));
+    if(tapDt<450&&tapMoved<16&&phase2MoonInside({x:phase2MoonlightState.downX||0,y:phase2MoonlightState.downY||0})){
+      openLostFrame();
+    }
+  }
   e.preventDefault();
 
   phase2MoonlightState.pointerId=null;
@@ -658,6 +670,10 @@ function resetPhase2Moonlight(){
   phase2MoonlightState.points=[];
   phase2MoonlightState.distance=0;
   phase2MoonlightState.last=null;
+  phase2MoonlightState.downX=0;
+  phase2MoonlightState.downY=0;
+  phase2MoonlightState.downT=0;
+  clearTimeout(phase2MoonlightState.hintTimer);
   phase2MoonlightState.complete=false;
 
   phase2MoonlightAura.classList.remove('active','complete');
@@ -695,6 +711,15 @@ function activatePhase2Moonlight(){
   void phase2MoonlightPrompt.offsetWidth;
   phase2MoonlightPrompt.style.animation='';
   resizePhase2MoonlightCanvas();
+  clearTimeout(phase2MoonlightState.hintTimer);
+  phase2MoonlightState.hintTimer=setTimeout(()=>{
+    if(!phase2MoonlightState.complete&&!phase2MoonlightState.drawing&&lostFrame&&!lostFrame.classList.contains('open')){
+      phase2MoonlightNote.textContent='psst… tap the moon.';
+      phase2MoonlightNote.classList.remove('show');
+      void phase2MoonlightNote.offsetWidth;
+      phase2MoonlightNote.classList.add('show');
+    }
+  },7000);
 }
 
 if(phase2MoonlightHit){
@@ -754,6 +779,7 @@ go=function(n){
   if(i===7 && n!==7){
     pausePhase2Song();
     stopPhase2Video();
+    closeLostFrame();
   }
   return phase2BaseGo(n);
 };
@@ -875,3 +901,70 @@ go=function(n){
   window.addEventListener('pagehide',markLeft,{once:true});
 })();
 
+
+/* ===== Phase 2 — The Lost Frame (tap the moon) ===== */
+const lostFrame=document.getElementById('lostFrame');
+const lfIntro=document.getElementById('lfIntro');
+const lfRail=document.getElementById('lfRail');
+const lfSecret=document.getElementById('lfSecret');
+const lfDetail=document.getElementById('lfDetail');
+const lfTitle=document.getElementById('lfTitle');
+const lfNote=document.getElementById('lfNote');
+const lfNotes=['you always notice the quiet ones.','three years later and this one still feels familiar.','not everything needs a reason.','there is something hiding here.','you nearly skipped this one.','19. that\'s all.','okay… you found the frame i didn\'t label.','maybe the last frame isn\'t actually the last.'];
+let lostFrameOpen=false;
+
+function openLostFrame(){
+  if(!lostFrame||lostFrameOpen)return;
+  lostFrameOpen=true;
+  if(typeof phase2MoonlightState!=='undefined')clearTimeout(phase2MoonlightState.hintTimer);
+  resetPhase2Moonlight();
+  lfIntro.classList.remove('hidden');
+  lfRail.classList.remove('show');
+  lfSecret.classList.remove('show');
+  lfDetail.classList.remove('open');
+  lostFrame.classList.add('open');
+  lostFrame.setAttribute('aria-hidden','false');
+}
+function closeLostFrame(){
+  if(!lostFrame||!lostFrameOpen)return;
+  lostFrameOpen=false;
+  lfDetail.classList.remove('open');
+  lostFrame.classList.remove('open');
+  lostFrame.setAttribute('aria-hidden','true');
+}
+const lfEnterBtn=document.getElementById('lfEnter');
+if(lfEnterBtn)lfEnterBtn.addEventListener('click',()=>{
+  lfIntro.classList.add('hidden');
+  setTimeout(()=>lfRail.classList.add('show'),250);
+});
+if(lfRail)lfRail.querySelectorAll('.frame').forEach((f,i)=>{
+  f.addEventListener('click',()=>{
+    if(f.classList.contains('special')){
+      lfSecret.classList.add('show');
+      return;
+    }
+    const b=f.querySelector('b');
+    lfTitle.textContent=b?b.textContent:'';
+    lfNote.textContent=lfNotes[i]||'';
+    lfDetail.classList.add('open');
+  });
+});
+const lfDetailClose=document.getElementById('lfDetailClose');
+if(lfDetailClose)lfDetailClose.addEventListener('click',e=>{
+  e.stopPropagation();
+  lfDetail.classList.remove('open');
+});
+if(lfDetail)lfDetail.addEventListener('click',e=>{
+  if(e.target===lfDetail)lfDetail.classList.remove('open');
+});
+const lfCloseBtn=document.getElementById('lfClose');
+if(lfCloseBtn)lfCloseBtn.addEventListener('click',e=>{
+  e.stopPropagation();
+  closeLostFrame();
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    if(lfDetail)lfDetail.classList.remove('open');
+    closeLostFrame();
+  }
+});
