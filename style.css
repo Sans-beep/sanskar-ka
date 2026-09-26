@@ -547,3 +547,60 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
 .her-doodles span:nth-child(5){left:46%;top:7%;font-size:20px;color:rgba(255,217,138,.45);animation-delay:-3s}
 .her-doodles span:nth-child(6){right:44%;bottom:5%;font-size:22px;animation-delay:-5s}
 @keyframes herFloat{0%,100%{transform:translateY(0) rotate(-4deg);opacity:.5}50%{transform:translateY(-12px) rotate(5deg);opacity:.95}}
+
+/* ===== "wanna say something??" — interstitial between phase 2 and phase 3 ===== */
+.say-inner{position:relative}
+.say-title{font-size:54px;margin-top:14px;color:#f6ecd9;line-height:1.02}
+.say-stage{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:5}
+.say-bit{position:absolute;left:50%;top:40%;font-size:22px;opacity:0;will-change:transform,opacity}
+.say-bit.go{animation:sayBurst 1.7s cubic-bezier(.2,.7,.3,1) forwards}
+@keyframes sayBurst{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}
+  16%{opacity:1}
+  100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(1.15) rotate(var(--rr))}
+}
+.say-doodle{position:absolute;left:50%;top:36%;transform:translate(-50%,-50%);font-size:66px;opacity:0;font-family:Caveat,cursive;color:#ffd9e4;text-shadow:0 0 34px rgba(255,158,181,.65);will-change:transform,opacity}
+.say-doodle.go{animation:sayPop 2.6s ease forwards}
+@keyframes sayPop{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}
+  22%{opacity:1;transform:translate(-50%,-50%) scale(1.14)}
+  42%{transform:translate(-50%,-50%) scale(1)}
+  78%{opacity:1}
+  100%{opacity:0;transform:translate(-50%,-58%) scale(1)}
+}
+.say-cloud{position:absolute;left:50%;top:34%;transform:translate(-50%,-50%);font-size:60px;opacity:0;color:#b9c8e8;will-change:transform,opacity}
+.say-cloud.go{animation:sayCloud 3.2s ease forwards}
+@keyframes sayCloud{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}
+  20%{opacity:1;transform:translate(-50%,-50%) scale(1.06)}
+  35%{transform:translate(-50%,-52%) scale(1)}
+  80%{opacity:1}
+  100%{opacity:0;transform:translate(-50%,-56%) scale(1)}
+}
+.say-rain{position:absolute;top:44%;font-size:15px;color:#9db8e8;opacity:0;will-change:transform,opacity}
+.say-rain.go{animation:sayRain 1.5s ease-in infinite}
+@keyframes sayRain{
+  0%{opacity:0;transform:translateY(-8px)}
+  35%{opacity:.9}
+  100%{opacity:0;transform:translateY(52px)}
+}
+.say-line{margin-top:14px;min-height:30px;font:21px Caveat,cursive;color:#cbbab0}
+.say-choices{display:flex;gap:14px;justify-content:center}
+.say-choices .btn{margin-top:16px;min-width:112px}
+.say-no{background:transparent!important;color:#cbbab0!important;border-color:#5a534e!important}
+.btn:disabled{opacity:.35;cursor:not-allowed;transform:none!important}
+.say-ahead{margin-top:32px}
+.say-write{margin-top:4px}
+.say-card{background:rgba(20,16,24,.74);border:1px solid rgba(255,217,138,.28);border-radius:18px;padding:18px;max-width:330px;margin:0 auto;box-shadow:0 18px 40px #0009}
+.say-card-title{font:25px Caveat,cursive;color:#f6ecd9;margin-bottom:10px}
+#sayText{width:100%;box-sizing:border-box;background:rgba(255,255,255,.05);border:1px solid rgba(255,217,138,.25);border-radius:12px;color:#f6ecd9;font:19px Caveat,cursive;padding:10px 12px;resize:vertical;min-height:96px}
+#sayText:focus{outline:none;border-color:rgba(255,217,138,.6)}
+#sayText::placeholder{color:rgba(203,186,176,.5)}
+.say-card .btn{margin-top:14px;width:100%}
+.say-status{min-height:24px;margin-top:8px;font:18px Caveat,cursive;color:#cbbab0}
+.say-soon{margin-top:12px;font:19px Caveat,cursive;color:#cbbab0}
+/* onward button inside the constellation finale (finale itself is pointer-events:none) */
+.const-finale .const-onward{pointer-events:auto}
+.const-onward{margin-top:16px;border:1px solid rgba(255,217,138,.55);background:rgba(255,217,138,.1);color:#ffe9bd;border-radius:999px;padding:11px 24px;font:600 12px "DM Sans";letter-spacing:.08em;cursor:pointer;transition:.2s}
+.const-onward:hover{transform:translateY(-2px);background:rgba(255,217,138,.18)}
+.const-onward[hidden]{display:none}

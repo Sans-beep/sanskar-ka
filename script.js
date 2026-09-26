@@ -107,6 +107,7 @@ function go(n){
   syncGlobalBack();
   if(n===6)renderUnlockPage();
   if(n===8)startConstSky();else if(oldIndex===8)stopConstSky();
+  if(n===9&&window.trackStoryEvent)window.trackStoryEvent('say-shown');
   const thread=document.getElementById('storyThread');
   if(thread){thread.classList.remove('play');void thread.offsetWidth;thread.classList.add('play');}
   if(n===1){
@@ -1320,6 +1321,9 @@ function closeHerVideo(){
   if(herVideoPlayed){
     const bs=document.querySelectorAll('#constSky .const-star')[4];
     if(bs)bs.classList.add('blaze');
+    // …and the way forward opens: the interstitial page before phase 3.
+    const ow=document.getElementById('constOnward');
+    if(ow)ow.hidden=false;
   }
 }
 (function wireHerVideo(){
@@ -1572,3 +1576,114 @@ function applyCustomization(){
   });
 }
 applyCustomization();
+
+/* ===== "wanna say something??" — interstitial page between phase 2 and phase 3.
+   Her words travel to him through a tiny form backend (FormSubmit). The message
+   body itself NEVER touches analytics — only metadata events (shown/yes/no/sent). */
+const SAY_SOMETHING_EMAIL='you@example.com'; // TODO: set to his real email, then click FormSubmit's activation mail once
+const PHASE3_INDEX=10; // first page of phase 3, once it exists
+let sayAnswered=false,saySending=false;
+
+function setSayLine(t){
+  const l=document.getElementById('sayLine');
+  if(l)l.textContent=t||'';
+}
+function activateSayAhead(){
+  const a=document.getElementById('sayAhead');
+  if(a)a.disabled=false;
+}
+/* Happy burst: hearts + sparkles flying outward (transform/opacity only — GPU-cheap). */
+function sayHappyBurst(){
+  const stage=document.getElementById('sayStage');
+  if(!stage)return;
+  stage.innerHTML='';
+  const glyphs=['♡','✦','❋','★','♡','✦','♪','❋','♡','✦','★','♡','✦','❋'];
+  glyphs.forEach((g,k)=>{
+    const s=document.createElement('span');
+    s.className='say-bit';s.textContent=g;
+    const ang=(k/glyphs.length)*Math.PI*2+Math.random()*.6;
+    const dist=90+Math.random()*140;
+    s.style.setProperty('--dx',Math.cos(ang)*dist+'px');
+    s.style.setProperty('--dy',Math.sin(ang)*dist+'px');
+    s.style.setProperty('--rr',(Math.random()*160-80)+'deg');
+    s.style.color=k%3?'#ffd98a':'#ff9eb5';
+    s.style.animationDelay=(Math.random()*.28)+'s';
+    stage.appendChild(s);
+  });
+  const d=document.createElement('div');
+  d.className='say-doodle';d.textContent='♡';
+  stage.appendChild(d);
+  setTimeout(()=>{stage.querySelectorAll('.say-bit,.say-doodle').forEach(el=>el.classList.add('go'));},40);
+}
+/* Sad doodle: a little cloud that pops in and rains for a moment. Tender, not guilty. */
+function saySadDoodle(){
+  const stage=document.getElementById('sayStage');
+  if(!stage)return;
+  stage.innerHTML='';
+  const cloud=document.createElement('div');
+  cloud.className='say-cloud';cloud.textContent='☁';
+  stage.appendChild(cloud);
+  for(let k=0;k<9;k++){
+    const r=document.createElement('span');
+    r.className='say-rain';r.textContent='·';
+    r.style.left=`calc(50% + ${(k-4)*16}px)`;
+    r.style.animationDelay=(k*.18)+'s';
+    stage.appendChild(r);
+  }
+  setTimeout(()=>{stage.querySelectorAll('.say-cloud,.say-rain').forEach(el=>el.classList.add('go'));},40);
+}
+function wireSayPage(){
+  const yes=document.getElementById('sayYes'),no=document.getElementById('sayNo'),
+        ahead=document.getElementById('sayAhead'),choices=document.getElementById('sayChoices'),
+        write=document.getElementById('sayWrite'),send=document.getElementById('saySend'),
+        text=document.getElementById('sayText'),status=document.getElementById('sayStatus');
+  if(!yes||!no||!ahead)return;
+  const onward=document.getElementById('constOnward');
+  if(onward)onward.addEventListener('click',()=>{go(9);});
+  yes.addEventListener('click',()=>{
+    if(sayAnswered)return;sayAnswered=true;
+    choices.style.display='none';
+    sayHappyBurst();
+    setSayLine('yay ♡ tell me everything.');
+    if(write)write.hidden=false;
+    if(window.trackStoryEvent)window.trackStoryEvent('say-yes');
+  });
+  no.addEventListener('click',()=>{
+    if(sayAnswered)return;sayAnswered=true;
+    choices.style.display='none';
+    saySadDoodle();
+    setSayLine('okay ♡ no pressure.');
+    activateSayAhead();
+    if(window.trackStoryEvent)window.trackStoryEvent('say-no');
+  });
+  if(send)send.addEventListener('click',async()=>{
+    if(saySending)return;
+    const msg=text?text.value.trim():'';
+    if(!msg){if(status)status.textContent='write a little something first ♡';return;}
+    saySending=true;send.disabled=true;send.textContent='sending…';
+    if(status)status.textContent='';
+    try{
+      const r=await fetch('https://formsubmit.co/ajax/'+encodeURIComponent(SAY_SOMETHING_EMAIL),{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Accept':'application/json'},
+        body:JSON.stringify({_subject:'she said something ♡',message:msg,page:'wanna-say-something'})
+      });
+      if(!r.ok)throw new Error('send failed: '+r.status);
+      if(status)status.textContent="it'll find its way to me ♡";
+      if(text)text.disabled=true;
+      send.textContent='sent ♡';
+      activateSayAhead();
+      if(window.trackStoryEvent)window.trackStoryEvent('say-sent');
+    }catch(e){
+      if(status)status.textContent="hmm, that didn't fly — try again?";
+      send.disabled=false;send.textContent='send →';
+    }
+    saySending=false;
+  });
+  ahead.addEventListener('click',()=>{
+    if(ahead.disabled)return;
+    if(pages.length>PHASE3_INDEX){go(PHASE3_INDEX);}
+    else{const s=document.getElementById('saySoon');if(s)s.hidden=false;}
+  });
+}
+wireSayPage();
