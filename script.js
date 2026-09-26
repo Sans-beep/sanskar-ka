@@ -868,6 +868,9 @@ go=function(n){
     closeLostFrame();
     deactivatePhase2MoonlightHit();
   }
+  if(i===8 && n!==8){
+    closeHerVideo();
+  }
   return phase2BaseGo(n);
 };
 
@@ -1102,7 +1105,7 @@ const CONSTELLATION_MEMORIES=[
   {title:'the song',caption:'ours, on repeat.',photo:null},
   {title:'almost said it',caption:'you felt it too.',photo:null},
   {title:'the long walk',caption:'we took the long way home.',photo:null},
-  {title:'today',caption:'still my favorite.',photo:null},
+  {title:'today',caption:'still my favorite.',photo:null,video:'https://raw.githubusercontent.com/Sans-beep/sanskar-ka/3cb9941f7a75032fbbcf2df233349d0e4b49c611/her-video.mp4'},
 ];
 const CONSTELLATION_STARS=[
   {x:72,y:22,pink:true},{x:50,y:30},{x:28,y:22},{x:20,y:46},{x:50,y:76},{x:66,y:62},{x:80,y:46}
@@ -1131,10 +1134,59 @@ function initConstellation(){
   if(close)close.addEventListener('click',e=>{e.stopPropagation();closeConstMemory();});
 }
 
+function markConstFound(idx){
+  if(constFound.has(idx))return false;
+  const m=CONSTELLATION_MEMORIES[idx];
+  constFound.add(idx);
+  const sky=document.getElementById('constSky');
+  const star=document.querySelectorAll('#constSky .const-star')[idx];
+  if(star){
+    star.classList.add('found');star.classList.remove('pink');
+    if(sky){
+      const r=star.getBoundingClientRect(),sr=sky.getBoundingClientRect();
+      constBurst(r.left-sr.left+r.width/2,r.top-sr.top+r.height/2,true);
+    }
+  }
+  if(sky){
+    const lab=document.createElement('span');
+    lab.className='const-label';lab.textContent=m.title;
+    lab.style.left=CONSTELLATION_STARS[idx].x+'%';
+    lab.style.top=CONSTELLATION_STARS[idx].y+'%';
+    sky.appendChild(lab);
+  }
+  document.getElementById('constCount').textContent=constFound.size+' / '+CONSTELLATION_STARS.length;
+  if(window.trackStoryEvent)window.trackStoryEvent('memory-found',{star:idx+1});
+  drawConstProgress();
+  return true;
+}
+
+/* The video star ("today"): no photo card — the video is the finale reward.
+   Tapping it marks it found like any star; the cinematic plays once all 7
+   are found. Tapping it again after the finale replays the video. */
+function openVideoStar(idx){
+  const newly=markConstFound(idx);
+  const left=CONSTELLATION_STARS.length-constFound.size;
+  const hint=document.getElementById('constHint');
+  if(hint){
+    if(left>0){
+      hint.textContent=newly?"this one's saved for last ♡":(left+' more hiding ✦');
+      hint.classList.remove('hide');
+    }else hint.classList.add('hide');
+  }
+  if(left===0&&!constFinaleShown){
+    constFinaleShown=true;
+    setTimeout(runConstFinale,900);
+  }else if(!newly&&constFinaleShown){
+    openHerVideo();
+  }
+}
+
 function openConstMemory(idx){
   const m=CONSTELLATION_MEMORIES[idx];
+  if(!m)return;
+  if(m.video){openVideoStar(idx);return;}
   const card=document.getElementById('constCard');
-  if(!card||!m)return;
+  if(!card)return;
   const photo=document.getElementById('constPhoto');
   document.getElementById('constTitle').textContent=m.title;
   document.getElementById('constText').textContent=m.caption;
@@ -1144,28 +1196,7 @@ function openConstMemory(idx){
   card.classList.add('open');
   card.setAttribute('aria-hidden','false');
   card.style.setProperty('--tilt',((idx%2?1:-1)*(1+(idx%3)*.6)).toFixed(1)+'deg');
-  if(!constFound.has(idx)){
-    constFound.add(idx);
-    const sky=document.getElementById('constSky');
-    const star=document.querySelectorAll('#constSky .const-star')[idx];
-    if(star){
-      star.classList.add('found');star.classList.remove('pink');
-      if(sky){
-        const r=star.getBoundingClientRect(),sr=sky.getBoundingClientRect();
-        constBurst(r.left-sr.left+r.width/2,r.top-sr.top+r.height/2,true);
-      }
-    }
-    if(sky){
-      const lab=document.createElement('span');
-      lab.className='const-label';lab.textContent=m.title;
-      lab.style.left=CONSTELLATION_STARS[idx].x+'%';
-      lab.style.top=CONSTELLATION_STARS[idx].y+'%';
-      sky.appendChild(lab);
-    }
-    document.getElementById('constCount').textContent=constFound.size+' / '+CONSTELLATION_STARS.length;
-    if(window.trackStoryEvent)window.trackStoryEvent('memory-found',{star:idx+1});
-    drawConstProgress();
-  }
+  markConstFound(idx);
   const left=CONSTELLATION_STARS.length-constFound.size;
   const hint=document.getElementById('constHint');
   if(hint){
@@ -1213,7 +1244,80 @@ function runConstFinale(){
     const f=document.getElementById('constFinale');
     if(f){f.classList.add('show');f.setAttribute('aria-hidden','false');}
   },1400);
+  // After the heart finishes drawing, dive toward her star — then her video.
+  herZoomT=setTimeout(zoomToHer,3600);
 }
+
+/* Finale cinematic: zoom the whole sky toward her star, then fade in the
+   fullscreen video. Pending timeouts are cleared if she leaves mid-flight. */
+let herZoomT=0,herVideoT=0,herVideoPlayed=false;
+function zoomToHer(){
+  if(window.sitePageIndex!==8)return;
+  const sky=document.getElementById('constSky');
+  const p9=document.getElementById('p9');
+  if(!sky||!p9)return;
+  const s=CONSTELLATION_STARS[6];
+  const x=s.x/100*sky.clientWidth,y=s.y/100*sky.clientHeight;
+  p9.classList.add('zooming','cine');
+  sky.style.transformOrigin=x.toFixed(1)+'px '+y.toFixed(1)+'px';
+  void sky.offsetWidth;
+  sky.style.transform='scale(2.8)';
+  herVideoT=setTimeout(openHerVideo,2500);
+}
+function openHerVideo(){
+  if(window.sitePageIndex!==8)return;
+  const ov=document.getElementById('herVideo');
+  const v=document.getElementById('herVideoEl');
+  if(!ov||!v)return;
+  document.getElementById('herEnd').classList.add('hidden');
+  document.getElementById('herPlay').classList.add('hidden');
+  ov.classList.add('open');
+  ov.setAttribute('aria-hidden','false');
+  try{v.currentTime=0;}catch(e){}
+  const pr=v.play();
+  if(pr&&typeof pr.catch==='function')pr.catch(()=>{
+    // Autoplay with sound was blocked — let her tap to play.
+    document.getElementById('herPlay').classList.remove('hidden');
+  });
+  if(!herVideoPlayed){
+    herVideoPlayed=true;
+    if(window.trackStoryEvent)window.trackStoryEvent('her-video-played',{});
+  }
+}
+function closeHerVideo(){
+  clearTimeout(herZoomT);clearTimeout(herVideoT);
+  const v=document.getElementById('herVideoEl');
+  if(v){try{v.pause();}catch(e){}}
+  const ov=document.getElementById('herVideo');
+  if(ov){ov.classList.remove('open');ov.setAttribute('aria-hidden','true');}
+  const p9=document.getElementById('p9');
+  if(p9)p9.classList.remove('zooming','cine');
+  const sky=document.getElementById('constSky');
+  if(sky){sky.style.transform='';sky.style.transformOrigin='';}
+  const hp=document.getElementById('herPlay');
+  if(hp)hp.classList.add('hidden');
+  if(typeof syncGlobalBack==='function')syncGlobalBack();
+}
+(function wireHerVideo(){
+  const v=document.getElementById('herVideoEl');
+  if(v)v.addEventListener('ended',()=>{
+    document.getElementById('herEnd').classList.remove('hidden');
+  });
+  const hp=document.getElementById('herPlay');
+  if(hp)hp.addEventListener('click',()=>{
+    hp.classList.add('hidden');
+    if(v){try{v.play();}catch(e){}}
+  });
+  const rp=document.getElementById('herReplay');
+  if(rp)rp.addEventListener('click',()=>{
+    document.getElementById('herEnd').classList.add('hidden');
+    if(v){try{v.currentTime=0;v.play();}catch(e){}}
+  });
+  const hb=document.getElementById('herBack');
+  if(hb)hb.addEventListener('click',closeHerVideo);
+  const hc=document.getElementById('herClose');
+  if(hc)hc.addEventListener('click',closeHerVideo);
+})();
 
 initConstellation();
 
