@@ -1,0 +1,26 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<style>
+body{background:#0d0b09;margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:Georgia,serif}
+.lostframe{position:relative;width:100%;height:100vh;overflow:hidden}
+.lostframe .rail{position:absolute;inset:0;display:flex;align-items:center;gap:22px;padding:0 22vw;overflow-x:auto}
+.lostframe .frame{flex:0 0 clamp(250px,27vw,390px);height:clamp(330px,61vh,540px);position:relative;background:#141210;border:1px solid #2a251f;transform:rotate(1deg);filter:saturate(.7);margin:0;padding:14px;box-sizing:border-box}
+.lostframe .image{height:86%;position:relative;overflow:hidden;background:linear-gradient(145deg,#b8ab9b,#514b47 60%,#171717)}
+.lostframe .image img{width:100%;height:100%;object-fit:cover;display:block}
+.lostframe figcaption{display:flex;justify-content:space-between;padding:10px 4px 0;color:#cdbfae;font-size:12px;letter-spacing:2px}
+.lostframe .scribble{position:absolute;right:-5px;top:-18px;font-family:Caveat,cursive;font-size:22px;color:#c8b9a5;transform:rotate(-8deg)}
+.lostframe .frame-wide{flex:0 0 clamp(340px,62vw,600px);height:clamp(300px,48vh,430px)}
+.lostframe .frame-wide .image{height:80%}
+.lostframe .frame-wide .tape{position:absolute;top:-13px;left:38px;width:96px;height:26px;background:rgba(232,221,210,.85);transform:rotate(-5deg);box-shadow:0 4px 12px #0005;z-index:3}
+.lostframe .frame-wide .fd{position:absolute;font-family:Caveat,cursive;pointer-events:none;z-index:3}
+.lostframe .frame-wide .f1{top:-26px;right:34px;font-size:30px;color:#e8b8bb;transform:rotate(10deg)}
+.lostframe .frame-wide .f2{bottom:-4px;left:-18px;font-size:24px;color:#d9c8bd;transform:rotate(-12deg)}
+.lostframe .frame-wide .f3{top:44%;right:-20px;font-size:22px;color:#c8b9a5;transform:rotate(8deg)}
+.lostframe .frame-wide .f4{bottom:-16px;right:60px;font-size:20px;color:#e8b8bb;transform:rotate(-6deg)}
+</style></head><body>
+<div class="lostframe"><section class="rail">
+<figure class="frame" style="transform:rotate(-2deg)"><div class="image"></div><figcaption><b>FRAME 017</b><span>KEEP</span></figcaption></figure>
+<figure class="frame frame-wide" style="transform:rotate(1deg)"><div class="image"><img src="frame-019.jpg" alt="FRAME 019"></div><figcaption><b>FRAME 019</b><span>EXPOSED</span></figcaption><div class="scribble">19</div><i class="tape"></i><i class="fd f1">♡</i><i class="fd f2">✦</i><i class="fd f3">❀</i><i class="fd f4">♡</i></figure>
+<figure class="frame" style="transform:rotate(2deg)"><div class="image"></div><figcaption><b>FRAME 021</b><span>END?</span></figcaption></figure>
+</section></div>
+</body></html>
