@@ -1114,7 +1114,7 @@ const CONSTELLATION_MEMORIES=[
   {title:'today',caption:'still my favorite.',photo:null,video:'https://raw.githubusercontent.com/Sans-beep/sanskar-ka/3cb9941f7a75032fbbcf2df233349d0e4b49c611/her-video.mp4'},
 ];
 const CONSTELLATION_STARS=[
-  {x:72,y:22,pink:true},{x:50,y:30},{x:28,y:22},{x:20,y:46},{x:50,y:76},{x:66,y:62},{x:80,y:46}
+  {x:72,y:22,pink:true},{x:50,y:30},{x:28,y:22},{x:20,y:46},{x:50,y:68.5},{x:66,y:62},{x:80,y:46}
 ];
 const CONSTELLATION_HEART=[2,1,0,6,5,4,3,2];
 const constFound=new Set();
@@ -1315,6 +1315,11 @@ function closeHerVideo(){
   if(phase2SongPausedForVideo){
     phase2SongPausedForVideo=false;
     if(phase2Song)fadeInAudio(phase2Song,.46,650);
+  }
+  // She watched her video and came back: the heart's bottom star blazes now.
+  if(herVideoPlayed){
+    const bs=document.querySelectorAll('#constSky .const-star')[4];
+    if(bs)bs.classList.add('blaze');
   }
 }
 (function wireHerVideo(){
