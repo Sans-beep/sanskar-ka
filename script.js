@@ -106,6 +106,7 @@ function go(n){
   window.sitePageIndex=i;
   syncGlobalBack();
   if(n===6)renderUnlockPage();
+  if(n===8)startConstSky();else if(oldIndex===8)stopConstSky();
   const thread=document.getElementById('storyThread');
   if(thread){thread.classList.remove('play');void thread.offsetWidth;thread.classList.add('play');}
   if(n===1){
@@ -1111,12 +1112,33 @@ function openConstMemory(idx){
     : '<div class="ph-empty">✦</div>';
   card.classList.add('open');
   card.setAttribute('aria-hidden','false');
+  card.style.setProperty('--tilt',((idx%2?1:-1)*(1+(idx%3)*.6)).toFixed(1)+'deg');
   if(!constFound.has(idx)){
     constFound.add(idx);
+    const sky=document.getElementById('constSky');
     const star=document.querySelectorAll('#constSky .const-star')[idx];
-    if(star){star.classList.add('found');star.classList.remove('pink');}
+    if(star){
+      star.classList.add('found');star.classList.remove('pink');
+      if(sky){
+        const r=star.getBoundingClientRect(),sr=sky.getBoundingClientRect();
+        constBurst(r.left-sr.left+r.width/2,r.top-sr.top+r.height/2,true);
+      }
+    }
+    if(sky){
+      const lab=document.createElement('span');
+      lab.className='const-label';lab.textContent=m.title;
+      lab.style.left=CONSTELLATION_STARS[idx].x+'%';
+      lab.style.top=CONSTELLATION_STARS[idx].y+'%';
+      sky.appendChild(lab);
+    }
     document.getElementById('constCount').textContent=constFound.size+' / '+CONSTELLATION_STARS.length;
-    if(constFound.size===1)document.getElementById('constHint').classList.add('hide');
+    drawConstProgress();
+  }
+  const left=CONSTELLATION_STARS.length-constFound.size;
+  const hint=document.getElementById('constHint');
+  if(hint){
+    if(left>0){hint.textContent=left+' more hiding ✦';hint.classList.remove('hide');}
+    else hint.classList.add('hide');
   }
 }
 
@@ -1133,6 +1155,7 @@ function runConstFinale(){
   const sky=document.getElementById('constSky');
   const svg=document.getElementById('constLines');
   if(!sky||!svg)return;
+  svg.innerHTML='';
   const W=sky.clientWidth,H=sky.clientHeight;
   const pts=CONSTELLATION_HEART.map(k=>{
     const s=CONSTELLATION_STARS[k];
@@ -1148,6 +1171,10 @@ function runConstFinale(){
   path.getBoundingClientRect();
   path.style.transition='stroke-dashoffset 2.6s ease-in-out';
   path.style.strokeDashoffset='0';
+  CONSTELLATION_HEART.forEach((k,i)=>{
+    const s=CONSTELLATION_STARS[k];
+    setTimeout(()=>constBurst(s.x/100*W,s.y/100*H,true),900+i*160);
+  });
   document.getElementById('constHint').classList.add('hide');
   setTimeout(()=>{
     const f=document.getElementById('constFinale');
@@ -1156,3 +1183,174 @@ function runConstFinale(){
 }
 
 initConstellation();
+
+/* ===== Phase 3 — living night sky engine =====
+   Twinkling starfield + nebula + milky way + shooting stars on canvas,
+   tap-anywhere sparkle bursts, parallax, proximity glow on memory stars,
+   and progressive constellation lines as memories are found. */
+const constSkyState={raf:0,stars:[],parts:[],shoot:null,nextShoot:0,px:0,py:0,tpx:0,tpy:0,W:0,H:0,neb:null,dpr:1};
+
+function constSkySetup(){
+  const sky=document.getElementById('constSky');
+  const cv=document.getElementById('constBg');
+  if(!sky||!cv||sky.dataset.sky)return;
+  sky.dataset.sky='1';
+  for(let k=0;k<130;k++){
+    constSkyState.stars.push({
+      x:Math.random(),y:Math.random(),
+      r:.4+Math.random()*1.3,
+      ph:Math.random()*Math.PI*2,
+      sp:.6+Math.random()*1.8,
+      depth:.25+Math.random()*.75,
+      warm:Math.random()<.22
+    });
+  }
+  constSkyState.nextShoot=performance.now()+2500+Math.random()*4000;
+  sky.addEventListener('pointermove',e=>{
+    const r=sky.getBoundingClientRect();
+    constSkyState.tpx=((e.clientX-r.left)/r.width-.5)*2;
+    constSkyState.tpy=((e.clientY-r.top)/r.height-.5)*2;
+    constelProximity(e.clientX,e.clientY);
+  },{passive:true});
+  sky.addEventListener('pointerdown',e=>{
+    if(e.target.closest('.const-star,.const-card,.const-finale'))return;
+    const r=sky.getBoundingClientRect();
+    constBurst(e.clientX-r.left,e.clientY-r.top,false);
+  },{passive:true});
+  window.addEventListener('resize',()=>{constSkyResize();drawConstProgress();},{passive:true});
+  constSkyResize();
+}
+
+function constSkyResize(){
+  const sky=document.getElementById('constSky');
+  const cv=document.getElementById('constBg');
+  if(!sky||!cv)return;
+  const r=sky.getBoundingClientRect();
+  const dpr=Math.min(window.devicePixelRatio||1,1.5);
+  const W=Math.max(1,Math.round(r.width)),H=Math.max(1,Math.round(r.height));
+  constSkyState.W=W;constSkyState.H=H;constSkyState.dpr=dpr;
+  cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);
+  const neb=document.createElement('canvas');neb.width=W;neb.height=H;
+  const nx=neb.getContext('2d');
+  if(nx){
+  const blobs=[[.2,.25,.5,'91,60,140'],[.85,.7,.55,'40,70,160'],[.6,.12,.4,'150,80,120']];
+  blobs.forEach(b=>{
+    const g=nx.createRadialGradient(b[0]*W,b[1]*H,0,b[0]*W,b[1]*H,Math.max(W,H)*b[2]);
+    g.addColorStop(0,'rgba('+b[3]+',.14)');g.addColorStop(1,'rgba('+b[3]+',0)');
+    nx.fillStyle=g;nx.fillRect(0,0,W,H);
+  });
+  nx.save();nx.translate(W*.5,H*.45);nx.rotate(-.5);
+  const mg=nx.createLinearGradient(0,-H*.28,0,H*.28);
+  mg.addColorStop(0,'rgba(150,170,220,0)');mg.addColorStop(.5,'rgba(150,170,220,.10)');mg.addColorStop(1,'rgba(150,170,220,0)');
+  nx.fillStyle=mg;nx.fillRect(-W,-H*.28,W*2,H*.56);nx.restore();
+  constSkyState.neb=neb;
+  }
+}
+
+function constSkyTick(now){
+  const st=constSkyState;
+  if(!st.raf)return;
+  const cv=document.getElementById('constBg');
+  if(!cv){st.raf=0;return;}
+  const ctx=cv.getContext('2d');
+  if(!ctx){st.raf=requestAnimationFrame(constSkyTick);return;}
+  const W=st.W,H=st.H,dpr=st.dpr||1;
+  if(!W||!H){st.raf=requestAnimationFrame(constSkyTick);return;}
+  st.px+=(st.tpx-st.px)*.06;st.py+=(st.tpy-st.py)*.06;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,W,H);
+  if(st.neb)ctx.drawImage(st.neb,0,0,W,H);
+  const t=now/1000;
+  for(const s of st.stars){
+    const tw=.45+.55*Math.abs(Math.sin(t*s.sp+s.ph));
+    ctx.globalAlpha=tw*(.35+.65*s.depth);
+    ctx.fillStyle=s.warm?'#ffe3b3':'#dfe9ff';
+    ctx.beginPath();
+    ctx.arc(s.x*W+st.px*16*s.depth,s.y*H+st.py*12*s.depth,s.r,0,6.2832);
+    ctx.fill();
+  }
+  ctx.globalAlpha=1;
+  if(!st.shoot&&now>st.nextShoot){
+    st.shoot={x:W*(.15+Math.random()*.7),y:-20,vx:-(4+Math.random()*4),vy:5+Math.random()*3,life:1};
+    st.nextShoot=now+5000+Math.random()*6000;
+  }
+  if(st.shoot){
+    const sh=st.shoot;
+    sh.x+=sh.vx;sh.y+=sh.vy;sh.life-=.022;
+    if(sh.life<=0||sh.y>H+40)st.shoot=null;
+    else{
+      const grad=ctx.createLinearGradient(sh.x,sh.y,sh.x-sh.vx*10,sh.y-sh.vy*10);
+      grad.addColorStop(0,'rgba(255,255,255,'+(.9*sh.life).toFixed(2)+')');
+      grad.addColorStop(1,'rgba(255,255,255,0)');
+      ctx.strokeStyle=grad;ctx.lineWidth=2;ctx.lineCap='round';
+      ctx.beginPath();ctx.moveTo(sh.x,sh.y);ctx.lineTo(sh.x-sh.vx*10,sh.y-sh.vy*10);ctx.stroke();
+    }
+  }
+  const ps=st.parts;
+  for(let k=ps.length-1;k>=0;k--){
+    const p=ps[k];
+    p.x+=p.vx;p.y+=p.vy;p.vy+=.03;p.life-=p.decay;
+    if(p.life<=0){ps.splice(k,1);continue;}
+    ctx.globalAlpha=Math.max(0,p.life);
+    ctx.fillStyle=p.color;
+    ctx.beginPath();ctx.arc(p.x,p.y,p.size*(.5+p.life*.5),0,6.2832);ctx.fill();
+  }
+  ctx.globalAlpha=1;
+  st.raf=requestAnimationFrame(constSkyTick);
+}
+
+function startConstSky(){
+  constSkySetup();
+  const st=constSkyState;
+  if(st.raf)return;
+  st.raf=requestAnimationFrame(constSkyTick);
+}
+function stopConstSky(){
+  const st=constSkyState;
+  if(st.raf){cancelAnimationFrame(st.raf);st.raf=0;}
+}
+
+function constBurst(x,y,big){
+  const st=constSkyState;
+  const n=big?26:12;
+  for(let k=0;k<n;k++){
+    const a=Math.random()*Math.PI*2,sp=(big?2.6:1.8)*(.4+Math.random());
+    st.parts.push({x:x,y:y,
+      vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-.6,
+      life:1,decay:.02+Math.random()*.02,
+      size:1+Math.random()*(big?2.6:1.8),
+      color:Math.random()<.5?'#ffd98a':'#fff6e6'});
+  }
+  if(st.parts.length>320)st.parts.splice(0,st.parts.length-320);
+}
+
+function constelProximity(cx,cy){
+  const stars=document.querySelectorAll('#constSky .const-star');
+  stars.forEach(b=>{
+    const r=b.getBoundingClientRect();
+    const dx=cx-(r.left+r.width/2),dy=cy-(r.top+r.height/2);
+    b.classList.toggle('near',Math.hypot(dx,dy)<110);
+  });
+}
+
+/* Faint gold segments join found stars in heart order — the constellation
+   builds as she finds memories; the finale redraws it in full glory. */
+function drawConstProgress(){
+  const svg=document.getElementById('constLines');
+  const sky=document.getElementById('constSky');
+  if(!svg||!sky||constFinaleShown)return;
+  const W=sky.clientWidth,H=sky.clientHeight;
+  if(!W||!H)return;
+  svg.innerHTML='';
+  const order=CONSTELLATION_HEART;
+  for(let k=0;k<order.length-1;k++){
+    const a=order[k],b=order[k+1];
+    if(!constFound.has(a)||!constFound.has(b))continue;
+    const sa=CONSTELLATION_STARS[a],sb=CONSTELLATION_STARS[b];
+    const ln=document.createElementNS('http://www.w3.org/2000/svg','line');
+    ln.setAttribute('x1',(sa.x/100*W).toFixed(1));ln.setAttribute('y1',(sa.y/100*H).toFixed(1));
+    ln.setAttribute('x2',(sb.x/100*W).toFixed(1));ln.setAttribute('y2',(sb.y/100*H).toFixed(1));
+    ln.setAttribute('class','const-seg');
+    svg.appendChild(ln);
+  }
+}
