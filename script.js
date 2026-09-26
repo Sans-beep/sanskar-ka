@@ -539,7 +539,7 @@ function positionPhase2MoonEffects(){
   }
   if(phase2MoonlightFlash){
     const W=phase2Page.clientWidth||1,H=phase2Page.clientHeight||1;
-    const glow=phase2VideoFit()==='contain'?'rgba(212,175,55,.22)':'rgba(237,247,251,.18)';
+    const glow='rgba(212,175,55,.26)';
     phase2MoonlightFlash.style.background=
       'radial-gradient(circle at '+(c.x/W*100).toFixed(2)+'% '+(c.y/H*100).toFixed(2)+'%,'+glow+',transparent 27%)';
   }
@@ -590,9 +590,9 @@ function phase2MoonlightRender(){
       const taper=k/phase2MoonlightState.points.length;
 
       ctx.shadowBlur=16+16*taper;
-      const lightStage=phase2VideoFit()==='contain';
-      ctx.shadowColor=lightStage?`rgba(212,175,55,${.18+.40*life})`:`rgba(225,243,252,${.16+.42*life})`;
-      ctx.strokeStyle=lightStage?`rgba(198,148,44,${.12+.60*life})`:`rgba(239,249,255,${.10+.65*life})`;
+      // Ink-on-white video: draw in ink with a warm gold glow in both fit modes.
+      ctx.shadowColor=`rgba(212,175,55,${.20+.42*life})`;
+      ctx.strokeStyle=`rgba(43,38,32,${.14+.62*life})`;
       ctx.lineWidth=1.5+5*taper;
 
       ctx.beginPath();
@@ -603,8 +603,8 @@ function phase2MoonlightRender(){
 
     const last=phase2MoonlightState.points[phase2MoonlightState.points.length-1];
     ctx.shadowBlur=24;
-    ctx.shadowColor='rgba(226,243,252,.5)';
-    ctx.fillStyle='rgba(246,252,255,.92)';
+    ctx.shadowColor='rgba(212,175,55,.55)';
+    ctx.fillStyle='rgba(43,38,32,.92)';
     ctx.beginPath();
     ctx.arc(last.x,last.y,3,0,Math.PI*2);
     ctx.fill();
