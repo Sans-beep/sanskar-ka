@@ -316,6 +316,7 @@ const phase2Videos=[
 ].filter(Boolean);
 let phase2VideoIndex=0;
 let phase2SongPlaying=false;
+let phase2SongPausedForVideo=false;
 let phase2LoopTimer=null;
 let phase2Crossfading=false;
 let phase2VideoStarted=false;
@@ -858,18 +859,23 @@ if(enterPhase2Button){
   });
 }
 
-// One clean Phase 2 wrapper: leaving Phase 2 stops both media.
+// One clean Phase 2 wrapper. Phase 2 is the moon page (7) AND the constellation
+// (8): the song plays across both and only stops when she truly leaves phase 2.
+// (Phase 3's entry, when built, should stop it.)
 // No room/Lost Frame/fullscreen navigation layer.
 const phase2BaseGo=go;
 go=function(n){
-  if(i===7 && n!==7){
+  // Close her video first so its song-resume never fights the phase exit below.
+  if(i===8 && n!==8){
+    closeHerVideo();
+  }
+  if((i===7||i===8)&&(n!==7&&n!==8)){
     pausePhase2Song();
+  }
+  if(i===7 && n!==7){
     stopPhase2Video();
     closeLostFrame();
     deactivatePhase2MoonlightHit();
-  }
-  if(i===8 && n!==8){
-    closeHerVideo();
   }
   return phase2BaseGo(n);
 };
@@ -1283,6 +1289,12 @@ function openHerVideo(){
     try{v.play();}catch(e){}
     document.getElementById('herMuted').classList.remove('hidden');
   });
+  // The song plays through the whole cinematic — it only yields for her video:
+  // fade out here (keeping its position), resume where it left off on close.
+  if(phase2Song && !phase2Song.paused){
+    phase2SongPausedForVideo=true;
+    fadeOutAudio(phase2Song,650,false);
+  }
   if(!herVideoPlayed){
     herVideoPlayed=true;
     if(window.trackStoryEvent)window.trackStoryEvent('her-video-played',{});
@@ -1299,6 +1311,11 @@ function closeHerVideo(){
   const sky=document.getElementById('constSky');
   if(sky){sky.style.transform='';sky.style.transformOrigin='';}
   if(typeof syncGlobalBack==='function')syncGlobalBack();
+  // Back to the stars: the song picks up exactly where it paused for the video.
+  if(phase2SongPausedForVideo){
+    phase2SongPausedForVideo=false;
+    if(phase2Song)fadeInAudio(phase2Song,.46,650);
+  }
 }
 (function wireHerVideo(){
   const v=document.getElementById('herVideoEl');
