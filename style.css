@@ -423,6 +423,7 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
 .lostframe .frame{flex:0 0 clamp(250px,27vw,390px);height:clamp(330px,61vh,540px);position:relative;cursor:pointer;scroll-snap-align:center;transform:rotate(var(--r));transition:.4s;filter:saturate(.7);margin:0}
 .lostframe .frame:hover{transform:rotate(0) translateY(-9px);filter:saturate(1)}
 .lostframe .image{height:86%;position:relative;overflow:hidden;background:linear-gradient(145deg,#b8ab9b,#514b47 60%,#171717)}
+.lostframe .image img{width:100%;height:100%;object-fit:cover;display:block}
 .lostframe .frame:nth-child(2) .image{background:linear-gradient(120deg,#d5c2a7,#7f7368 45%,#282727 46%)}
 .lostframe .frame:nth-child(3) .image{background:radial-gradient(circle at 60% 35%,#e7bd98 0 8%,#776257 9% 18%,#242323 19%)}
 .lostframe .frame:nth-child(4) .image{background:linear-gradient(160deg,#7c8883,#d0c9b7 42%,#404542 43%,#181a19)}
