@@ -180,7 +180,7 @@ const unlockLabel0=unlockBtnEl?unlockBtnEl.textContent:'unlock \u2192';
 const codePlaceholder0='\u2022 \u2022 \u2022 \u2022 \u2022 \u2022 \u2022 \u2022 \u2022';
 function renderUnlockPage(){
   const input=document.getElementById('code'),button=document.getElementById('unlock'),e=document.getElementById('error');
-  if(unlocked){
+  if(unlocked||ownerMode){
     if(input){input.disabled=true;input.value='';input.placeholder='already unlocked \u2661';}
     if(button){button.disabled=false;button.textContent='continue \u2192';}
     if(e)e.textContent='';
@@ -748,6 +748,16 @@ function activatePhase2Moonlight(){
   },7000);
 }
 
+// When leaving the moon page the full-screen gesture layer must stop
+// intercepting taps — a child with pointer-events:auto stays hittable even
+// when its parent page is pointer-events:none, so without this it silently
+// eats every forward button on every page (the back button sits above it,
+// which is why only back kept working).
+function deactivatePhase2MoonlightHit(){
+  if(!phase2MoonlightHit)return;
+  phase2MoonlightHit.style.pointerEvents='none';
+}
+
 if(phase2MoonlightHit){
   phase2MoonlightHit.addEventListener('pointerdown',phase2MoonlightBegin,{passive:false});
   phase2MoonlightHit.addEventListener('pointermove',phase2MoonlightMove,{passive:false});
@@ -806,6 +816,7 @@ go=function(n){
     pausePhase2Song();
     stopPhase2Video();
     closeLostFrame();
+    deactivatePhase2MoonlightHit();
   }
   return phase2BaseGo(n);
 };
