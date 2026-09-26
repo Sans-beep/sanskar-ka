@@ -1035,8 +1035,9 @@ if(lfDetail)lfDetail.addEventListener('click',e=>{
   if(e.target===lfDetail)lfDetail.classList.remove('open');
 });
 /* "there's more" is reserved for future slides/phases — parked for now. */
+/* "there's more" button: unparked — carries her from phase 2 (p8) to phase 3 (p9) */
 const lostFrameCta=document.getElementById('lostFrameCta');
-if(lostFrameCta)lostFrameCta.style.display='none';
+if(lostFrameCta)lostFrameCta.addEventListener('click',e=>{e.stopPropagation();go(8);});
 const lfCloseBtn=document.getElementById('lfClose');
 if(lfCloseBtn)lfCloseBtn.addEventListener('click',e=>{
   e.stopPropagation();
@@ -1048,3 +1049,100 @@ document.addEventListener('keydown',e=>{
     closeLostFrame();
   }
 });
+
+/* ===== Phase 3 — Constellation =====
+   Add photos later: set `photo` to the image URL (or repo path, e.g. 'mem-1.jpg').
+   Titles/captions below are placeholders — replace with the real ones anytime. */
+const CONSTELLATION_MEMORIES=[
+  {title:'the first hello',caption:'where it all started ♡',photo:null},
+  {title:'that laugh',caption:'you know the one.',photo:null},
+  {title:'4:18 pm',caption:'an ordinary day, my favorite memory.',photo:null},
+  {title:'the song',caption:'ours, on repeat.',photo:null},
+  {title:'almost said it',caption:'you felt it too.',photo:null},
+  {title:'the long walk',caption:'we took the long way home.',photo:null},
+  {title:'today',caption:'still my favorite.',photo:null},
+];
+const CONSTELLATION_STARS=[
+  {x:72,y:22,pink:true},{x:50,y:30},{x:28,y:22},{x:20,y:46},{x:50,y:76},{x:66,y:62},{x:80,y:46}
+];
+const CONSTELLATION_HEART=[2,1,0,6,5,4,3,2];
+const constFound=new Set();
+let constFinaleShown=false;
+
+function initConstellation(){
+  const sky=document.getElementById('constSky');
+  if(!sky||sky.dataset.init)return;
+  sky.dataset.init='1';
+  CONSTELLATION_STARS.forEach((s,idx)=>{
+    const b=document.createElement('button');
+    b.type='button';
+    b.className='const-star'+(s.pink?' pink':'');
+    b.style.left=s.x+'%';
+    b.style.top=s.y+'%';
+    b.style.animationDelay=(idx*0.45)+'s';
+    b.textContent=s.pink?'✦':'✧';
+    b.setAttribute('aria-label','memory star '+(idx+1));
+    b.addEventListener('click',e=>{e.stopPropagation();openConstMemory(idx);});
+    sky.appendChild(b);
+  });
+  const close=document.getElementById('constClose');
+  if(close)close.addEventListener('click',e=>{e.stopPropagation();closeConstMemory();});
+}
+
+function openConstMemory(idx){
+  const m=CONSTELLATION_MEMORIES[idx];
+  const card=document.getElementById('constCard');
+  if(!card||!m)return;
+  const photo=document.getElementById('constPhoto');
+  document.getElementById('constTitle').textContent=m.title;
+  document.getElementById('constText').textContent=m.caption;
+  if(photo)photo.innerHTML=m.photo
+    ? '<img src="'+m.photo+'" alt="">'
+    : '<div class="ph-empty">✦</div>';
+  card.classList.add('open');
+  card.setAttribute('aria-hidden','false');
+  if(!constFound.has(idx)){
+    constFound.add(idx);
+    const star=document.querySelectorAll('#constSky .const-star')[idx];
+    if(star){star.classList.add('found');star.classList.remove('pink');}
+    document.getElementById('constCount').textContent=constFound.size+' / '+CONSTELLATION_STARS.length;
+    if(constFound.size===1)document.getElementById('constHint').classList.add('hide');
+  }
+}
+
+function closeConstMemory(){
+  const card=document.getElementById('constCard');
+  if(card){card.classList.remove('open');card.setAttribute('aria-hidden','true');}
+  if(constFound.size===CONSTELLATION_STARS.length&&!constFinaleShown){
+    constFinaleShown=true;
+    setTimeout(runConstFinale,450);
+  }
+}
+
+function runConstFinale(){
+  const sky=document.getElementById('constSky');
+  const svg=document.getElementById('constLines');
+  if(!sky||!svg)return;
+  const W=sky.clientWidth,H=sky.clientHeight;
+  const pts=CONSTELLATION_HEART.map(k=>{
+    const s=CONSTELLATION_STARS[k];
+    return (s.x/100*W).toFixed(1)+','+(s.y/100*H).toFixed(1);
+  });
+  const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+  path.setAttribute('d','M'+pts.join(' L')+' Z');
+  svg.appendChild(path);
+  let len=1200;
+  try{len=path.getTotalLength();}catch(e){/* jsdom lacks SVG geometry; real browsers are fine */}
+  path.style.strokeDasharray=len;
+  path.style.strokeDashoffset=len;
+  path.getBoundingClientRect();
+  path.style.transition='stroke-dashoffset 2.6s ease-in-out';
+  path.style.strokeDashoffset='0';
+  document.getElementById('constHint').classList.add('hide');
+  setTimeout(()=>{
+    const f=document.getElementById('constFinale');
+    if(f){f.classList.add('show');f.setAttribute('aria-hidden','false');}
+  },1400);
+}
+
+initConstellation();
