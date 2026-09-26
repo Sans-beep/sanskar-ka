@@ -1580,7 +1580,7 @@ applyCustomization();
 /* ===== "wanna say something??" — interstitial page between phase 2 and phase 3.
    Her words travel to him through a tiny form backend (FormSubmit). The message
    body itself NEVER touches analytics — only metadata events (shown/yes/no/sent). */
-const SAY_SOMETHING_EMAIL='you@example.com'; // TODO: set to his real email, then click FormSubmit's activation mail once
+const SAY_SOMETHING_EMAIL='beyondsanskar@gmail.com'; // real address; activate once via FormSubmit's mail
 const PHASE3_INDEX=10; // first page of phase 3, once it exists
 let sayAnswered=false,saySending=false;
 
