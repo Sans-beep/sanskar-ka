@@ -271,10 +271,25 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
   /* moonlight interaction redrawn in warm gold / ink for the light stage */
   .phase2-moonlight-prompt{color:rgba(43,38,32,.78);border-color:rgba(43,38,32,.22);background:rgba(255,255,255,.55)}
   .phase2-moonlight-note{color:rgba(43,38,32,.88)}
-  .phase2-moonlight-aura{
+.phase2-moonlight-aura{
     border-color:rgba(190,150,60,.35);
     box-shadow:0 0 26px rgba(212,175,55,.30),0 0 64px rgba(212,175,55,.16),inset 0 0 26px rgba(212,175,55,.10);
   }
+}
+.phase2-moonlight-star{
+  position:absolute;
+  transform:translate(-50%,-50%);
+  color:#f4a9c6;
+  font-size:24px;
+  line-height:1;
+  pointer-events:none;
+  z-index:3;
+  text-shadow:0 0 14px rgba(244,169,198,.95),0 0 34px rgba(244,169,198,.55),0 0 60px rgba(244,169,198,.3);
+  animation:phase2StarShine 2.6s ease-in-out infinite;
+}
+@keyframes phase2StarShine{
+  0%,100%{opacity:.6;transform:translate(-50%,-50%) scale(.85) rotate(-8deg)}
+  50%{opacity:1;transform:translate(-50%,-50%) scale(1.18) rotate(10deg)}
 }
 
 
@@ -436,7 +451,8 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
 .lostframe .rail{position:absolute;inset:0;display:flex;align-items:center;gap:34px;padding:0 9vw;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:none;opacity:0;transform:scale(.985);transition:1s;touch-action:pan-x pan-y}
 .lostframe .rail.show{opacity:1;transform:none}
 .lostframe .rail::-webkit-scrollbar{display:none}
-.lostframe .frame{flex:0 0 clamp(250px,27vw,390px);height:clamp(330px,61vh,540px);position:relative;cursor:pointer;scroll-snap-align:center;transform:rotate(var(--r));transition:.4s;filter:saturate(.7);margin:0}
+.lostframe .frame{flex:0 0 clamp(250px,27vw,390px);height:clamp(330px,61vh,540px);position:relative;cursor:grab;scroll-snap-align:center;transform:rotate(var(--r));transition:.4s;filter:saturate(.7);margin:0}
+.lostframe .frame:active{cursor:grabbing}
 .lostframe .frame:hover{transform:rotate(0) translateY(-9px);filter:saturate(1)}
 .lostframe .image{height:86%;position:relative;overflow:hidden;background:linear-gradient(145deg,#b8ab9b,#514b47 60%,#171717)}
 .lostframe .image img{width:100%;height:100%;object-fit:cover;display:block}
@@ -473,6 +489,5 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
 .lostframe .lf-close:active{transform:scale(.94)}
 @media(max-width:650px){.lostframe .header{left:16px;right:16px}.lostframe .rail{padding:0 22vw;gap:22px}.lostframe .frame{flex-basis:62vw;height:59vh}.lostframe .sub{font-size:20px}.lostframe .secret{font-size:18px}}
 
-/* ===== Phase 2 — Lost Frame entry button ===== */
-.lostframe-cta{position:absolute!important;left:50%!important;bottom:78px!important;transform:translateX(-50%)!important;z-index:30!important;margin:0!important;box-shadow:0 12px 32px #000b;white-space:nowrap}
-.lostframe-cta:hover{transform:translateX(-50%) translateY(-2px)!important}
+/* ===== Phase 2 — Lost Frame entry button (parked: reserved for future phases) ===== */
+.lostframe-cta{display:none!important}

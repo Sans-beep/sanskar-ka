@@ -471,6 +471,7 @@ const phase2MoonlightLayer=document.getElementById('phase2MoonlightLayer');
 const phase2MoonlightTrail=document.getElementById('phase2MoonlightTrail');
 const phase2MoonlightAura=document.getElementById('phase2MoonlightAura');
 const phase2MoonlightFlash=document.getElementById('phase2MoonlightFlash');
+const phase2MoonlightStar=document.getElementById('phase2MoonlightStar');
 const phase2MoonlightPrompt=document.getElementById('phase2MoonlightPrompt');
 const phase2MoonlightNote=document.getElementById('phase2MoonlightNote');
 const phase2MoonlightCtx=phase2MoonlightTrail?.getContext('2d');
@@ -527,6 +528,10 @@ function positionPhase2MoonEffects(){
   if(phase2MoonlightAura){
     phase2MoonlightAura.style.left=c.x+'px';
     phase2MoonlightAura.style.top=c.y+'px';
+  }
+  if(phase2MoonlightStar){
+    phase2MoonlightStar.style.left=c.x+'px';
+    phase2MoonlightStar.style.top=c.y+'px';
   }
   if(phase2MoonlightFlash){
     const W=phase2Page.clientWidth||1,H=phase2Page.clientHeight||1;
@@ -994,6 +999,8 @@ function openLostFrame(){
   lostFrameOpen=true;
   if(typeof phase2MoonlightState!=='undefined')clearTimeout(phase2MoonlightState.hintTimer);
   resetPhase2Moonlight();
+  const back=document.getElementById('globalBack');
+  if(back)back.style.display='none';
   lfIntro.classList.remove('hidden');
   lfRail.classList.remove('show');
   lfSecret.classList.remove('show');
@@ -1007,24 +1014,14 @@ function closeLostFrame(){
   lfDetail.classList.remove('open');
   lostFrame.classList.remove('open');
   lostFrame.setAttribute('aria-hidden','true');
+  if(typeof syncGlobalBack==='function')syncGlobalBack();
 }
 const lfEnterBtn=document.getElementById('lfEnter');
 if(lfEnterBtn)lfEnterBtn.addEventListener('click',()=>{
   lfIntro.classList.add('hidden');
   setTimeout(()=>lfRail.classList.add('show'),250);
 });
-if(lfRail)lfRail.querySelectorAll('.frame').forEach((f,i)=>{
-  f.addEventListener('click',()=>{
-    if(f.classList.contains('special')){
-      lfSecret.classList.add('show');
-      return;
-    }
-    const b=f.querySelector('b');
-    lfTitle.textContent=b?b.textContent:'';
-    lfNote.textContent=lfNotes[i]||'';
-    lfDetail.classList.add('open');
-  });
-});
+/* Frames are drag-only now: no tap-to-open detail. */
 const lfDetailClose=document.getElementById('lfDetailClose');
 if(lfDetailClose)lfDetailClose.addEventListener('click',e=>{
   e.stopPropagation();
@@ -1033,11 +1030,9 @@ if(lfDetailClose)lfDetailClose.addEventListener('click',e=>{
 if(lfDetail)lfDetail.addEventListener('click',e=>{
   if(e.target===lfDetail)lfDetail.classList.remove('open');
 });
+/* "there's more" is reserved for future slides/phases — parked for now. */
 const lostFrameCta=document.getElementById('lostFrameCta');
-if(lostFrameCta)lostFrameCta.addEventListener('click',e=>{
-  e.stopPropagation();
-  openLostFrame();
-});
+if(lostFrameCta)lostFrameCta.style.display='none';
 const lfCloseBtn=document.getElementById('lfClose');
 if(lfCloseBtn)lfCloseBtn.addEventListener('click',e=>{
   e.stopPropagation();
