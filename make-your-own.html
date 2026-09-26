@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Make your own ♡</title>
+<script defer src="https://cloud.umami.is/script.js" data-website-id="a185121f-03b3-4c7e-b61d-20452f515db2" data-domains="sans-beep.github.io" data-tag="birthday"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0d0b0a;color:#2b2620;font-family:"DM Sans",sans-serif;min-height:100vh;display:grid;place-items:center;padding:28px 16px;background-image:radial-gradient(circle at 50% 0%,rgba(232,184,187,.06),transparent 55%)}
+.card{width:min(94vw,400px);background:#f5efe4;border-radius:6px;padding:28px 24px 26px;box-shadow:0 30px 90px rgba(0,0,0,.55);position:relative}
+.card::before{content:"";position:absolute;top:-13px;left:50%;transform:translateX(-50%) rotate(-3deg);width:96px;height:26px;background:rgba(244,169,198,.35);border-left:1px dashed rgba(255,255,255,.5);border-right:1px dashed rgba(255,255,255,.5)}
+h1{font-family:Caveat,cursive;font-size:34px;line-height:1;color:#2b2620}
+.sub{font-size:14px;color:#6b5f55;margin:8px 0 4px;line-height:1.55}
+label{display:block;font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:#8a7d70;margin:15px 0 0}
+input{width:100%;margin-top:5px;padding:10px 12px;border:1px solid #d8cec2;border-radius:6px;background:#fffdf8;font-size:15px;color:#2b2620;font-family:"DM Sans",sans-serif}
+input:focus{outline:none;border-color:#c9a86a;box-shadow:0 0 0 3px rgba(201,168,106,.18)}
+.memtitle{font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:#8a7d70;margin:20px 0 2px}
+.mem{display:grid;grid-template-columns:20px 1fr;gap:5px 8px;margin-top:10px;align-items:center}
+.mem>span{grid-row:1/3;font-family:Caveat,cursive;color:#a89a8c;font-size:19px;text-align:center}
+.mem input{margin-top:0;padding:8px 10px;font-size:13px}
+.btn{display:block;width:100%;margin-top:20px;border:1px solid #81766e;background:#2b2620;color:#f5efe4;border-radius:999px;padding:14px 24px;font:600 14px "DM Sans";cursor:pointer;transition:.2s}
+.btn:hover{transform:translateY(-2px)}
+.linkrow{display:flex;gap:8px;margin-top:14px}
+.linkrow input{flex:1;min-width:0;margin-top:0;font-size:12px;color:#6b5f55}
+.linkrow .btn{width:auto;margin-top:0;padding:10px 18px;white-space:nowrap}
+.hidden{display:none!important}
+.note{margin-top:16px;font-size:12px;color:#a89a8c;line-height:1.6;text-align:center}
+.back{display:block;margin:18px auto 0;background:none;border:0;color:#8a7d70;font-size:13px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+</style>
+</head>
+<body>
+<main class="card">
+  <h1>make your own ♡</h1>
+  <p class="sub">Fill this in and get a link — your own copy of the whole birthday journey, with your names and memories.</p>
+  <label>her name<input id="mkTo" maxlength="24" placeholder="e.g. Aisha" autocomplete="off"></label>
+  <label>your name<input id="mkFrom" maxlength="24" placeholder="e.g. Rohan" autocomplete="off"></label>
+  <label>secret code<input id="mkCode" maxlength="16" placeholder="e.g. AISHA21" autocomplete="off" style="text-transform:uppercase"></label>
+  <label>her birthday<input id="mkDate" type="date" value="2026-10-19"></label>
+  <div class="memtitle">the 7 memories</div>
+  <div id="mkMems"></div>
+  <button class="btn" id="mkGenerate" type="button">get my link →</button>
+  <div class="linkrow hidden" id="mkLinkRow">
+    <input id="mkLink" readonly>
+    <button class="btn" id="mkCopy" type="button">copy</button>
+  </div>
+  <p class="note">The link opens the journey personalized for her.<br>Photos can't be customized yet — coming soon.</p>
+  <button class="back" type="button" onclick="location.href='./'">← back to the original</button>
+</main>
+<script>
+(function(){
+  var defaults=[
+    ['the first hello','where it all started ♡'],
+    ['that laugh','you know the one.'],
+    ['4:18 pm','an ordinary day, my favorite memory.'],
+    ['the song','ours, on repeat.'],
+    ['almost said it','you felt it too.'],
+    ['the long walk','we took the long way home.'],
+    ['today','still my favorite.']
+  ];
+  var wrap=document.getElementById('mkMems'),pairs=[];
+  defaults.forEach(function(d,k){
+    var row=document.createElement('div');row.className='mem';
+    var num=document.createElement('span');num.textContent=k+1;
+    var t=document.createElement('input');t.placeholder='memory title';t.maxLength=40;t.autocomplete='off';t.value=d[0];
+    var c=document.createElement('input');c.placeholder='one line about it';c.maxLength=90;c.autocomplete='off';c.value=d[1];
+    row.appendChild(num);row.appendChild(t);row.appendChild(c);
+    wrap.appendChild(row);pairs.push([t,c]);
+  });
+  var $=function(id){return document.getElementById(id);};
+  function track(n){try{if(window.umami&&typeof window.umami.track==='function')window.umami.track(n,{});}catch(e){}}
+  $('mkGenerate').addEventListener('click',function(){
+    var p=new URLSearchParams();
+    var to=$('mkTo').value.trim();if(to)p.set('to',to);
+    var from=$('mkFrom').value.trim();if(from)p.set('from',from);
+    var code=$('mkCode').value.trim().toUpperCase();if(code)p.set('code',code);
+    var date=$('mkDate').value;if(date)p.set('date',date);
+    pairs.forEach(function(pr,k){
+      var t=pr[0].value.trim(),c=pr[1].value.trim();
+      if(t||c)p.set('m'+(k+1),t+'|'+c);
+    });
+    var base=location.href.replace(/[^/]*$/,'');
+    var link=base+'#'+p.toString();
+    $('mkLink').value=link;
+    $('mkLinkRow').classList.remove('hidden');
+    $('mkLink').focus();$('mkLink').select();
+    track('custom-link-generated');
+  });
+  $('mkCopy').addEventListener('click',function(){
+    var inp=$('mkLink'),btn=$('mkCopy');
+    function done(){btn.textContent='copied ✓';setTimeout(function(){btn.textContent='copy';},1600);}
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(inp.value).then(done).catch(function(){inp.select();document.execCommand('copy');done();});
+    }else{inp.select();try{document.execCommand('copy');}catch(e){}done();}
+  });
+  track('make-own-opened');
+})();
+</script>
+</body>
+</html>
