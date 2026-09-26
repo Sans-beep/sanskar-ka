@@ -1272,6 +1272,8 @@ function openHerVideo(){
   document.getElementById('herMuted').classList.add('hidden');
   ov.classList.add('open');
   ov.setAttribute('aria-hidden','false');
+  const gb=document.getElementById('globalBack');
+  if(gb)gb.style.display='none';
   try{v.currentTime=0;}catch(e){}
   v.muted=false;
   const pr=v.play();
