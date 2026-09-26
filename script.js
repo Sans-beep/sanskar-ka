@@ -105,6 +105,12 @@ function go(n){
   i=n;
   window.sitePageIndex=i;
   syncGlobalBack();
+  if(n===6){
+    const codeInput=document.getElementById('code'),unlockBtn=document.getElementById('unlock'),codeErr=document.getElementById('error');
+    if(codeInput){codeInput.disabled=false;codeInput.value='';}
+    if(unlockBtn)unlockBtn.disabled=false;
+    if(codeErr)codeErr.textContent='';
+  }
   const thread=document.getElementById('storyThread');
   if(thread){thread.classList.remove('play');void thread.offsetWidth;thread.classList.add('play');}
   if(n===1){

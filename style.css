@@ -457,5 +457,5 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
 @media(max-width:650px){.lostframe .header{left:16px;right:16px}.lostframe .rail{padding:0 22vw;gap:22px}.lostframe .frame{flex-basis:62vw;height:59vh}.lostframe .sub{font-size:20px}.lostframe .secret{font-size:18px}}
 
 /* ===== Phase 2 — Lost Frame entry button ===== */
-.lostframe-cta{position:absolute!important;left:50%!important;bottom:26px!important;transform:translateX(-50%)!important;z-index:30!important;margin:0!important;box-shadow:0 12px 32px #000b;white-space:nowrap}
+.lostframe-cta{position:absolute!important;left:50%!important;bottom:78px!important;transform:translateX(-50%)!important;z-index:30!important;margin:0!important;box-shadow:0 12px 32px #000b;white-space:nowrap}
 .lostframe-cta:hover{transform:translateX(-50%) translateY(-2px)!important}
