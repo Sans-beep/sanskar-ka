@@ -1250,32 +1250,7 @@ function runConstFinale(){
 
 /* Finale cinematic: zoom the whole sky toward her star, then fade in the
    fullscreen video. Pending timeouts are cleared if she leaves mid-flight. */
-let herZoomT=0,herVideoT=0,herVideoPlayed=false,herRaf=0,herCtx=null;
-function herCtx2d(){
-  if(!herCtx){
-    const c=document.getElementById('herVideoCanvas');
-    if(c&&c.getContext){try{herCtx=c.getContext('2d');}catch(e){herCtx=null;}}
-  }
-  return herCtx;
-}
-function herSizeCanvas(){
-  const v=document.getElementById('herVideoEl');
-  const c=document.getElementById('herVideoCanvas');
-  if(v&&c&&v.videoWidth&&!c.width){c.width=v.videoWidth;c.height=v.videoHeight;}
-}
-/* Paint the video onto the canvas every frame. The canvas is a normal page
-   layer, so screenshots capture it — unlike the video's hardware surface. */
-function herDrawLoop(){
-  const ov=document.getElementById('herVideo');
-  if(!ov||!ov.classList.contains('open'))return;
-  const v=document.getElementById('herVideoEl');
-  const c=document.getElementById('herVideoCanvas');
-  const x=herCtx2d();
-  if(v&&c&&x&&v.readyState>=2&&c.width){
-    try{x.drawImage(v,0,0,c.width,c.height);}catch(e){}
-  }
-  herRaf=requestAnimationFrame(herDrawLoop);
-}
+let herZoomT=0,herVideoT=0,herVideoPlayed=false;
 function zoomToHer(){
   if(window.sitePageIndex!==8)return;
   const sky=document.getElementById('constSky');
@@ -1308,9 +1283,6 @@ function openHerVideo(){
     try{v.play();}catch(e){}
     document.getElementById('herMuted').classList.remove('hidden');
   });
-  herSizeCanvas();
-  try{cancelAnimationFrame(herRaf);}catch(e){}
-  herRaf=requestAnimationFrame(herDrawLoop);
   if(!herVideoPlayed){
     herVideoPlayed=true;
     if(window.trackStoryEvent)window.trackStoryEvent('her-video-played',{});
@@ -1318,7 +1290,6 @@ function openHerVideo(){
 }
 function closeHerVideo(){
   clearTimeout(herZoomT);clearTimeout(herVideoT);
-  try{cancelAnimationFrame(herRaf);}catch(e){}
   const v=document.getElementById('herVideoEl');
   if(v){try{v.pause();}catch(e){}}
   const ov=document.getElementById('herVideo');
@@ -1331,10 +1302,8 @@ function closeHerVideo(){
 }
 (function wireHerVideo(){
   const v=document.getElementById('herVideoEl');
-  const c=document.getElementById('herVideoCanvas');
-  if(v)v.addEventListener('loadedmetadata',herSizeCanvas);
-  if(c)c.addEventListener('click',()=>{
-    if(v&&v.muted){
+  if(v)v.addEventListener('click',()=>{
+    if(v.muted){
       v.muted=false;
       document.getElementById('herMuted').classList.add('hidden');
     }

@@ -532,10 +532,7 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
 .her-video{position:fixed;inset:0;z-index:250;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:rgba(2,3,8,.95);opacity:0;pointer-events:none;transition:opacity 1s ease;padding:24px 12px}
 .her-video.open{opacity:1;pointer-events:auto}
 .her-doodles{position:absolute;inset:0;pointer-events:none}
-.her-video-el{max-width:94vw;max-height:66vh;width:auto;height:auto;border-radius:14px;background:#000;box-shadow:0 0 90px rgba(244,169,198,.22),0 30px 90px rgba(0,0,0,.65)}
-/* The real <video> stays off the visible layer (its hardware surface is what
-   makes phones refuse screenshots); we paint its frames onto the canvas. */
-.her-video-src{position:absolute;width:2px;height:2px;opacity:0;pointer-events:none}
+.her-video-el{max-width:94vw;max-height:66vh;border-radius:14px;background:#000;box-shadow:0 0 90px rgba(244,169,198,.22),0 30px 90px rgba(0,0,0,.65)}
 .her-cap{font-family:Caveat,cursive;font-size:27px;color:#f0e2d4;text-shadow:0 2px 14px rgba(0,0,0,.85);text-align:center}
 .her-muted{font-size:12px;letter-spacing:.1em;color:rgba(240,226,212,.55)}
 .her-end{display:flex;justify-content:center}
