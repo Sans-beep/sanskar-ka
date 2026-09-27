@@ -28,7 +28,10 @@ function fadeOutAudio(a,duration=500,reset=true){
     }
   },30);
 }
-/* (birthday slide + its song were removed; the intro at index 0 plays aise-kyun instead) */
+/* Page order: p0 intro (0), p1 hey (1), p2 birthday (2), p3 throwback (3),
+   p4 delivery (4), p5 chocolate (5), p6 letter (6), p7 unlock (7),
+   p8 moon (8), p9 constellation (9), p10 say (10), p11 garden (11).
+   The birthday slide is back WITHOUT its song; the intro plays aise-kyun. */
 
 const pages=[...document.querySelectorAll('.page')];
 let i=0,busy=false,phase1Ending=false;
@@ -104,14 +107,14 @@ function go(n){
   i=n;
   window.sitePageIndex=i;
   syncGlobalBack();
-  if(n===6)renderUnlockPage();
-  if(n===8)startConstSky();else if(oldIndex===8)stopConstSky();
-  if(n===9&&window.trackStoryEvent)window.trackStoryEvent('say-shown');
-  if(n===10)startGarden();else if(oldIndex===10)stopGarden();
-  if(n===10&&window.trackStoryEvent)window.trackStoryEvent('phase3-shown');
+  if(n===7)renderUnlockPage();
+  if(n===9)startConstSky();else if(oldIndex===9)stopConstSky();
+  if(n===10&&window.trackStoryEvent)window.trackStoryEvent('say-shown');
+  if(n===11)startGarden();else if(oldIndex===11)stopGarden();
+  if(n===11&&window.trackStoryEvent)window.trackStoryEvent('phase3-shown');
   const thread=document.getElementById('storyThread');
   if(thread){thread.classList.remove('play');void thread.offsetWidth;thread.classList.add('play');}
-  if(n===0)startIntro();
+  if(n===0&&!ownerMode)startIntro();
   if(n===2){
     startBirthdayWeather();
   }else if(oldIndex===2){
@@ -196,7 +199,11 @@ function stopIntro(){
     if(audio&&!audio.dataset.missing){audio.currentTime=0;try{audio.play().catch(()=>{});}catch(_){}}
     snd.hidden=true;
   });
-  if(i===0)startIntro();
+  if(i===0){
+    // Owner mode skips the 19s intro timer and starts on "Hey Kashish".
+    if(new URLSearchParams(location.search).has('owner'))setCurrentPage(1);
+    else startIntro();
+  }
 })();
 function handleNextButton(button){
   if(!button || busy)return;
@@ -217,10 +224,10 @@ function syncGlobalBack(){const show=i>0&&!phase1Ending;globalBack.style.display
 globalBack.onclick=function(e){
   e.preventDefault();
   e.stopPropagation();
-  if(busy || i===0)return;
+  if(busy || i===0 || (i===1 && ownerMode))return;
   go(i-1);
 };
-setCurrentPage(0);
+setCurrentPage(new URLSearchParams(location.search).has('owner')?1:0);
 
 function runPhase1Ending(){
   phase1Ending=true;
@@ -911,7 +918,7 @@ function enterPhase2(){
   activatePhase2Moonlight();
   playPhase2Song();
   playPhase2Video();
-  go(7);
+  go(8);
 }
 
 const enterPhase2Button=document.getElementById('enterPhase2');
@@ -923,20 +930,20 @@ if(enterPhase2Button){
   });
 }
 
-// One clean Phase 2 wrapper. Phase 2 is the moon page (7) AND the constellation
-// (8): the song plays across both and only stops when she truly leaves phase 2.
-// (Phase 3's entry, when built, should stop it.)
+// One clean Phase 2 wrapper. Phase 2 is the moon page (8) AND the constellation
+// (9): the song plays across both and only stops when she truly leaves phase 2.
+// (Phase 3's entry, when built, should stop it).
 // No room/Lost Frame/fullscreen navigation layer.
 const phase2BaseGo=go;
 go=function(n){
   // Close her video first so its song-resume never fights the phase exit below.
-  if(i===8 && n!==8){
+  if(i===9 && n!==9){
     closeHerVideo();
   }
-  if((i===7||i===8)&&(n!==7&&n!==8)){
+  if((i===8||i===9)&&(n!==8&&n!==9)){
     pausePhase2Song();
   }
-  if(i===7 && n!==7){
+  if(i===8 && n!==8){
     stopPhase2Video();
     closeLostFrame();
     deactivatePhase2MoonlightHit();
@@ -1144,7 +1151,7 @@ if(lfDetail)lfDetail.addEventListener('click',e=>{
 /* "there's more" button: gated — it appears only after she finishes the moonlight
    drawing AND has opened + closed the Lost Frame (phase 2 fully explored). */
 const lostFrameCta=document.getElementById('lostFrameCta');
-if(lostFrameCta)lostFrameCta.addEventListener('click',e=>{e.stopPropagation();if(window.trackStoryEvent)window.trackStoryEvent('phase3-cta-click',{});go(8);});
+if(lostFrameCta)lostFrameCta.addEventListener('click',e=>{e.stopPropagation();if(window.trackStoryEvent)window.trackStoryEvent('phase3-cta-click',{});go(9);});
 let phase2MoonDone=false,phase2LostDone=false;
 function maybeShowPhase3Cta(){
   if(phase2MoonDone&&phase2LostDone&&lostFrameCta)lostFrameCta.classList.add('show');
@@ -1322,7 +1329,7 @@ function runConstFinale(){
    fullscreen video. Pending timeouts are cleared if she leaves mid-flight. */
 let herZoomT=0,herVideoT=0,herVideoPlayed=false;
 function zoomToHer(){
-  if(window.sitePageIndex!==8)return;
+  if(window.sitePageIndex!==9)return;
   const sky=document.getElementById('constSky');
   const p9=document.getElementById('p9');
   if(!sky||!p9)return;
@@ -1335,7 +1342,7 @@ function zoomToHer(){
   herVideoT=setTimeout(openHerVideo,2500);
 }
 function openHerVideo(){
-  if(window.sitePageIndex!==8)return;
+  if(window.sitePageIndex!==9)return;
   const ov=document.getElementById('herVideo');
   const v=document.getElementById('herVideoEl');
   if(!ov||!v)return;
@@ -1649,7 +1656,7 @@ applyCustomization();
    Her words travel to him through a tiny form backend (FormSubmit). The message
    body itself NEVER touches analytics — only metadata events (shown/yes/no/sent). */
 const SAY_SOMETHING_EMAIL='beyondsanskar@gmail.com'; // real address; activate once via FormSubmit's mail
-const PHASE3_INDEX=10; // first page of phase 3: "two flowers, one garden"
+const PHASE3_INDEX=11; // first page of phase 3: "two flowers, one garden"
 let sayAnswered=false,saySending=false;
 
 function setSayLine(t){
@@ -1707,7 +1714,7 @@ function wireSayPage(){
         text=document.getElementById('sayText'),status=document.getElementById('sayStatus');
   if(!yes||!no||!ahead)return;
   const onward=document.getElementById('constOnward');
-  if(onward)onward.addEventListener('click',()=>{go(9);});
+  if(onward)onward.addEventListener('click',()=>{go(10);});
   yes.addEventListener('click',()=>{
     if(sayAnswered)return;sayAnswered=true;
     choices.style.display='none';
@@ -1756,11 +1763,11 @@ function wireSayPage(){
 }
 wireSayPage();
 
-/* ===== Phase 3: "two flowers, one garden" (p11, index 10) =====
+/* ===== Phase 3: "two flowers, one garden" (p11, index 11) =====
    She holds each bud to bloom it (real photos: orange = him, yellow = her).
    When both bloom, petals swirl up into a heart, then her photo appears.
    All motion is transform/opacity-only (WAAPI + CSS) — GPU-cheap. */
-const GARDEN_INDEX=10;
+const GARDEN_INDEX=11;
 const HOLD_MS=1400, RING_C=339.3;
 let gardenInit=false, gardenHeartDone=false, gardenFinaleShown=false, gardenRaf=0, gardenLast=0;
 const gardenState={him:{p:0,done:false,holding:false},her:{p:0,done:false,holding:false}};
@@ -2029,7 +2036,7 @@ function wireGarden(){
   const ahead=document.getElementById('gardenAhead');
   if(ahead)ahead.addEventListener('click',()=>{
     if(ahead.disabled)return;
-    const PHASE4_INDEX=11;
+    const PHASE4_INDEX=12;
     if(pages.length>PHASE4_INDEX)go(PHASE4_INDEX);
     else{const s=document.getElementById('gardenSoon');if(s)s.hidden=false;}
   });
