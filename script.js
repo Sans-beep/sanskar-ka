@@ -51,7 +51,7 @@ function go(n){
   busy=true;
   const oldIndex=i, old=pages[i], next=pages[n], forward=n>i;
   if(oldIndex===0)stopIntro();
-  if(oldIndex===2){
+  if(oldIndex===3){
     const t=document.getElementById('throwbackSong');
     if(t)fadeOutAudio(t,450,true);
   }
@@ -59,7 +59,7 @@ function go(n){
   const transitionDoodles=document.getElementById('transitionDoodles');
   const transitionMap={
     '0-1':{cls:'t01',items:[['☼','12%','22%','-28px','12px','0','-8deg'],['✧','82%','27%','24px','10px','0','12deg'],['⌁','19%','76%','-18px','18px','0','-10deg'],['♡','76%','72%','18px','-12px','0','8deg']]},
-    '1-2':{cls:'t12',items:[['♡','15%','30%','-22px','8px','0','-14deg'],['⌁','86%','35%','22px','4px','0','12deg'],['✦','72%','78%','18px','18px','0','-8deg']]},
+    '1-2':{cls:'t12',items:[['☀','15%','30%','-22px','8px','0','-14deg'],['⌁','86%','35%','22px','4px','0','12deg'],['✦','72%','78%','18px','18px','0','-8deg']]},
     '2-3':{cls:'t23',items:[['✎','10%','20%','-20px','10px','0','-12deg'],['▱','88%','24%','20px','8px','0','10deg'],['⌁','18%','82%','-14px','-14px','0','-6deg'],['✧','78%','76%','18px','-10px','0','9deg']]},
     '3-4':{cls:'t34',items:[['↗','13%','42%','-18px','0','0','-12deg'],['—','87%','62%','20px','-8px','0','0deg'],['✦','70%','18%','12px','-14px','0','6deg']]},
     '4-5':{cls:'t45',items:[['✓','17%','25%','-16px','6px','0','-8deg'],['✦','84%','29%','18px','4px','0','10deg'],['♡','81%','76%','16px','-10px','0','-7deg'],['⌁','13%','72%','-12px','-8px','0','8deg']]},
@@ -112,8 +112,13 @@ function go(n){
   const thread=document.getElementById('storyThread');
   if(thread){thread.classList.remove('play');void thread.offsetWidth;thread.classList.add('play');}
   if(n===0)startIntro();
+  if(n===2){
+    startBirthdayWeather();
+  }else if(oldIndex===2){
+    resetBirthdayWeather();
+  }
   const throwbackSong=document.getElementById('throwbackSong');
-  if(throwbackSong && n===2){
+  if(throwbackSong && n===3){
     throwbackSong.currentTime=0;
     fadeInAudio(throwbackSong,.48,850);
   }
