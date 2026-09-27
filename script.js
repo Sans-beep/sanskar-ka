@@ -1281,6 +1281,11 @@ function openHerVideo(){
   document.getElementById('herMuted').classList.add('hidden');
   ov.classList.add('open');
   ov.setAttribute('aria-hidden','false');
+  // Desktop/laptop: the scene was recorded sideways (a landscape moment stored in a
+  // portrait frame), so serve the upright horizontal cut. Mobile keeps the original file.
+  if(!v.dataset.landSwapped&&window.matchMedia&&window.matchMedia('(min-width:900px)').matches){
+    v.dataset.landSwapped='1';v.src='her-video-land.mp4';
+  }
   const gb=document.getElementById('globalBack');
   if(gb)gb.style.display='none';
   try{v.currentTime=0;}catch(e){}

@@ -681,3 +681,9 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
 .g-core{position:absolute;left:50%;top:50%;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;opacity:0}
 .g-pol-vid{width:168px;height:220px;object-fit:cover;border-radius:2px;display:block;background:#1a1430}
 .g-sound-hint{font-family:Caveat,cursive;font-size:19px;color:#a08b74;margin-top:4px}
+
+/* Desktop/laptop only: her video plays as the upright horizontal cut, sized so the
+   caption + back button always stay inside the viewport. Mobile CSS untouched. */
+@media (min-width:900px){
+  .her-video-el{max-width:82vw;max-height:58vh}
+}
