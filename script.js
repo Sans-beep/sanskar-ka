@@ -28,8 +28,7 @@ function fadeOutAudio(a,duration=500,reset=true){
     }
   },30);
 }
-function playBirthdaySong(){const a=document.getElementById('birthdaySong');if(a){a.pause();a.currentTime=0;fadeInAudio(a,.42,850)}}
-function pauseBirthdaySong(){fadeOutAudio(document.getElementById('birthdaySong'),450,true)}
+/* (birthday slide + its song were removed; the intro at index 0 plays aise-kyun instead) */
 
 const pages=[...document.querySelectorAll('.page')];
 let i=0,busy=false,phase1Ending=false;
@@ -51,7 +50,7 @@ function go(n){
   if(busy || n<0 || n>=pages.length || n===i)return;
   busy=true;
   const oldIndex=i, old=pages[i], next=pages[n], forward=n>i;
-  if(oldIndex===1)pauseBirthdaySong();
+  if(oldIndex===0)stopIntro();
   if(oldIndex===2){
     const t=document.getElementById('throwbackSong');
     if(t)fadeOutAudio(t,450,true);
@@ -60,7 +59,7 @@ function go(n){
   const transitionDoodles=document.getElementById('transitionDoodles');
   const transitionMap={
     '0-1':{cls:'t01',items:[['☼','12%','22%','-28px','12px','0','-8deg'],['✧','82%','27%','24px','10px','0','12deg'],['⌁','19%','76%','-18px','18px','0','-10deg'],['♡','76%','72%','18px','-12px','0','8deg']]},
-    '1-2':{cls:'t12',items:[['☀','15%','30%','-22px','8px','0','-14deg'],['⌁','86%','35%','22px','4px','0','12deg'],['✦','72%','78%','18px','18px','0','-8deg']]},
+    '1-2':{cls:'t12',items:[['♡','15%','30%','-22px','8px','0','-14deg'],['⌁','86%','35%','22px','4px','0','12deg'],['✦','72%','78%','18px','18px','0','-8deg']]},
     '2-3':{cls:'t23',items:[['✎','10%','20%','-20px','10px','0','-12deg'],['▱','88%','24%','20px','8px','0','10deg'],['⌁','18%','82%','-14px','-14px','0','-6deg'],['✧','78%','76%','18px','-10px','0','9deg']]},
     '3-4':{cls:'t34',items:[['↗','13%','42%','-18px','0','0','-12deg'],['—','87%','62%','20px','-8px','0','0deg'],['✦','70%','18%','12px','-14px','0','6deg']]},
     '4-5':{cls:'t45',items:[['✓','17%','25%','-16px','6px','0','-8deg'],['✦','84%','29%','18px','4px','0','10deg'],['♡','81%','76%','16px','-10px','0','-7deg'],['⌁','13%','72%','-12px','-8px','0','8deg']]},
@@ -112,12 +111,7 @@ function go(n){
   if(n===10&&window.trackStoryEvent)window.trackStoryEvent('phase3-shown');
   const thread=document.getElementById('storyThread');
   if(thread){thread.classList.remove('play');void thread.offsetWidth;thread.classList.add('play');}
-  if(n===1){
-    startBirthdayWeather();
-    playBirthdaySong();
-  }else if(oldIndex===1){
-    resetBirthdayWeather();
-  }
+  if(n===0)startIntro();
   const throwbackSong=document.getElementById('throwbackSong');
   if(throwbackSong && n===2){
     throwbackSong.currentTime=0;
@@ -137,6 +131,68 @@ function go(n){
   },900);
 }
 /* GLOBAL NAVIGATION — one handler for every forward control + one dedicated back control. */
+/* INTRO — 19-second timer with 19 blipping lines (page index 0). */
+const INTRO_LINES=["nineteen seconds.","that's all i'm asking for.","breathe.","you're here.","that's my favorite part.","before the noise —","before the cake —","before the world texts you —","just this.","you, existing.","do you know how rare that is?","okay. mushy bit over.","(it's not over.)","i made you something.","it's not big.","it's not expensive.","it's just… yours.","ready?","let's go ♡"];
+let introTimerId=null,introStep=0,introDone=false;
+function introEls(){return{timer:document.getElementById('introTimer'),line:document.getElementById('introLine'),prog:document.getElementById('introProgress'),cont:document.getElementById('introContinue'),snd:document.getElementById('introSound'),audio:document.getElementById('aiseKyun')};}
+function showIntroStep(){
+  const{timer,line,prog}=introEls();
+  if(!timer||!line)return;
+  timer.textContent=String(19-introStep);
+  line.classList.remove('blip');void line.offsetWidth;
+  line.textContent=INTRO_LINES[introStep];
+  line.classList.add('blip');
+  if(prog)prog.style.width=((introStep+1)/19*100)+'%';
+}
+function tryIntroAudio(){
+  const{audio,snd}=introEls();
+  if(!audio||audio.dataset.missing)return;
+  try{
+    const p=audio.play();
+    if(p&&p.catch)p.catch(()=>{if(snd&&window.sitePageIndex===0)snd.hidden=false;});
+  }catch(_){if(snd&&window.sitePageIndex===0)snd.hidden=false;}
+}
+function startIntro(){
+  stopIntroTimer();
+  introStep=0;introDone=false;
+  const{cont,snd}=introEls();
+  if(cont)cont.hidden=true;
+  if(snd)snd.hidden=true;
+  showIntroStep();
+  tryIntroAudio();
+  if(window.trackStoryEvent)window.trackStoryEvent('intro-shown');
+  introTimerId=setInterval(()=>{
+    introStep++;
+    if(introStep>=INTRO_LINES.length){finishIntro();return;}
+    showIntroStep();
+  },1000);
+}
+function finishIntro(){
+  stopIntroTimer();introDone=true;
+  const{cont}=introEls();
+  if(cont)cont.hidden=false;
+  if(window.trackStoryEvent)window.trackStoryEvent('intro-complete');
+  setTimeout(()=>{if(window.sitePageIndex===0&&introDone&&!busy)go(1);},2400);
+}
+function stopIntroTimer(){if(introTimerId){clearInterval(introTimerId);introTimerId=null;}}
+function stopIntro(){
+  stopIntroTimer();introDone=false;
+  const{audio}=introEls();
+  if(audio)fadeOutAudio(audio,450,true);
+}
+(function initIntro(){
+  const{audio,snd}=introEls();
+  if(audio){
+    audio.addEventListener('error',()=>{audio.dataset.missing='1';if(snd)snd.hidden=true;});
+    if(audio.readyState===0)audio.load();
+  }
+  if(snd)snd.addEventListener('click',e=>{
+    e.stopPropagation();
+    if(audio&&!audio.dataset.missing){audio.currentTime=0;try{audio.play().catch(()=>{});}catch(_){}}
+    snd.hidden=true;
+  });
+  if(i===0)startIntro();
+})();
 function handleNextButton(button){
   if(!button || busy)return;
   const page=button.closest('.page');

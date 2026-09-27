@@ -687,3 +687,26 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
 @media (min-width:900px){
   .her-video-el{max-width:82vw;max-height:58vh}
 }
+
+/* intro — 19 second timer (p0) */
+.intro-page{background:radial-gradient(130% 100% at 50% 0%,#231627 0%,#100b14 52%,#070509 100%);overflow:hidden}
+.intro-stars{position:absolute;inset:0;pointer-events:none}
+.intro-stars .is{position:absolute;border-radius:50%;background:#fff;animation:introTwinkle 3.4s ease-in-out infinite}
+.intro-stars .s1{width:2px;height:2px;left:12%;top:22%}
+.intro-stars .s2{width:3px;height:3px;left:78%;top:16%;animation-delay:.7s}
+.intro-stars .s3{width:2px;height:2px;left:64%;top:38%;animation-delay:1.4s}
+.intro-stars .s4{width:2px;height:2px;left:28%;top:64%;animation-delay:.4s}
+.intro-stars .s5{width:3px;height:3px;left:86%;top:58%;animation-delay:2.1s}
+.intro-stars .s6{width:2px;height:2px;left:44%;top:12%;animation-delay:2.8s}
+.intro-stars .s7{width:2px;height:2px;left:8%;top:78%;animation-delay:1.1s}
+.intro-stars .s8{width:2px;height:2px;left:56%;top:82%;animation-delay:1.9s}
+@keyframes introTwinkle{0%,100%{opacity:.12}50%{opacity:.75}}
+.intro-inner{justify-content:center;text-align:center;position:relative;z-index:1}
+.intro-timer{font-family:Georgia,'Times New Roman',serif;font-size:118px;line-height:1;color:#e9c979;letter-spacing:.04em;font-variant-numeric:tabular-nums;text-shadow:0 0 34px rgba(233,201,121,.28)}
+.intro-progress{width:180px;height:1px;background:rgba(255,255,255,.14);margin:20px auto 28px;border-radius:1px;overflow:hidden}
+.intro-progress span{display:block;height:100%;width:0;background:#e9c979;transition:width .9s linear}
+.intro-line{font-size:31px;color:#f5ead6;min-height:52px;padding:0 12px}
+.intro-line.blip{animation:introBlip .55s ease both}
+@keyframes introBlip{0%{opacity:0;transform:scale(.9) translateY(8px)}22%{opacity:1;transform:scale(1.04) translateY(0)}38%{transform:scale(1)}100%{opacity:1;transform:scale(1)}}
+.intro-sound{margin-top:28px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.22);color:#f5ead6;border-radius:999px;padding:9px 20px;font-size:14px;font-family:"DM Sans",sans-serif;cursor:pointer}
+#introContinue{margin-top:28px}
