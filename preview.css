@@ -1,0 +1,93 @@
+/* Preview mode: the real site, but every word and photo stays hidden.
+   Only the shell, the art and the interactions show — the code lock
+   does the rest. Main site (index.html) is untouched. */
+
+body.preview{
+  -webkit-user-select:none;
+  user-select:none;
+}
+
+/* ---- blurred words: layout stays, meaning doesn't ---- */
+body.preview .kicker,
+body.preview .script,
+body.preview .note,
+body.preview .copy,
+body.preview .scribble,
+body.preview .sub,
+body.preview .tiny,
+body.preview .tip,
+body.preview .throwback-note,
+body.preview .throwback-copy,
+body.preview .slip-note,
+body.preview .slip-head,
+body.preview .slip-code,
+body.preview .tap-count,
+body.preview .upload-status,
+body.preview .say-status,
+body.preview .say-line,
+body.preview .say-card-title,
+body.preview .letter-card p,
+body.preview .letter-title,
+body.preview .const-caption,
+body.preview .const-finale-line,
+body.preview .const-finale-sub,
+body.preview .const-finale-kicker,
+body.preview .const-hint,
+body.preview .garden-hint,
+body.preview .proof-caption,
+body.preview .g-label,
+body.preview .her-cap,
+body.preview .g-sound-hint,
+body.preview .reveal-line,
+body.preview #introLine,
+body.preview .detail{
+  filter:blur(11px);
+  pointer-events:none;
+}
+
+/* ---- photos & videos: visible as shapes, never as themselves ---- */
+body.preview .throwback-photo img,
+body.preview .frame img,
+body.preview .const-photo img,
+body.preview .g-polaroid img,
+body.preview .proof-photo img,
+body.preview .photo-placeholder,
+body.preview video{
+  filter:blur(30px) brightness(.62) saturate(.8);
+  pointer-events:none;
+}
+
+/* ---- stays sharp: navigation, the lock, the art ---- */
+body.preview .btn,
+body.preview button,
+body.preview input,
+body.preview textarea,
+body.preview .doodle,
+body.preview .top,
+body.preview #introTimer,
+body.preview canvas,
+body.preview .envelope{
+  filter:none;
+}
+
+/* ---- the tease badge ---- */
+body.preview::after{
+  content:'a preview ♡ — every word unlocks on your day';
+  position:fixed;
+  bottom:64px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:99999;
+  pointer-events:none;
+  font-family:Georgia,serif;
+  font-style:italic;
+  font-size:13px;
+  letter-spacing:.4px;
+  color:#f5d98b;
+  background:rgba(10,10,25,.72);
+  border:1px solid rgba(245,217,139,.35);
+  border-radius:999px;
+  padding:8px 16px;
+  white-space:nowrap;
+  backdrop-filter:blur(6px);
+}
