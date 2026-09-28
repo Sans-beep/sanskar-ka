@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>For Kashish ♡</title>
 <link rel="stylesheet" href="style.css?v=20260927-57">
-<link rel="stylesheet" href="preview.css?v=4">
+<link rel="stylesheet" href="preview.css?v=5">
 </head>
 <body class="preview">
 <div class="shell"><main class="card">
@@ -190,12 +190,14 @@
   </article>
 </div>
 <script src="script.js?v=20260927-57"></script><audio id="letterSong" preload="auto" src="tune-jo-na-kaha.mp3"></audio><audio id="throwbackSong" preload="auto" loop src="throwback-music.mp3"></audio>
-<!-- preview-only: moon video tease, plays just before the code lock. no interaction. -->
+<!-- preview-only: moon video tease, plays just before the code lock. the moon opens the real Lost Frame. -->
 <div class="moon-tease" id="moonTease" aria-hidden="true">
   <video class="mt-video is-visible" id="mtVideoA" playsinline muted preload="auto" src="https://raw.githubusercontent.com/Sans-beep/sanskar-ka/2d28655d14b456b009c8fc2bcdb7fbaf5f907b77/phase2-reference-moon-no-lyrics.mp4?v=20260925-3"></video>
   <video class="mt-video" id="mtVideoB" playsinline muted preload="auto" aria-hidden="true" src="https://raw.githubusercontent.com/Sans-beep/sanskar-ka/2d28655d14b456b009c8fc2bcdb7fbaf5f907b77/phase2-reference-moon-no-lyrics.mp4?v=20260925-3"></video>
   <div class="mt-star" aria-hidden="true">✦</div>
   <div class="mt-countwrap"><div class="mt-countline">just wait a little more 🪷🫶🏻</div><div class="mt-count" id="mtCount">--d : --h : --m : --s</div></div>
+  <button class="mt-moontap" id="mtMoonTap" aria-label="tap the moon"></button>
+  <div class="mt-taphint" id="mtTapHint">psst&hellip; tap the moon</div>
   <button class="btn mt-continue" id="mtContinue">continue &rarr;</button>
 </div>
 <script>
@@ -262,6 +264,32 @@
     }
     return realGo(n);
   };
+  // ---- preview-only: the tease moon opens the real Lost Frame, exactly like the main page ----
+  // The frame element is temporarily lifted to <body> so it renders above the
+  // tease overlay (z 90000); every handler and state bit stays the real one.
+  (function(){
+    var tap=document.getElementById('mtMoonTap');
+    var hint=document.getElementById('mtTapHint');
+    var lf=document.getElementById('lostFrame');
+    if(!tap||!lf||typeof openLostFrame!=='function'||typeof closeLostFrame!=='function')return;
+    var origParent=lf.parentNode, origNext=lf.nextSibling;
+    var realCloseLostFrame=closeLostFrame;
+    closeLostFrame=function(){
+      realCloseLostFrame();
+      if(lf.parentNode!==origParent)origParent.insertBefore(lf,origNext);
+      document.body.classList.remove('lf-over-tease');
+    };
+    var dX=0,dY=0,dT=0;
+    tap.addEventListener('pointerdown',function(e){dX=e.clientX;dY=e.clientY;dT=performance.now();});
+    tap.addEventListener('pointerup',function(e){
+      if(performance.now()-dT<450&&Math.hypot(e.clientX-dX,e.clientY-dY)<16){
+        if(hint)hint.classList.add('gone');
+        if(lf.parentNode!==document.body){origParent=lf.parentNode;origNext=lf.nextSibling;document.body.appendChild(lf);}
+        document.body.classList.add('lf-over-tease');
+        openLostFrame();
+      }
+    });
+  })();
   document.getElementById('mtContinue').addEventListener('click',function(){
     stopTease();
     overlay.classList.remove('open');

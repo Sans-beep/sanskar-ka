@@ -132,3 +132,19 @@ body.preview .moon-tease .mt-video{filter:none;} /* the tease stays sharp */
 .mt-countwrap{position:absolute;top:6.5%;left:0;right:0;z-index:2;text-align:center;pointer-events:none;}
 .mt-countline{font-family:Georgia,serif;font-style:italic;font-size:15px;color:#6b5a44;letter-spacing:.4px;margin-bottom:8px;}
 .mt-count{font-size:12px;letter-spacing:.24em;color:#6b5a44;opacity:.9;font-weight:600;}
+
+/* ---- preview-only: tap the tease moon -> the real Lost Frame ---- */
+.mt-moontap{
+  position:absolute;left:26%;top:19.5%;width:34%;aspect-ratio:1;
+  transform:translate(-50%,-50%);z-index:3;
+  background:transparent;border:0;border-radius:50%;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.mt-taphint{
+  position:absolute;left:26%;top:32%;transform:translateX(-50%);z-index:3;
+  font-family:Georgia,serif;font-style:italic;font-size:13px;color:#6b5a44;
+  opacity:0;transition:opacity 1.2s ease;pointer-events:none;white-space:nowrap;
+}
+.moon-tease.open .mt-taphint{opacity:.85;transition-delay:5s;}
+.mt-taphint.gone{opacity:0!important;transition:opacity .4s ease;}
+body.preview.lf-over-tease #lostFrame{position:fixed!important;inset:0!important;z-index:90001!important;}
