@@ -54,6 +54,7 @@ let proofFile=null,proofUploaded=false;
 // The 19s intro timer lives only in the preview copy (preview.html carries
 // body.preview). The main site opens straight on p1 ("Hey Kashish").
 const isPreviewPage=document.body.classList.contains('preview');
+const globalBack=document.getElementById('globalBack');
 
 function go(n){
   if(busy || n<0 || n>=pages.length || n===i)return;
@@ -226,7 +227,6 @@ document.querySelectorAll('.next').forEach(button=>{
     handleNextButton(button);
   };
 });
-const globalBack=document.getElementById('globalBack');
 function syncGlobalBack(){const show=i>0&&!phase1Ending&&(isPreviewPage||i>1);globalBack.style.display=show?"flex":"none";globalBack.classList.toggle("show",show);}
 globalBack.onclick=function(e){
   e.preventDefault();
