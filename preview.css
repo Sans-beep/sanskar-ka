@@ -127,3 +127,8 @@ body.preview .moon-tease .mt-video{filter:none;} /* the tease stays sharp */
 .pv-countwrap{margin-top:30px;text-align:center;}
 .pv-countline{font-family:Georgia,serif;font-style:italic;font-size:15px;color:#f5d98b;letter-spacing:.4px;margin-bottom:10px;}
 .pv-count{font-size:12px;letter-spacing:.24em;color:#ffe9bd;opacity:.9;font-weight:600;}
+
+/* ---- preview-only: birthday countdown inside the moon tease ---- */
+.mt-countwrap{position:absolute;top:6.5%;left:0;right:0;z-index:2;text-align:center;pointer-events:none;}
+.mt-countline{font-family:Georgia,serif;font-style:italic;font-size:15px;color:#6b5a44;letter-spacing:.4px;margin-bottom:8px;}
+.mt-count{font-size:12px;letter-spacing:.24em;color:#6b5a44;opacity:.9;font-weight:600;}

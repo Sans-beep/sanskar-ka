@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>For Kashish ♡</title>
 <link rel="stylesheet" href="style.css?v=20260927-57">
-<link rel="stylesheet" href="preview.css?v=3">
+<link rel="stylesheet" href="preview.css?v=4">
 </head>
 <body class="preview">
 <div class="shell"><main class="card">
@@ -195,6 +195,7 @@
   <video class="mt-video is-visible" id="mtVideoA" playsinline muted preload="auto" src="https://raw.githubusercontent.com/Sans-beep/sanskar-ka/2d28655d14b456b009c8fc2bcdb7fbaf5f907b77/phase2-reference-moon-no-lyrics.mp4?v=20260925-3"></video>
   <video class="mt-video" id="mtVideoB" playsinline muted preload="auto" aria-hidden="true" src="https://raw.githubusercontent.com/Sans-beep/sanskar-ka/2d28655d14b456b009c8fc2bcdb7fbaf5f907b77/phase2-reference-moon-no-lyrics.mp4?v=20260925-3"></video>
   <div class="mt-star" aria-hidden="true">✦</div>
+  <div class="mt-countwrap"><div class="mt-countline">just wait a little more 🪷🫶🏻</div><div class="mt-count" id="mtCount">--d : --h : --m : --s</div></div>
   <button class="btn mt-continue" id="mtContinue">continue &rarr;</button>
 </div>
 <script>
@@ -270,13 +271,14 @@
 })();
 /* preview-only: countdown to her day, ticking on the lock page */
 (function(){
-  var el=document.getElementById('pvCount');
-  if(!el)return;
+  var els=[document.getElementById('pvCount'),document.getElementById('mtCount')].filter(Boolean);
+  if(!els.length)return;
   var target=new Date(2026,9,19,0,0,0);
   function p(n){return (n<10?'0':'')+n;}
   function tick(){
     var diff=target-new Date(); if(diff<0)diff=0;
-    el.textContent=Math.floor(diff/864e5)+'d : '+p(Math.floor(diff/36e5)%24)+'h : '+p(Math.floor(diff/6e4)%60)+'m : '+p(Math.floor(diff/1e3)%60)+'s';
+    var t=Math.floor(diff/864e5)+'d : '+p(Math.floor(diff/36e5)%24)+'h : '+p(Math.floor(diff/6e4)%60)+'m : '+p(Math.floor(diff/1e3)%60)+'s';
+    els.forEach(function(el){el.textContent=t;});
   }
   tick(); setInterval(tick,1000);
 })();
