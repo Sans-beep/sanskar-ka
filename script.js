@@ -31,7 +31,9 @@ function fadeOutAudio(a,duration=500,reset=true){
 /* Page order: p0 intro (0), p1 hey (1), p2 birthday (2), p3 throwback (3),
    p4 delivery (4), p5 chocolate (5), p6 letter (6), p7 unlock (7),
    p8 moon (8), p9 constellation (9), p10 say (10), p11 garden (11).
-   The birthday slide is back WITHOUT its song; the intro plays aise-kyun. */
+   The birthday slide is back WITHOUT its song; the intro plays aise-kyun.
+   NOTE: the intro timer (p0) plays ONLY in preview.html (body.preview) —
+   the main site starts on p1 and never shows p0. */
 
 const pages=[...document.querySelectorAll('.page')];
 let i=0,busy=false,phase1Ending=false;
@@ -48,6 +50,10 @@ function setCurrentPage(n){
 
 window.sitePageIndex=0;
 let proofFile=null,proofUploaded=false;
+
+// The 19s intro timer lives only in the preview copy (preview.html carries
+// body.preview). The main site opens straight on p1 ("Hey Kashish").
+const isPreviewPage=document.body.classList.contains('preview');
 
 function go(n){
   if(busy || n<0 || n>=pages.length || n===i)return;
@@ -114,7 +120,7 @@ function go(n){
   if(n===11&&window.trackStoryEvent)window.trackStoryEvent('phase3-shown');
   const thread=document.getElementById('storyThread');
   if(thread){thread.classList.remove('play');void thread.offsetWidth;thread.classList.add('play');}
-  if(n===0&&!ownerMode)startIntro();
+  if(n===0&&isPreviewPage)startIntro();
   if(n===2){
     startBirthdayWeather();
   }else if(oldIndex===2){
@@ -200,9 +206,10 @@ function stopIntro(){
     snd.hidden=true;
   });
   if(i===0){
-    // Owner mode skips the 19s intro timer and starts on "Hey Kashish".
-    if(new URLSearchParams(location.search).has('owner'))setCurrentPage(1);
-    else startIntro();
+    // Main site opens straight on "Hey Kashish"; the 19s intro timer
+    // plays only in the preview copy.
+    if(isPreviewPage)startIntro();
+    else setCurrentPage(1);
   }
 })();
 function handleNextButton(button){
@@ -220,14 +227,14 @@ document.querySelectorAll('.next').forEach(button=>{
   };
 });
 const globalBack=document.getElementById('globalBack');
-function syncGlobalBack(){const show=i>0&&!phase1Ending;globalBack.style.display=show?"flex":"none";globalBack.classList.toggle("show",show);}
+function syncGlobalBack(){const show=i>0&&!phase1Ending&&(isPreviewPage||i>1);globalBack.style.display=show?"flex":"none";globalBack.classList.toggle("show",show);}
 globalBack.onclick=function(e){
   e.preventDefault();
   e.stopPropagation();
-  if(busy || i===0 || (i===1 && ownerMode))return;
+  if(busy || i===0 || (i===1 && !isPreviewPage))return;
   go(i-1);
 };
-setCurrentPage(new URLSearchParams(location.search).has('owner')?1:0);
+setCurrentPage(isPreviewPage?0:1);
 
 function runPhase1Ending(){
   phase1Ending=true;
