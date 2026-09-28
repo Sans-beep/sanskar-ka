@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>For Kashish ♡</title>
 <link rel="stylesheet" href="style.css?v=20260927-57">
-<link rel="stylesheet" href="preview.css?v=2">
+<link rel="stylesheet" href="preview.css?v=3">
 </head>
 <body class="preview">
 <div class="shell"><main class="card">
@@ -192,31 +192,77 @@
 <script src="script.js?v=20260927-57"></script><audio id="letterSong" preload="auto" src="tune-jo-na-kaha.mp3"></audio><audio id="throwbackSong" preload="auto" loop src="throwback-music.mp3"></audio>
 <!-- preview-only: moon video tease, plays just before the code lock. no interaction. -->
 <div class="moon-tease" id="moonTease" aria-hidden="true">
-  <video class="mt-video" id="mtVideo" playsinline muted loop preload="auto" src="https://raw.githubusercontent.com/Sans-beep/sanskar-ka/2d28655d14b456b009c8fc2bcdb7fbaf5f907b77/phase2-reference-moon-no-lyrics.mp4?v=20260925-3"></video>
+  <video class="mt-video is-visible" id="mtVideoA" playsinline muted preload="auto" src="https://raw.githubusercontent.com/Sans-beep/sanskar-ka/2d28655d14b456b009c8fc2bcdb7fbaf5f907b77/phase2-reference-moon-no-lyrics.mp4?v=20260925-3"></video>
+  <video class="mt-video" id="mtVideoB" playsinline muted preload="auto" aria-hidden="true" src="https://raw.githubusercontent.com/Sans-beep/sanskar-ka/2d28655d14b456b009c8fc2bcdb7fbaf5f907b77/phase2-reference-moon-no-lyrics.mp4?v=20260925-3"></video>
+  <div class="mt-star" aria-hidden="true">✦</div>
   <button class="btn mt-continue" id="mtContinue">continue &rarr;</button>
 </div>
 <script>
-/* preview-only: the moon tease plays just before the code lock (video only, no interaction) */
+/* preview-only: the moon tease plays just before the code lock.
+   video only, no interaction — but with the phase-2 song, a seamless
+   dual-video crossfade loop (no loop-seam flicker), and the pink star. */
 (function(){
   if(!document.body.classList.contains('preview'))return;
   var overlay=document.getElementById('moonTease');
   if(!overlay||typeof go!=='function')return;
-  var vid=document.getElementById('mtVideo');
-  var realGo=go, shown=false;
+  var vids=[document.getElementById('mtVideoA'),document.getElementById('mtVideoB')].filter(Boolean);
+  var realGo=go, shown=false, vidIdx=0, loopTimer=null, xfade=false;
   var backBtn=document.getElementById('globalBack');
+  function activeVid(){return vids[vidIdx]||null;}
+  function playEl(v){try{var p=v.play();if(p&&p.catch)p.catch(function(){});}catch(e){}}
+  function scheduleLoop(){
+    clearTimeout(loopTimer);
+    var cur=activeVid(); if(!cur)return;
+    var d=cur.duration;
+    if(!Number.isFinite(d)||d<=0){loopTimer=setTimeout(scheduleLoop,120);return;}
+    var lead=Math.min(0.72,Math.max(0.48,d*0.04));
+    loopTimer=setTimeout(crossfade,Math.max(120,(d-cur.currentTime-lead)*1000));
+  }
+  function crossfade(){
+    if(xfade||vids.length<2)return;
+    var cur=activeVid(), nxt=vids[(vidIdx+1)%vids.length];
+    if(!cur||!nxt)return;
+    xfade=true; clearTimeout(loopTimer);
+    try{nxt.pause();nxt.currentTime=0;}catch(e){}
+    nxt.classList.add('is-visible');
+    playEl(nxt);
+    requestAnimationFrame(function(){requestAnimationFrame(function(){
+      cur.classList.remove('is-visible');
+      setTimeout(function(){
+        try{cur.pause();cur.currentTime=0;}catch(e){}
+        vidIdx=(vidIdx+1)%vids.length; xfade=false; scheduleLoop();
+      },480);
+    });});
+  }
+  function startTease(){
+    if(!vids.length)return;
+    clearTimeout(loopTimer); xfade=false; vidIdx=0;
+    vids.forEach(function(v,k){
+      try{v.pause();v.currentTime=0;}catch(e){}
+      v.classList.toggle('is-visible',k===0);
+    });
+    playEl(activeVid());
+    scheduleLoop();
+    if(typeof playPhase2Song==='function'){try{playPhase2Song();}catch(e){}}
+  }
+  function stopTease(){
+    clearTimeout(loopTimer); xfade=false;
+    vids.forEach(function(v){try{v.pause();}catch(e){}});
+    if(typeof pausePhase2Song==='function'){try{pausePhase2Song();}catch(e){}}
+  }
   go=function(n){
     if(n===7&&!shown){
       shown=true;
       overlay.classList.add('open');
       overlay.setAttribute('aria-hidden','false');
       if(backBtn)backBtn.style.display='none';
-      if(vid){try{vid.currentTime=0;var p=vid.play();if(p&&p.catch)p.catch(function(){});}catch(e){}}
+      startTease();
       return;
     }
     return realGo(n);
   };
   document.getElementById('mtContinue').addEventListener('click',function(){
-    if(vid){try{vid.pause();}catch(e){}}
+    stopTease();
     overlay.classList.remove('open');
     overlay.setAttribute('aria-hidden','true');
     realGo(7);
