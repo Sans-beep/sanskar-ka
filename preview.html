@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>For Kashish ♡</title>
 <link rel="stylesheet" href="style.css?v=20260927-57">
-<link rel="stylesheet" href="preview.css?v=1">
+<link rel="stylesheet" href="preview.css?v=2">
 </head>
 <body class="preview">
 <div class="shell"><main class="card">
@@ -16,7 +16,9 @@
 <section class="page" id="p4"><div class="top"><span>FIRST THINGS FIRST</span><span>19.10.26</span></div><div class="inner"><i class="doodle d1">↗</i><i class="doodle d4">♡</i><div class="kicker">there's a little something</div><div class="copy" style="margin-top:15px">waiting for you.</div><div class="delivery-slip"><div class="slip-head">DELIVERY</div><div class="slip-rule"></div><div class="slip-row"><span>1 × something sweet</span><span>♡</span></div><div class="slip-row" style="margin-top:5px"><span>for</span><span>the bhondu girl</span></div><div class="slip-note">status: outside</div><div class="slip-code">19</div></div><div class="scribble">yes, this one :)</div><div class="note" style="margin-top:10px">check your door.</div><button class="btn next">I found it →</button></div></section>
 <section class="page" id="p5"><div class="top"><span>A LITTLE SWEETNESS</span><span>19.10.26</span></div><div class="inner"><i class="doodle d1">♡</i><i class="doodle d2">✎</i><div class="kicker">you came back.</div><div class="proof-polaroid" id="proofPolaroid"><div class="tape"></div><div class="proof-photo" id="proofPhoto"><span class="photo-placeholder">show me the chocolate ♡</span><img id="proofImage" alt="Your chocolate photo preview"><div class="proof-caption">evidence</div></div><div class="verified-stamp">VERIFIED ♡</div></div><div class="copy" style="font-size:26px">okay… prove you found it.</div><label class="upload-label" for="proofUpload">choose photo →</label><input class="upload-input" id="proofUpload" type="file" accept="image/*"><div class="upload-status" id="uploadStatus">I know you found it. prove it.</div><button class="btn p4-next" id="p4Next" disabled>continue →</button></div></section>
 <section class="page" id="p6"><div class="top"><span>ONE MORE THING</span><span>19.10.26</span></div><div class="inner"><i class="doodle d1">♡</i><i class="doodle d2">✦</i><div class="kicker">the letter</div><div class="copy" style="font-size:38px;margin-top:12px">there's something<br>in the letter you'll need later.</div><div class="envelope hit" id="secretEnvelope" aria-label="Tap the envelope nine times"><div class="seal">19</div></div><div class="tap-count" id="tapCount">there's something here… <b>♡</b></div><div class="note">open the letter. keep the little code.</div><i class="doodle">⌁</i><button class="btn next">I have it →</button></div></section>
-<section class="page" id="p7"><div class="top"><span>PRIVATE ENTRY</span><span>19.10.26</span></div><div class="inner"><i class="doodle d1">♡</i><i class="doodle d2">⌁</i><div class="kicker">the next chapter is locked</div><div class="copy" style="font-size:39px;margin-top:14px">enter the code<br>from the letter.</div><input id="code" maxlength="20" placeholder="• • • • • • • • •" autocomplete="off"><button class="btn" id="unlock">unlock →</button><div class="error" id="error"></div><div class="tiny">no cheating, bhondu girl.</div></div></section>
+<section class="page" id="p7"><div class="top"><span>PRIVATE ENTRY</span><span>19.10.26</span></div><div class="inner"><i class="doodle d1">♡</i><i class="doodle d2">⌁</i><div class="kicker">the next chapter is locked</div><div class="copy" style="font-size:39px;margin-top:14px">enter the code<br>from the letter.</div><input id="code" maxlength="20" placeholder="• • • • • • • • •" autocomplete="off"><button class="btn" id="unlock">unlock →</button><div class="error" id="error"></div><div class="tiny">no cheating, bhondu girl.</div>
+<div class="pv-countwrap"><div class="pv-countline">just wait a little more 🪷🫶🏻</div>
+<div class="pv-count" id="pvCount">--d : --h : --m : --s</div></div></div></section>
 
 <section class="page phase2-film" id="p8">
   <div class="film-stage" id="filmStage">
@@ -219,6 +221,18 @@
     overlay.setAttribute('aria-hidden','true');
     realGo(7);
   });
+})();
+/* preview-only: countdown to her day, ticking on the lock page */
+(function(){
+  var el=document.getElementById('pvCount');
+  if(!el)return;
+  var target=new Date(2026,9,19,0,0,0);
+  function p(n){return (n<10?'0':'')+n;}
+  function tick(){
+    var diff=target-new Date(); if(diff<0)diff=0;
+    el.textContent=Math.floor(diff/864e5)+'d : '+p(Math.floor(diff/36e5)%24)+'h : '+p(Math.floor(diff/6e4)%60)+'m : '+p(Math.floor(diff/1e3)%60)+'s';
+  }
+  tick(); setInterval(tick,1000);
 })();
 </script>
 </body></html>
