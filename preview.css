@@ -20,7 +20,11 @@ body.preview .throwback-note,
 body.preview .throwback-copy,
 body.preview .slip-note,
 body.preview .slip-head,
+body.preview .slip-row,
 body.preview .slip-code,
+body.preview .archive-meta,
+body.preview .throwback-small,
+body.preview .seal,
 body.preview .tap-count,
 body.preview .upload-status,
 body.preview .say-status,
@@ -90,6 +94,11 @@ body.preview::after{
   padding:8px 16px;
   white-space:nowrap;
   backdrop-filter:blur(6px);
+  animation:pvBadgeBreathe 4s ease-in-out infinite;
+}
+@keyframes pvBadgeBreathe{
+  0%,100%{box-shadow:0 0 0 rgba(245,217,139,0)}
+  50%{box-shadow:0 0 18px rgba(245,217,139,.28)}
 }
 
 /* ---- moon video tease (preview-only, before the code lock) ---- */
