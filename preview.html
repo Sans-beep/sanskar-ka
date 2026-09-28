@@ -188,4 +188,38 @@
     <p style="text-align:right;margin-top:28px" id="letterSig">— Sanskar ♡</p>
   </article>
 </div>
-<script src="script.js?v=20260927-56"></script><audio id="letterSong" preload="auto" src="tune-jo-na-kaha.mp3"></audio><audio id="throwbackSong" preload="auto" loop src="throwback-music.mp3"></audio></body></html>
+<script src="script.js?v=20260927-56"></script><audio id="letterSong" preload="auto" src="tune-jo-na-kaha.mp3"></audio><audio id="throwbackSong" preload="auto" loop src="throwback-music.mp3"></audio>
+<!-- preview-only: moon video tease, plays just before the code lock. no interaction. -->
+<div class="moon-tease" id="moonTease" aria-hidden="true">
+  <video class="mt-video" id="mtVideo" playsinline muted loop preload="auto" src="https://raw.githubusercontent.com/Sans-beep/sanskar-ka/2d28655d14b456b009c8fc2bcdb7fbaf5f907b77/phase2-reference-moon-no-lyrics.mp4?v=20260925-3"></video>
+  <button class="btn mt-continue" id="mtContinue">continue &rarr;</button>
+</div>
+<script>
+/* preview-only: the moon tease plays just before the code lock (video only, no interaction) */
+(function(){
+  if(!document.body.classList.contains('preview'))return;
+  var overlay=document.getElementById('moonTease');
+  if(!overlay||typeof go!=='function')return;
+  var vid=document.getElementById('mtVideo');
+  var realGo=go, shown=false;
+  var backBtn=document.getElementById('globalBack');
+  go=function(n){
+    if(n===7&&!shown){
+      shown=true;
+      overlay.classList.add('open');
+      overlay.setAttribute('aria-hidden','false');
+      if(backBtn)backBtn.style.display='none';
+      if(vid){try{vid.currentTime=0;var p=vid.play();if(p&&p.catch)p.catch(function(){});}catch(e){}}
+      return;
+    }
+    return realGo(n);
+  };
+  document.getElementById('mtContinue').addEventListener('click',function(){
+    if(vid){try{vid.pause();}catch(e){}}
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden','true');
+    realGo(7);
+  });
+})();
+</script>
+</body></html>
