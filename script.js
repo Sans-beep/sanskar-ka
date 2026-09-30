@@ -1852,12 +1852,15 @@ function wireSayPage(){
     saySending=true;send.disabled=true;send.textContent='sending…';
     if(status)status.textContent='';
     sayEmailToken=Math.random().toString(36).slice(2,10);
+    const sayCtl=new AbortController();const sayTo=setTimeout(()=>sayCtl.abort(),15000);
     try{
       const r=await fetch('https://formsubmit.co/ajax/'+encodeURIComponent(SAY_SOMETHING_EMAIL),{
         method:'POST',
         headers:{'Content-Type':'application/json','Accept':'application/json'},
+        signal:sayCtl.signal,
         body:JSON.stringify({_subject:'she said something ♡',message:msg,page:'wanna-say-something',ref:sayEmailToken})
       });
+      clearTimeout(sayTo);
       if(!r.ok)throw new Error('send failed: '+r.status);
       if(status)status.textContent="it'll find its way to me ♡";
       if(text)text.disabled=true;
@@ -1867,6 +1870,7 @@ function wireSayPage(){
       activateSayAhead();
       if(window.trackStoryEvent)window.trackStoryEvent('say-sent');
     }catch(e){
+      clearTimeout(sayTo);
       if(status)status.textContent="hmm, that didn't fly — try again?";
       send.disabled=false;send.textContent='send →';
     }
@@ -1909,12 +1913,15 @@ function wireEmailPage(){
     }
     sending=true;send.disabled=true;send.textContent='sending…';
     if(status)status.textContent='';
+    const emailCtl=new AbortController();const emailTo=setTimeout(()=>emailCtl.abort(),15000);
     try{
       const r=await fetch('https://formsubmit.co/ajax/'+encodeURIComponent(SAY_SOMETHING_EMAIL),{
         method:'POST',
         headers:{'Content-Type':'application/json','Accept':'application/json'},
+        signal:emailCtl.signal,
         body:JSON.stringify({_subject:'her reply address ♡',_replyto:email,reply_to:email,ref:sayEmailToken||'no-ref',page:'reply-address'})
       });
+      clearTimeout(emailTo);
       if(!r.ok)throw new Error('send failed: '+r.status);
       if(status)status.textContent="noted ♡ i'll write back.";
       input.disabled=true;send.textContent='saved ♡';
@@ -1922,6 +1929,7 @@ function wireEmailPage(){
       if(window.trackStoryEvent)window.trackStoryEvent('email-sent');
       setTimeout(onward,900);
     }catch(e){
+      clearTimeout(emailTo);
       if(status)status.textContent="hmm, that didn't fly — try again?";
       send.disabled=false;send.textContent="that's it →";
     }

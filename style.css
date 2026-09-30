@@ -549,6 +549,9 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
 
 /* ===== "wanna say something??" — interstitial between phase 2 and phase 3 ===== */
 .say-inner{position:relative}
+/* tall pages: when the content overflows the viewport the inner goes full-height and the
+   first in-flow element would slide up under the absolute top bar — keep clearance. */
+#p10 .inner,#p-email .inner{padding-top:30px}
 .say-title{font-size:54px;margin-top:14px;color:#f6ecd9;line-height:1.02}
 .say-stage{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:5}
 .say-bit{position:absolute;left:50%;top:40%;font-size:22px;opacity:0;will-change:transform,opacity}
