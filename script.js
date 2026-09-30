@@ -28,6 +28,110 @@ function fadeOutAudio(a,duration=500,reset=true){
     }
   },30);
 }
+const PHASE1_LYRICS=[
+{t:8.2,line:"Hey there Delilah, what's it like in New York City?"},
+{t:13.6,line:"I'm a thousand miles away, but girl, tonight you look so pretty"},
+{t:19.1,line:"Yes you do"},
+{t:21.8,line:"Times Square can't shine as bright as you"},
+{t:25.4,line:"I swear it's true"},
+{t:29.9,line:"Hey there Delilah, don't you worry about the distance"},
+{t:35.4,line:"I'm right there if you get lonely, give this song another listen"},
+{t:40.8,line:"Close your eyes"},
+{t:43.6,line:"Listen to my voice, it's my disguise"},
+{t:48.1,line:"I'm by your side"},
+{t:52.6,line:"Oh it's what you do to me"},
+{t:57.2,line:"Oh it's what you do to me"},
+{t:61.7,line:"Oh it's what you do to me"},
+{t:66.2,line:"Oh it's what you do to me"},
+{t:69.9,line:"What you do to me"},
+{t:74.4,line:"Hey there Delilah, I know times are getting hard"},
+{t:79.9,line:"But just believe me girl, someday I'll pay the bills with this guitar"},
+{t:85.3,line:"We'll have it good"},
+{t:88.0,line:"We'll have the life we knew we would"},
+{t:91.6,line:"My word is good"},
+{t:95.3,line:"Hey there Delilah, I've got so much left to say"},
+{t:100.7,line:"If every simple song I wrote to you would take your breath away"},
+{t:106.2,line:"I'd write it all"},
+{t:108.9,line:"Even more in love with me you'd fall"},
+{t:112.5,line:"We'd have it all"},
+{t:116.2,line:"Oh it's what you do to me"},
+{t:120.7,line:"Oh it's what you do to me"},
+{t:125.2,line:"Oh it's what you do to me"},
+{t:129.8,line:"Oh it's what you do to me"},
+{t:135.2,line:"A thousand miles seems pretty far"},
+{t:138.8,line:"But they've got planes and trains and cars"},
+{t:142.5,line:"I'd walk to you if I had no other way"},
+{t:147.9,line:"Our friends would all make fun of us"},
+{t:152.4,line:"And we'll just laugh along because"},
+{t:156.1,line:"We know that none of them have felt this way"},
+{t:161.5,line:"Delilah I can promise you"},
+{t:165.2,line:"That by the time we get through"},
+{t:168.8,line:"The world will never ever be the same"},
+{t:173.3,line:"And you're to blame"},
+{t:176.9,line:"Hey there Delilah, you be good and don't you miss me"},
+{t:182.4,line:"Two more years and you'll be done with school"},
+{t:186.0,line:"And I'll be making history like I do"},
+{t:189.7,line:"You know it's all because of you"},
+{t:193.3,line:"We can do whatever we want to"},
+{t:196.9,line:"Hey there Delilah, here's to you"},
+{t:200.5,line:"This one's for you"},
+{t:203.3,line:"Oh it's what you do to me"},
+{t:206.9,line:"Oh it's what you do to me"},
+{t:210.5,line:"Oh it's what you do to me"},
+{t:214.2,line:"Oh it's what you do to me"},
+{t:217.8,line:"What you do to me"},
+{t:221.4,line:"Oh whoa, whoa"},
+{t:225.0,line:"Oh whoa, whoa, oh whoa"},
+{t:228.7,line:"Oh"}
+];
+/* PHASE 1 SONG — Hey There Delilah, synced lyrics from first let's-go until unlock.
+   The lyric layer is page-independent: it follows the audio clock, not the page. */
+let phase1SongStarted=false,phase1SongDone=false,lyricTimer=null,lastLyricIdx=-1;
+function lyricLayerEl(){return document.getElementById('lyricLayer');}
+function lyricLineEl(){return document.getElementById('lyricLine');}
+function startPhase1Song(){
+  if(phase1SongStarted)return;phase1SongStarted=true;
+  const a=document.getElementById('phase1Song');if(!a)return;
+  a.loop=true;
+  fadeInAudio(a,.5,1400);
+  const l=lyricLayerEl();if(l){l.classList.add('show');l.dataset.page=window.sitePageIndex;}
+  lastLyricIdx=-1;
+  if(lyricTimer)clearInterval(lyricTimer);
+  lyricTimer=setInterval(updateLyricLine,250);
+  if(window.trackStoryEvent)window.trackStoryEvent('phase1-song-started');
+}
+function updateLyricLine(){
+  const a=document.getElementById('phase1Song');if(!a||a.paused)return;
+  const t=a.currentTime;let idx=0;
+  for(let k=0;k<PHASE1_LYRICS.length;k++){if(PHASE1_LYRICS[k].t<=t)idx=k;else break;}
+  if(idx===lastLyricIdx)return;lastLyricIdx=idx;
+  const el=lyricLineEl();if(!el)return;
+  el.classList.remove('lyr-in');void el.offsetWidth;
+  el.textContent=PHASE1_LYRICS[idx].line;el.classList.add('lyr-in');
+}
+function duckAudio(a,to,duration){
+  if(!a)return;
+  if(a._fadeTimer){clearInterval(a._fadeTimer);a._fadeTimer=null;}
+  const from=a.volume,started=performance.now();
+  a._fadeTimer=setInterval(()=>{
+    const t=Math.min(1,(performance.now()-started)/duration);
+    a.volume=from+(to-from)*t;
+    if(t>=1){clearInterval(a._fadeTimer);a._fadeTimer=null;}
+  },30);
+}
+function duckPhase1Song(duck){
+  if(!phase1SongStarted||phase1SongDone)return;
+  const a=document.getElementById('phase1Song'),l=lyricLayerEl();
+  if(duck){duckAudio(a,.06,600);if(l)l.classList.remove('show');}
+  else{duckAudio(a,.5,900);if(l)l.classList.add('show');}
+}
+function stopPhase1Song(){
+  if(!phase1SongStarted||phase1SongDone)return;phase1SongDone=true;
+  const a=document.getElementById('phase1Song');if(a)fadeOutAudio(a,900,true);
+  const l=lyricLayerEl();if(l)l.classList.remove('show');
+  if(lyricTimer){clearInterval(lyricTimer);lyricTimer=null;}
+}
+
 /* Page order: p0 intro (0), p1 hey (1), p2 birthday (2), p3 throwback (3),
    p4 delivery (4), p5 chocolate (5), p6 letter (6), p7 unlock (7),
    p8 moon (8), p9 constellation (9), p10 say (10), p11 garden (11).
@@ -123,6 +227,8 @@ function go(n){
   }else if(oldIndex===2){
     resetBirthdayWeather();
   }
+  if(n===2&&oldIndex===1)startPhase1Song();
+  const _ll=lyricLayerEl();if(_ll)_ll.dataset.page=n;
   setTimeout(()=>{
     old.classList.remove('active','exit-left','exit-right','enter-left','enter-right');
     next.style.animation='none';
@@ -229,6 +335,7 @@ setCurrentPage(isPreviewPage?0:1);
 
 function runPhase1Ending(){
   phase1Ending=true;
+  stopPhase1Song();
   const overlay=document.getElementById('codeReveal');
   const grant=document.getElementById('revealGrant');
   const wait=document.getElementById('revealWait');
@@ -319,6 +426,7 @@ function closeLetter(){
   pop.setAttribute('aria-hidden','true');
   const song=document.getElementById('letterSong');
   if(song){ clearTimeout(window.letterSongStop); fadeOutAudio(song,500,true); }
+  duckPhase1Song(false);
 }
 document.getElementById('closeLetter').onclick=closeLetter;
 pop.addEventListener('click',e=>{if(e.target===pop)closeLetter()});
@@ -357,6 +465,7 @@ env.addEventListener('click',()=>{
     });
 
     // Start audio during the user gesture so mobile autoplay policies are more reliable.
+    duckPhase1Song(true);
     const letterSong=document.getElementById('letterSong');
     if(letterSong){letterSong.currentTime=20;fadeInAudio(letterSong,.56,900);}
     // The actual letter opens automatically after the heart burst.
