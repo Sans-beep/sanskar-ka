@@ -127,7 +127,8 @@ function stopPhase1Song(){
 
 /* Page order: p0 intro (0), p1 hey (1), p2 birthday (2), p3 throwback (3),
    p4 delivery (4), p5 chocolate (5), p6 letter (6), p7 unlock (7),
-   p8 moon (8), p9 constellation (9), p10 say (10), p11 garden (11).
+   p8 moon (8), p9 constellation (9), p10 say (10), p11 reply-email (11),
+   p12 garden (12).
    The birthday slide is back WITHOUT its song; the intro plays aise-kyun.
    NOTE: the intro timer (p0) plays ONLY in preview.html (body.preview) —
    the main site starts on p1 and never shows p0. */
@@ -210,8 +211,9 @@ function go(n){
   if(n===7)renderUnlockPage();
   if(n===9)startConstSky();else if(oldIndex===9)stopConstSky();
   if(n===10&&window.trackStoryEvent)window.trackStoryEvent('say-shown');
-  if(n===11)startGarden();else if(oldIndex===11)stopGarden();
-  if(n===11&&window.trackStoryEvent)window.trackStoryEvent('phase3-shown');
+  if(n===11&&window.trackStoryEvent)window.trackStoryEvent('email-shown');
+  if(n===12)startGarden();else if(oldIndex===12)stopGarden();
+  if(n===12&&window.trackStoryEvent)window.trackStoryEvent('phase3-shown');
   const thread=document.getElementById('storyThread');
   if(thread){thread.classList.remove('play');void thread.offsetWidth;thread.classList.add('play');}
   if(n===0&&isPreviewPage)startIntro();
@@ -1031,9 +1033,10 @@ if(enterPhase2Button){
 }
 
 // One clean Phase 2 wrapper. Phase 2 is the moon page (8), the constellation
-// (9), AND the "wanna say something??" interstitial (10): the song plays across
-// all three and only stops when she truly leaves — i.e. on "going ahead →"
-// into phase 3 (11) or navigating back before the moon.
+// (9), the "wanna say something??" interstitial (10), AND the reply-address
+// page (11): the song plays across all four and only stops when she truly
+// leaves — i.e. on "that's it →"/"skip →" into phase 3 (12) or navigating
+// back before the moon.
 // No room/Lost Frame/fullscreen navigation layer.
 const phase2BaseGo=go;
 go=function(n){
@@ -1041,7 +1044,7 @@ go=function(n){
   if(i===9 && n!==9){
     closeHerVideo();
   }
-  if((i===8||i===9||i===10)&&(n!==8&&n!==9&&n!==10)){
+  if((i===8||i===9||i===10||i===11)&&(n!==8&&n!==9&&n!==10&&n!==11)){
     pausePhase2Song();
   }
   if(i===8 && n!==8){
@@ -1757,8 +1760,9 @@ applyCustomization();
    Her words travel to him through a tiny form backend (FormSubmit). The message
    body itself NEVER touches analytics — only metadata events (shown/yes/no/sent). */
 const SAY_SOMETHING_EMAIL='beyondsanskar@gmail.com'; // real address; activate once via FormSubmit's mail
-const PHASE3_INDEX=11; // first page of phase 3: "two flowers, one garden"
-let sayAnswered=false,saySending=false;
+const EMAIL_INDEX=11; // "where can i write back?" — only after she wrote + it sent
+const PHASE3_INDEX=12; // first page of phase 3: "two flowers, one garden"
+let sayAnswered=false,saySending=false,sayWroteAndSent=false,sayEmailToken='';
 
 function setSayLine(t){
   const l=document.getElementById('sayLine');
@@ -1847,17 +1851,19 @@ function wireSayPage(){
     if(!msg){if(status)status.textContent='write a little something first ♡';return;}
     saySending=true;send.disabled=true;send.textContent='sending…';
     if(status)status.textContent='';
+    sayEmailToken=Math.random().toString(36).slice(2,10);
     try{
       const r=await fetch('https://formsubmit.co/ajax/'+encodeURIComponent(SAY_SOMETHING_EMAIL),{
         method:'POST',
         headers:{'Content-Type':'application/json','Accept':'application/json'},
-        body:JSON.stringify({_subject:'she said something ♡',message:msg,page:'wanna-say-something'})
+        body:JSON.stringify({_subject:'she said something ♡',message:msg,page:'wanna-say-something',ref:sayEmailToken})
       });
       if(!r.ok)throw new Error('send failed: '+r.status);
       if(status)status.textContent="it'll find its way to me ♡";
       if(text)text.disabled=true;
       send.textContent='sent ♡';
       if(skip)skip.hidden=true;
+      sayWroteAndSent=true;
       activateSayAhead();
       if(window.trackStoryEvent)window.trackStoryEvent('say-sent');
     }catch(e){
@@ -1868,17 +1874,67 @@ function wireSayPage(){
   });
   ahead.addEventListener('click',()=>{
     if(ahead.disabled)return;
-    if(pages.length>PHASE3_INDEX){go(PHASE3_INDEX);}
+    // She wrote something and it reached him → ask where he can write back.
+    // Otherwise (no / never-mind / send failed) → straight to the garden.
+    if(sayWroteAndSent&&pages.length>EMAIL_INDEX){go(EMAIL_INDEX);}
+    else if(pages.length>PHASE3_INDEX){go(PHASE3_INDEX);}
     else{const s=document.getElementById('saySoon');if(s)s.hidden=false;}
   });
 }
 wireSayPage();
 
-/* ===== Phase 3: "two flowers, one garden" (p11, index 11) =====
+/* ===== Reply-address page (index 11): "where can i write back? ♡" =====
+   Only reachable when she wrote something AND it sent (sayWroteAndSent).
+   Her address goes to his inbox via FormSubmit with the same ref token as
+   her message, so the two emails pair up. _replyto means his Gmail reply
+   goes straight to her — no DM, no call. The address itself never touches
+   analytics (event names only). The phase-2 song keeps playing: this page
+   is inside the phase-2 unit in the go() wrapper above. */
+function wireEmailPage(){
+  const input=document.getElementById('sayEmail'),send=document.getElementById('emailSend'),
+        skip=document.getElementById('emailSkip'),status=document.getElementById('emailStatus');
+  if(!input||!send)return;
+  let sending=false;
+  const onward=()=>{if(pages.length>PHASE3_INDEX)go(PHASE3_INDEX);};
+  if(skip)skip.addEventListener('click',()=>{
+    if(window.trackStoryEvent)window.trackStoryEvent('email-skipped');
+    onward();
+  });
+  send.addEventListener('click',async()=>{
+    if(sending)return;
+    const email=input.value.trim();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+      if(status)status.textContent="hmm, that doesn't look like an email ♡";
+      return;
+    }
+    sending=true;send.disabled=true;send.textContent='sending…';
+    if(status)status.textContent='';
+    try{
+      const r=await fetch('https://formsubmit.co/ajax/'+encodeURIComponent(SAY_SOMETHING_EMAIL),{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Accept':'application/json'},
+        body:JSON.stringify({_subject:'her reply address ♡',_replyto:email,reply_to:email,ref:sayEmailToken||'no-ref',page:'reply-address'})
+      });
+      if(!r.ok)throw new Error('send failed: '+r.status);
+      if(status)status.textContent="noted ♡ i'll write back.";
+      input.disabled=true;send.textContent='saved ♡';
+      if(skip)skip.hidden=true;
+      if(window.trackStoryEvent)window.trackStoryEvent('email-sent');
+      setTimeout(onward,900);
+    }catch(e){
+      if(status)status.textContent="hmm, that didn't fly — try again?";
+      send.disabled=false;send.textContent="that's it →";
+    }
+    sending=false;
+  });
+}
+wireEmailPage();
+
+/* ===== Phase 3: "two flowers, one garden" (index 12) =====
    She holds each bud to bloom it (real photos: orange = him, yellow = her).
    When both bloom, petals swirl up into a heart, then her photo appears.
    All motion is transform/opacity-only (WAAPI + CSS) — GPU-cheap. */
-const GARDEN_INDEX=11;
+const GARDEN_INDEX=12;
 const HOLD_MS=1400, RING_C=339.3;
 let gardenInit=false, gardenHeartDone=false, gardenFinaleShown=false, gardenRaf=0, gardenLast=0;
 const gardenState={him:{p:0,done:false,holding:false},her:{p:0,done:false,holding:false}};
@@ -2147,7 +2203,7 @@ function wireGarden(){
   const ahead=document.getElementById('gardenAhead');
   if(ahead)ahead.addEventListener('click',()=>{
     if(ahead.disabled)return;
-    const PHASE4_INDEX=12;
+    const PHASE4_INDEX=13;
     if(pages.length>PHASE4_INDEX)go(PHASE4_INDEX);
     else{const s=document.getElementById('gardenSoon');if(s)s.hidden=false;}
   });
