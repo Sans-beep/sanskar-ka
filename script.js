@@ -61,10 +61,6 @@ function go(n){
   busy=true;
   const oldIndex=i, old=pages[i], next=pages[n], forward=n>i;
   if(oldIndex===0)stopIntro();
-  if(oldIndex===3){
-    const t=document.getElementById('throwbackSong');
-    if(t)fadeOutAudio(t,450,true);
-  }
   const card=document.querySelector('.card');
   const transitionDoodles=document.getElementById('transitionDoodles');
   const transitionMap={
@@ -126,11 +122,6 @@ function go(n){
     startBirthdayWeather();
   }else if(oldIndex===2){
     resetBirthdayWeather();
-  }
-  const throwbackSong=document.getElementById('throwbackSong');
-  if(throwbackSong && n===3){
-    throwbackSong.currentTime=0;
-    fadeInAudio(throwbackSong,.48,850);
   }
   setTimeout(()=>{
     old.classList.remove('active','exit-left','exit-right','enter-left','enter-right');
@@ -326,8 +317,6 @@ tapSound.volume=.72;
 function closeLetter(){
   pop.classList.remove('open');
   pop.setAttribute('aria-hidden','true');
-  const song=document.getElementById('letterSong');
-  if(song){ clearTimeout(window.letterSongStop); fadeOutAudio(song,500,true); }
 }
 document.getElementById('closeLetter').onclick=closeLetter;
 pop.addEventListener('click',e=>{if(e.target===pop)closeLetter()});
@@ -365,16 +354,10 @@ env.addEventListener('click',()=>{
       burst.appendChild(el);
     });
 
-    // Start audio during the user gesture so mobile autoplay policies are more reliable.
-    const letterSong=document.getElementById('letterSong');
-    if(letterSong){letterSong.currentTime=20;fadeInAudio(letterSong,.56,900);}
     // The actual letter opens automatically after the heart burst.
     setTimeout(()=>{
       pop.classList.add('open');
       pop.setAttribute('aria-hidden','false');
-      const song=document.getElementById('letterSong');
-      clearTimeout(window.letterSongStop);
-      window.letterSongStop=setTimeout(()=>fadeOutAudio(song,900,true),40000);
     },620);
   }else{
     tapReset=setTimeout(()=>{
