@@ -725,8 +725,8 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
 #lyricLayer[data-page="1"]{bottom:19%}
 #lyricLayer[data-page="1"] #lyricLine{font-size:23px}
 #lyricLayer[data-page="2"]{bottom:12%}
-#lyricLayer[data-page="3"]{bottom:16%}
-#lyricLayer[data-page="3"] #lyricLine{font-size:22px}
+#lyricLayer[data-page="3"]{bottom:10.5%}
+#lyricLayer[data-page="3"] #lyricLine{font-size:21px}
 #lyricLayer[data-page="4"]{bottom:15%}
 #lyricLayer[data-page="4"] #lyricLine{font-size:22px}
 #lyricLayer[data-page="5"]{bottom:12%}
