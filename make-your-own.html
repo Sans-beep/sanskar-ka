@@ -2,101 +2,497 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Make your own ♡</title>
-<script defer src="https://cloud.umami.is/script.js" data-website-id="a185121f-03b3-4c7e-b61d-20452f515db2" data-domains="sans-beep.github.io" data-tag="birthday"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>make your own ♡</title>
+<script defer src="https://cloud.umami.is/script.js" data-website-id="a185121f-03b3-4c7e-b61d-20452f515db2" data-domains="sans-beep.github.io" data-tag="studio"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#0d0b0a;color:#2b2620;font-family:"DM Sans",sans-serif;min-height:100vh;display:grid;place-items:center;padding:28px 16px;background-image:radial-gradient(circle at 50% 0%,rgba(232,184,187,.06),transparent 55%)}
-.card{width:min(94vw,400px);background:#f5efe4;border-radius:6px;padding:28px 24px 26px;box-shadow:0 30px 90px rgba(0,0,0,.55);position:relative}
-.card::before{content:"";position:absolute;top:-13px;left:50%;transform:translateX(-50%) rotate(-3deg);width:96px;height:26px;background:rgba(244,169,198,.35);border-left:1px dashed rgba(255,255,255,.5);border-right:1px dashed rgba(255,255,255,.5)}
-h1{font-family:Caveat,cursive;font-size:34px;line-height:1;color:#2b2620}
-.sub{font-size:14px;color:#6b5f55;margin:8px 0 4px;line-height:1.55}
-label{display:block;font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:#8a7d70;margin:15px 0 0}
-input{width:100%;margin-top:5px;padding:10px 12px;border:1px solid #d8cec2;border-radius:6px;background:#fffdf8;font-size:15px;color:#2b2620;font-family:"DM Sans",sans-serif}
-input:focus{outline:none;border-color:#c9a86a;box-shadow:0 0 0 3px rgba(201,168,106,.18)}
-.memtitle{font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:#8a7d70;margin:20px 0 2px}
-.mem{display:grid;grid-template-columns:20px 1fr;gap:5px 8px;margin-top:10px;align-items:center}
-.mem>span{grid-row:1/3;font-family:Caveat,cursive;color:#a89a8c;font-size:19px;text-align:center}
-.mem input{margin-top:0;padding:8px 10px;font-size:13px}
-.btn{display:block;width:100%;margin-top:20px;border:1px solid #81766e;background:#2b2620;color:#f5efe4;border-radius:999px;padding:14px 24px;font:600 14px "DM Sans";cursor:pointer;transition:.2s}
-.btn:hover{transform:translateY(-2px)}
-.linkrow{display:flex;gap:8px;margin-top:14px}
-.linkrow input{flex:1;min-width:0;margin-top:0;font-size:12px;color:#6b5f55}
-.linkrow .btn{width:auto;margin-top:0;padding:10px 18px;white-space:nowrap}
-.hidden{display:none!important}
-.note{margin-top:16px;font-size:12px;color:#a89a8c;line-height:1.6;text-align:center}
-.back{display:block;margin:18px auto 0;background:none;border:0;color:#8a7d70;font-size:13px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+:root{--bg:#0d0a12;--bg2:#141020;--card:#1a1428;--line:#2c2340;--txt:#f2e9f4;--dim:#b9a8c9;--pink:#ff7aa8;--gold:#f5c86e;--green:#8fe3a8}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:radial-gradient(1200px 800px at 50% -10%,#241a3d 0%,var(--bg) 55%) fixed,var(--bg);color:var(--txt);font-family:"DM Sans",system-ui,sans-serif;min-height:100vh;padding:0 0 90px}
+.st-head{text-align:center;padding:44px 20px 10px}
+.st-kicker{font-size:11px;letter-spacing:.35em;color:var(--gold);margin-bottom:10px}
+.st-head h1{font-family:"Caveat",cursive;font-size:52px;font-weight:600;color:var(--pink);line-height:1}
+.st-sub{color:var(--dim);font-size:14px;max-width:520px;margin:12px auto 0;line-height:1.6}
+.st-sub b{color:var(--txt)}
+main{max-width:720px;margin:0 auto;padding:18px 16px}
+.card{background:linear-gradient(180deg,#1c152e,#150f22);border:1px solid var(--line);border-radius:18px;padding:22px 20px;margin:16px 0;box-shadow:0 18px 50px #0007}
+.card h2{font-family:"Caveat",cursive;font-size:30px;color:var(--gold);margin-bottom:4px}
+.card .step{font-size:11px;letter-spacing:.25em;color:var(--dim);margin-bottom:2px}
+.card p.hint{color:var(--dim);font-size:13px;line-height:1.6;margin:6px 0 14px}
+.card p.hint b{color:var(--gold)}
+.fld{margin:12px 0}
+.fld label{display:block;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
+.fld label .keep{float:right;text-transform:none;letter-spacing:0;color:#7d6f94;font-size:11px}
+.fld input[type=text],.fld input[type=email],.fld input[type=date],.fld input[type=password],.fld textarea{width:100%;background:#0f0b18;border:1px solid var(--line);border-radius:10px;color:var(--txt);font-family:"DM Sans",sans-serif;font-size:15px;padding:11px 12px;outline:none;transition:border .2s}
+.fld textarea{min-height:76px;resize:vertical;line-height:1.55;font-size:14px}
+.fld input:focus,.fld textarea:focus{border-color:var(--pink)}
+.fld .mini{font-size:12px;color:#7d6f94;margin-top:5px;line-height:1.5}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:520px){.frow{grid-template-columns:1fr}}
+details.sec{border:1px solid var(--line);border-radius:12px;margin:10px 0;background:#120d1d;overflow:hidden}
+details.sec>summary{cursor:pointer;list-style:none;padding:13px 15px;font-size:15px;font-weight:600;display:flex;justify-content:space-between;align-items:center}
+details.sec>summary::-webkit-details-marker{display:none}
+details.sec>summary .n{color:var(--pink);font-family:"Caveat",cursive;font-size:19px;margin-right:8px}
+details.sec>summary .rst{font-size:11px;color:#7d6f94;font-weight:400;border:1px solid var(--line);border-radius:20px;padding:4px 10px}
+details.sec>summary .rst:hover{color:var(--pink);border-color:var(--pink)}
+details.sec .body{padding:4px 15px 16px;border-top:1px solid var(--line)}
+details.sec .body .fld{margin:10px 0}
+.mrow{display:flex;gap:10px;align-items:center;margin:10px 0;flex-wrap:wrap}
+.mrow .mlab{flex:1 1 180px;font-size:13px;color:var(--dim)}
+.mrow .mlab b{color:var(--txt);display:block;font-size:14px}
+.thumb{width:64px;height:64px;border-radius:10px;object-fit:cover;border:1px solid var(--line);background:#0f0b18;display:none}
+.vthumb{display:none;font-size:12px;color:var(--green);border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:#0f0b18}
+.filebtn{display:inline-block;background:#241a3d;border:1px solid var(--pink);color:var(--pink);border-radius:10px;padding:9px 14px;font-size:13px;cursor:pointer;font-family:"DM Sans",sans-serif}
+.filebtn:hover{background:#2e2149}
+input[type=file]{display:none}
+.lockbox{background:#0f0b18;border:1px solid var(--gold);border-radius:12px;padding:16px;margin:14px 0}
+.lockbox h3{color:var(--gold);font-family:"Caveat",cursive;font-size:24px;margin-bottom:6px}
+.lockbox p{font-size:13px;color:var(--dim);line-height:1.6;margin-bottom:10px}
+.lockbox p b{color:var(--txt)}
+#codeStrength{font-size:12px;margin-top:6px;min-height:18px}
+.btn-big{display:block;width:100%;background:linear-gradient(135deg,var(--pink),#c65df0);border:none;color:#fff;font-family:"DM Sans",sans-serif;font-weight:600;font-size:17px;border-radius:14px;padding:16px;cursor:pointer;margin-top:14px;box-shadow:0 10px 30px #ff7aa855}
+.btn-big:disabled{opacity:.45;cursor:wait;box-shadow:none}
+#status{font-size:14px;color:var(--dim);margin-top:14px;line-height:1.7;white-space:pre-line}
+#status b{color:var(--green)}
+#dlWrap{display:none;margin-top:16px;text-align:center}
+#dlBtn{display:inline-block;background:linear-gradient(135deg,var(--green),#4fc98a);color:#06210f;font-weight:700;font-size:16px;border-radius:14px;padding:15px 34px;text-decoration:none;box-shadow:0 10px 30px #8fe3a855}
+.share{font-size:13px;color:var(--dim);line-height:1.7;margin-top:14px}
+.share b{color:var(--gold)}
+.priv{background:#0d1a12;border:1px solid #1f4a2e;border-radius:12px;padding:14px 16px;margin:14px 0;font-size:13px;color:#a9c9b4;line-height:1.65}
+.priv b{color:var(--green)}
+.foot{text-align:center;color:#5d5470;font-size:12px;margin-top:26px;line-height:1.7}
+.foot a{color:var(--pink)}
+details.adv{margin-top:12px}
+details.adv summary{cursor:pointer;color:#7d6f94;font-size:13px}
+details.adv .body{padding-top:10px}
 </style>
 </head>
 <body>
-<main class="card">
-  <h1>make your own ♡</h1>
-  <p class="sub">Fill this in and get a link — your own copy of the whole birthday journey, with your names and memories.</p>
-  <label>her name<input id="mkTo" maxlength="24" placeholder="e.g. Aisha" autocomplete="off"></label>
-  <label>your name<input id="mkFrom" maxlength="24" placeholder="e.g. Rohan" autocomplete="off"></label>
-  <label>secret code<input id="mkCode" maxlength="16" placeholder="e.g. AISHA21" autocomplete="off" style="text-transform:uppercase"></label>
-  <label>her birthday<input id="mkDate" type="date" value="2026-10-19"></label>
-  <div class="memtitle">the 7 memories</div>
-  <div id="mkMems"></div>
-  <button class="btn" id="mkGenerate" type="button">get my link →</button>
-  <div class="linkrow hidden" id="mkLinkRow">
-    <input id="mkLink" readonly>
-    <button class="btn" id="mkCopy" type="button">copy</button>
-  </div>
-  <p class="note">The link opens the journey personalized for her.<br>Photos can't be customized yet — coming soon.</p>
-  <button class="back" type="button" onclick="location.href='./'">← back to the original</button>
+<header class="st-head">
+  <div class="st-kicker">FOR YOUR PERSON ♡</div>
+  <h1>make your own</h1>
+  <p class="st-sub">Your own copy of the whole birthday journey — <b>every word rewritable, every photo yours</b>. The original stays exactly as it is. When you're done, you download <b>one locked file</b> — only your person, with the code, can open it.</p>
+</header>
+<main>
+  <div class="priv">🔒 <b>privacy, honestly:</b> everything on this page happens <b>inside your browser</b>. Your words and photos never leave this tab — there's no account, no upload, nothing sent to me. The file you download is <b>encrypted with your secret code</b> (AES-256). Without the code it's unreadable — even viewing the file's source shows nothing.</div>
+
+  <section class="card">
+    <div class="step">STEP 1</div><h2>the basics</h2>
+    <p class="hint">The names, the date, the code. Leave anything blank to keep the original.</p>
+    <div class="frow">
+      <div class="fld"><label>her name</label><input type="text" id="herName" placeholder="Kashish" autocomplete="off"><div class="mini">used in "Hey …", the letter, the finale</div></div>
+      <div class="fld"><label>your name</label><input type="text" id="yourName" placeholder="Sanskar" autocomplete="off"><div class="mini">signs the letter</div></div>
+    </div>
+    <div class="frow">
+      <div class="fld"><label>her birthday</label><input type="date" id="bday"><div class="mini">shown on the birthday-morning page</div></div>
+      <div class="fld"><label>your email <span class="keep">needed for replies</span></label><input type="email" id="yourEmail" placeholder="you@example.com" autocomplete="off"><div class="mini">her "say something" notes + reply address come <b>to you</b> — otherwise they'd land in my inbox</div></div>
+    </div>
+    <div class="lockbox">
+      <h3>🔐 the secret code</h3>
+      <p>This one code does two jobs: it <b>encrypts the whole file</b> (no code = unreadable, even from the file's source), and it's the code <b>she types inside</b> to unlock the journey. Share it with her privately — separately from the file.</p>
+      <div class="fld"><label>secret code</label><input type="text" id="secretCode" placeholder="a phrase only you two know" autocomplete="off"><div id="codeStrength"></div><div class="mini">6+ characters. A little phrase beats a clever word — it's genuinely harder to crack.</div></div>
+    </div>
+    <details class="adv"><summary>advanced: her photo upload at the "proof" step (optional)</summary><div class="body">
+      <p class="hint">On the original, her uploaded photo is sent via my Cloudinary. For your copy, add your own <b>cloud name</b> + <b>upload preset</b> (unsigned) — or leave blank and that step simply lets her through with a smile.</p>
+      <div class="frow">
+        <div class="fld"><label>cloudinary cloud name</label><input type="text" id="ccCloud" placeholder="" autocomplete="off"></div>
+        <div class="fld"><label>unsigned upload preset</label><input type="text" id="ccPreset" placeholder="" autocomplete="off"></div>
+      </div>
+    </div></details>
+  </section>
+
+  <section class="card">
+    <div class="step">STEP 2</div><h2>the words</h2>
+    <p class="hint">Every line from the site, prefilled with the original. Edit what you want — <b>untouched fields stay exactly as they are</b>. Use <b>{n}</b> where you see it (it's replaced by the number).</p>
+    <div id="wordGroups"></div>
+  </section>
+
+  <section class="card">
+    <div class="step">STEP 3</div><h2>photos &amp; videos</h2>
+    <p class="hint">Yours, everywhere. Photos are gently compressed; videos go in as-is (keep clips short — under 25 MB each). Skip any and the site degrades gracefully — a frame keeps its art, the video star becomes a photo card.</p>
+    <div class="fld"><label>throwback photo <span class="keep">the taped polaroid</span></label>
+      <div class="mrow"><img class="thumb" id="th-throwback" alt=""><label class="filebtn" for="f-throwback">choose photo</label><input type="file" id="f-throwback" accept="image/*"></div>
+    </div>
+    <div class="fld"><label>the lost frame <span class="keep">8 photos, optional each</span></label><div id="framePhotos"></div></div>
+    <div class="fld"><label>constellation <span class="keep">7 memory photos</span></label><div id="memPhotos"></div></div>
+    <div class="frow">
+      <div class="fld"><label>her video <span class="keep">the 7th star ♡</span></label>
+        <div class="mrow"><span class="vthumb" id="vt-hervideo"></span><label class="filebtn" for="f-hervideo">choose video</label><input type="file" id="f-hervideo" accept="video/*"></div>
+      </div>
+      <div class="fld"><label>garden video <span class="keep">the finale polaroid</span></label>
+        <div class="mrow"><span class="vthumb" id="vt-gardenvideo"></span><label class="filebtn" for="f-gardenvideo">choose video</label><input type="file" id="f-gardenvideo" accept="video/*"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="step">STEP 4</div><h2>lock it &amp; download</h2>
+    <p class="hint">This bakes everything into <b>one encrypted file</b>. Open it, type the code, and check it feels right — then send the file to her (and the code, separately ♡).</p>
+    <button class="btn-big" id="genBtn">🔒 encrypt &amp; download my site</button>
+    <div id="status"></div>
+    <div id="dlWrap"><a id="dlBtn" href="#" download>download</a>
+      <p class="share"><b>send it:</b> WhatsApp the file straight to her, or drop it on <b>netlify drop</b> (app.netlify.com/drop) for a link. <b>send the code separately</b> — a different chat, a call, a whisper. Without the code the file is just noise. ♡</p>
+    </div>
+  </section>
+  <p class="foot">made with the same love as the original.<br>your words &amp; photos never left this page.</p>
 </main>
 <script>
-(function(){
-  var defaults=[
-    ['the first hello','where it all started ♡'],
-    ['that laugh','you know the one.'],
-    ['4:18 pm','an ordinary day, my favorite memory.'],
-    ['the song','ours, on repeat.'],
-    ['almost said it','you felt it too.'],
-    ['the long walk','we took the long way home.'],
-    ['today','still my favorite.']
-  ];
-  var wrap=document.getElementById('mkMems'),pairs=[];
-  defaults.forEach(function(d,k){
-    var row=document.createElement('div');row.className='mem';
-    var num=document.createElement('span');num.textContent=k+1;
-    var t=document.createElement('input');t.placeholder='memory title';t.maxLength=40;t.autocomplete='off';t.value=d[0];
-    var c=document.createElement('input');c.placeholder='one line about it';c.maxLength=90;c.autocomplete='off';c.value=d[1];
-    row.appendChild(num);row.appendChild(t);row.appendChild(c);
-    wrap.appendChild(row);pairs.push([t,c]);
-  });
-  var $=function(id){return document.getElementById(id);};
-  function track(n){try{if(window.umami&&typeof window.umami.track==='function')window.umami.track(n,{});}catch(e){}}
-  $('mkGenerate').addEventListener('click',function(){
-    var p=new URLSearchParams();
-    var to=$('mkTo').value.trim();if(to)p.set('to',to);
-    var from=$('mkFrom').value.trim();if(from)p.set('from',from);
-    var code=$('mkCode').value.trim().toUpperCase();if(code)p.set('code',code);
-    var date=$('mkDate').value;if(date)p.set('date',date);
-    pairs.forEach(function(pr,k){
-      var t=pr[0].value.trim(),c=pr[1].value.trim();
-      if(t||c)p.set('m'+(k+1),t+'|'+c);
+"use strict";
+/* ================= MAKE-YOUR-OWN STUDIO ================= */
+const ABS='https://sans-beep.github.io/sanskar-ka/';
+let INDEX_HTML='',SCRIPT_JS='',STYLE_CSS='',HTML_DOC=null,JS_DEF={},MEM_DEF=[];
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+/* ================= MAKE-YOUR-OWN STUDIO (2/5): schemas + form ================= */
+const SECTIONS=[['intro','the 19-second intro'],['p1','1 · hey'],['p2','2 · birthday morning'],['p3','3 · throwback'],['p4','4 · delivery'],['p5','5 · proof'],['p6','6 · the letter'],['letter','the letter pop-up'],['p7','7 · the code lock'],['p8','8 · the lost frame'],['p9','9 · constellation'],['p10','10 · say something'],['pemail','11 · reply address'],['p11','12 · the garden'],['global','everywhere bits']];
+const JS_LABELS={'intro.lines':'the 19 intro lines (one per line)','unlock.placeholder':'code input placeholder','unlock.unlockedPlaceholder':'placeholder, already unlocked','unlock.btn':'unlock button','unlock.continueBtn':'continue button (unlocked)','unlock.error':'wrong-code message','upload.ownerNote':'owner-mode note','upload.notPhoto':'"not a photo" message','upload.tooBig':'"photo too big" message','upload.acquired':'"evidence acquired"','upload.sending':'"sending…" message','upload.believed':'"okay, i believe you"','upload.failed':'upload-failed message','letter.tapCount':'seal tap counter ({n} = taps)','letter.tapFound':'seal found message','letter.tapReset':'seal reset hint','moon.move':'"move across the moon"','moon.keep':'"keep drawing…"','moon.done':'"you left a little light here"','moon.psst':'"psst… tap the moon"','const.savedLast':'"saved for last" hint','const.moreHiding':'stars-remaining hint ({n} = left)','const.progress':'counter ({n} found, {total} total)','say.yesLine':'yes → line','say.noLine':'no → line','say.empty':'empty-message nudge','say.sending':'"sending…"','say.sent':'sent confirmation','say.sentBtn':'sent button','say.sendBtn':'send button','say.failed':'send-failed message','email.bad':'bad-email message','email.sending':'"sending…"','email.done':'done line','email.savedBtn':'saved button','email.sendBtn':'"that\'s it →" button','email.failed':'send-failed message','garden.oneDownHim':'"one down ♡ now her"','garden.oneDownHer':'"one down ♡ now him"','garden.grew':'"look what you grew ♡"'};
+/* field spec: {sec,label,sel,kind,idx,sub,js,mem,part,smart}  kind: text|html|attr|js|js-lines|custom */
+const F=(sec,label,sel,kind)=>({sec,label,sel,kind:kind||'text'});
+const FIELD_SPECS=[
+F('intro','top line','#p0 .top span:first-child'),F('intro','sound pill','#introSound'),F('intro','skip button','#introContinue'),
+F('p1','top line','#p1 .top span:first-child'),{sec:'p1',label:'hero (her name)',sel:'#p1 .hero',kind:'html',smart:'herName'},F('p1','note','#p1 .note'),F('p1','button','#p1 .btn.next'),
+F('p2','top line','#p2 .top span:first-child'),F('p2','kicker','#p2 .kicker'),F('p2','script headline','#p2 .script.birthday','html'),F('p2','note','#p2 .note'),F('p2','scribble','#p2 .scribble'),F('p2','button','#p2 .btn.next'),
+F('p3','top line','#p3 .top span:first-child'),F('p3','kicker','#p3 .kicker'),F('p3','throwback note','.throwback-note'),F('p3','archive meta · left','.archive-meta span:first-child'),F('p3','archive meta · right','.archive-meta span:last-child'),{sec:'p3',label:'throwback copy (2 lines)',sel:'.throwback-copy',kind:'throwback'},F('p3','throwback small','.throwback-small'),F('p3','button','#p3 .btn.next'),
+F('p4','top line','#p4 .top span:first-child'),F('p4','kicker','#p4 .kicker'),F('p4','copy','#p4 .copy'),F('p4','slip header','.slip-head'),F('p4','slip row 1 · item','.delivery-slip .slip-row:nth-of-type(3) span:first-child'),F('p4','slip row 1 · heart','.delivery-slip .slip-row:nth-of-type(3) span:last-child'),F('p4','slip row 2 · left','.delivery-slip .slip-row:nth-of-type(4) span:first-child'),F('p4','slip row 2 · right','.delivery-slip .slip-row:nth-of-type(4) span:last-child'),F('p4','slip note','.slip-note'),F('p4','slip code','.slip-code'),F('p4','scribble','#p4 .scribble'),F('p4','note','#p4 .note'),F('p4','button','#p4 .btn.next'),
+F('p5','top line','#p5 .top span:first-child'),F('p5','kicker','#p5 .kicker'),F('p5','photo placeholder','.photo-placeholder'),F('p5','proof caption','.proof-caption'),F('p5','verified stamp','.verified-stamp'),F('p5','copy','#p5 .copy'),F('p5','upload label','.upload-label'),F('p5','status line','#uploadStatus'),F('p5','continue button','#p4Next'),
+F('p6','top line','#p6 .top span:first-child'),F('p6','kicker','#p6 .kicker'),F('p6','copy','#p6 .copy','html'),F('p6','seal','.seal'),F('p6','tap counter','#tapCount','html'),F('p6','note','#p6 .note'),F('p6','button','#p6 .btn.next'),
+{sec:'letter',label:'letter title (her name)',sel:'.letter-title',smart:'herName'},{sec:'letter',label:'letter · paragraph 1',sel:'.letter-card p',idx:0,kind:'html'},{sec:'letter',label:'letter · paragraph 2',sel:'.letter-card p',idx:1,kind:'html'},{sec:'letter',label:'letter · paragraph 3',sel:'.letter-card p',idx:2,kind:'html'},{sec:'letter',label:'letter signature (your name)',sel:'#letterSig',smart:'yourName'},
+F('p7','top line','#p7 .top span:first-child'),F('p7','kicker','#p7 .kicker'),F('p7','copy','#p7 .copy','html'),F('p7','tiny note','#p7 .tiny'),
+F('p8','"there\'s more" button','#lostFrameCta'),F('p8','header','#lostFrame .header span:first-child'),F('p8','intro kicker','#lfIntro .kicker'),F('p8','intro headline','#lfIntro h1','html'),F('p8','intro sub','#lfIntro .sub'),F('p8','enter button','#lfEnter'),F('p8','secret line','#lfSecret'),F('p8','drag tip','#lostFrame .tip'),
+F('p9','top · left','.const-top span:first-child'),F('p9','top · right','.const-top span:last-child'),F('p9','finale kicker','.const-finale-kicker'),F('p9','finale line','.const-finale-line'),F('p9','"one more thing" button','#constOnward'),F('p9','video caption','.her-cap'),F('p9','muted hint','#herMuted'),F('p9','back to stars','#herBack'),
+F('p10','top line','#p10 .top span:first-child'),F('p10','kicker','#p10 .kicker'),F('p10','title','#p10 .say-title','html'),F('p10','yes button','#sayYes'),F('p10','no button','#sayNo'),F('p10','card title','#p10 .say-card-title'),F('p10','textarea hint','#sayText','attr'),F('p10','skip','#saySkip'),F('p10','going-ahead button','#sayAhead'),F('p10','soon note','#saySoon'),
+F('pemail','top line','#p-email .top span:first-child'),F('pemail','kicker','#p-email .kicker'),F('pemail','title','#p-email .say-title','html'),F('pemail','copy','#p-email .copy','html'),F('pemail','email hint','#sayEmail','attr'),F('pemail','skip','#emailSkip'),
+F('p11','top line','#p11 .top span:first-child'),F('p11','kicker','#p11 .kicker'),F('p11','garden title','.garden-title','html'),F('p11','his flower label','#gFlowerHim .g-label'),F('p11','her flower label','#gFlowerHer .g-label'),F('p11','caption','.g-cap'),F('p11','sound hint','#gSoundHint'),F('p11','going-ahead button','#gardenAhead'),F('p11','soon note','#gardenSoon'),
+F('global','back button','#globalBack'),F('global','code-reveal · granting','#revealGrant'),F('global','code-reveal · waiting','#revealWait'),F('global','code-reveal · found line','#revealFound'),F('global','code-reveal · number','#revealNumber'),F('global','code-reveal · finale','#revealFinal','html'),F('global','enter phase 2','#enterPhase2'),F('global','hidden joy','#joy'),
+];
+const JS_FIELD_SPECS=[
+['intro','intro.lines','js-lines'],['p7','unlock.placeholder'],['p7','unlock.unlockedPlaceholder'],['p7','unlock.btn'],['p7','unlock.continueBtn'],['p7','unlock.error'],
+['p5','upload.notPhoto'],['p5','upload.tooBig'],['p5','upload.acquired'],['p5','upload.sending'],['p5','upload.believed'],['p5','upload.failed'],['p5','upload.ownerNote'],
+['p6','letter.tapCount'],['p6','letter.tapFound'],['p6','letter.tapReset'],
+['p8','moon.move'],['p8','moon.keep'],['p8','moon.done'],['p8','moon.psst'],
+['p9','const.savedLast'],['p9','const.moreHiding'],['p9','const.progress'],
+['p10','say.yesLine'],['p10','say.noLine'],['p10','say.empty'],['p10','say.sending'],['p10','say.sent'],['p10','say.sentBtn'],['p10','say.sendBtn'],['p10','say.failed'],
+['pemail','email.bad'],['pemail','email.sending'],['pemail','email.done'],['pemail','email.savedBtn'],['pemail','email.sendBtn'],['pemail','email.failed'],
+['p11','garden.oneDownHim'],['p11','garden.oneDownHer'],['p11','garden.grew'],
+];
+const FIELDS=[]; /* {spec, el, def} */
+function qEl(spec){
+  let el;
+  if(spec.idx!==undefined){const all=HTML_DOC.querySelectorAll(spec.sel);el=all[spec.idx];}
+  else el=HTML_DOC.querySelector(spec.sel);
+  if(el&&spec.sub)el=el.querySelector(spec.sub);
+  return el;
+}
+function defOf(spec){
+  if(spec.js)return JS_DEF[spec.js]??'';
+  if(spec.mem!==undefined)return '';
+  const el=qEl(spec);
+  if(!el)return '';
+  if(spec.kind==='html')return el.innerHTML.replace(/<br\s*\/?>/gi,'\n').trim();
+  if(spec.kind==='throwback'){const b=el.innerHTML.split(/<br\s*\/?>/i);const s=el.querySelector('span');return (b[0]||'').trim()+'\n'+(s?s.textContent.trim():'');}
+  if(spec.kind==='attr')return el.getAttribute('placeholder')||'';
+  return el.textContent.trim();
+}
+function buildWordGroups(){
+  const host=$('wordGroups');host.innerHTML='';
+  SECTIONS.forEach(([key,title],si)=>{
+    const det=document.createElement('details');det.className='sec';if(si<2)det.open=true;
+    const sum=document.createElement('summary');
+    sum.innerHTML='<span><span class="n">'+(si+1)+'.</span>'+esc(title)+'</span>';
+    const rst=document.createElement('span');rst.className='rst';rst.textContent='reset section';
+    rst.onclick=e=>{e.preventDefault();e.stopPropagation();resetSection(key);};
+    sum.appendChild(rst);det.appendChild(sum);
+    const body=document.createElement('div');body.className='body';body.dataset.sec=key;
+    /* html text fields */
+    FIELD_SPECS.filter(s=>s.sec===key).forEach(spec=>{body.appendChild(fieldNode(spec));});
+    /* frame text fields for p8 */
+    if(key==='p8'){for(let k=0;k<8;k++){
+      body.appendChild(fieldNode({sec:'p8',label:'frame '+(k+1)+' · number',sel:'#lfRail .frame',idx:k,sub:'figcaption b'}));
+      body.appendChild(fieldNode({sec:'p8',label:'frame '+(k+1)+' · tag',sel:'#lfRail .frame',idx:k,sub:'figcaption span'}));
+      body.appendChild(fieldNode({sec:'p8',label:'frame '+(k+1)+' · scribble',sel:'#lfRail .frame',idx:k,sub:'.scribble'}));
+    }}
+    /* memory title/caption for p9 */
+    if(key==='p9'){for(let k=0;k<7;k++){
+      body.appendChild(fieldNode({sec:'p9',label:'memory '+(k+1)+' · title',mem:k,part:'title'}));
+      body.appendChild(fieldNode({sec:'p9',label:'memory '+(k+1)+' · caption',mem:k,part:'caption'}));
+    }}
+    /* js fields */
+    JS_FIELD_SPECS.filter(([s])=>s===key).forEach(([,jsKey,kind])=>{
+      body.appendChild(fieldNode({sec:key,label:JS_LABELS[jsKey]||jsKey,js:jsKey,kind:kind||'js'}));
     });
-    var base=location.href.replace(/[^/]*$/,'');
-    var link=base+'#'+p.toString();
-    $('mkLink').value=link;
-    $('mkLinkRow').classList.remove('hidden');
-    $('mkLink').focus();$('mkLink').select();
-    track('custom-link-generated');
+    det.appendChild(body);host.appendChild(det);
   });
-  $('mkCopy').addEventListener('click',function(){
-    var inp=$('mkLink'),btn=$('mkCopy');
-    function done(){btn.textContent='copied ✓';setTimeout(function(){btn.textContent='copy';},1600);}
-    if(navigator.clipboard&&navigator.clipboard.writeText){
-      navigator.clipboard.writeText(inp.value).then(done).catch(function(){inp.select();document.execCommand('copy');done();});
-    }else{inp.select();try{document.execCommand('copy');}catch(e){}done();}
+}
+function fieldNode(spec){
+  const wrap=document.createElement('div');wrap.className='fld';
+  const lab=document.createElement('label');lab.innerHTML=esc(spec.label)+'<span class="keep">keep as original</span>';
+  let input;
+  const multiline=(spec.kind==='html'||spec.kind==='js-lines'||spec.kind==='throwback');
+  input=document.createElement(multiline?'textarea':'input');if(!multiline)input.type='text';
+  const def=spec.mem!==undefined?(MEM_DEF[spec.mem]?MEM_DEF[spec.mem][spec.part]:''):(spec.js?(Array.isArray(JS_DEF[spec.js])?JS_DEF[spec.js].join('\n'):String(JS_DEF[spec.js]??'')):defOf(spec));
+  input.value=def;
+  input.addEventListener('input',()=>{input.dataset.dirty='1';});
+  wrap.appendChild(lab);wrap.appendChild(input);
+  FIELDS.push({spec,el:input,def:String(def)});
+  return wrap;
+}
+function resetSection(key){
+  FIELDS.filter(f=>f.spec.sec===key).forEach(f=>{f.el.value=f.def;delete f.el.dataset.dirty;});
+  syncSmart();
+}
+
+/* ================= MAKE-YOUR-OWN STUDIO (3/5): smart fields + media + init ================= */
+const MEDIA={throwback:null,frames:Array(8).fill(null),memPhotos:Array(7).fill(null),herVideo:null,gardenVideo:null};
+function setStatus(t){$('status').innerHTML=t;}
+function fmtSize(b){return b>1048576?(b/1048576).toFixed(1)+' MB':Math.round(b/1024)+' KB';}
+function syncSmart(){
+  const her=$('herName').value.trim(),you=$('yourName').value.trim();
+  FIELDS.forEach(f=>{
+    if(f.el.dataset.dirty||!f.spec.smart)return;
+    if(f.spec.smart==='herName'){
+      if(f.spec.sel==='#p1 .hero')f.el.value=her?('Hey'+String.fromCharCode(10)+her):f.def;
+      else if(f.spec.sel==='.letter-title')f.el.value=her?('For '+her+', ♡'):f.def;
+    }else if(f.spec.smart==='yourName'&&f.spec.sel==='#letterSig'){
+      f.el.value=you?('— '+you+' ♡'):f.def;
+    }
   });
-  track('make-own-opened');
-})();
+}
+function codeHint(){
+  const v=$('secretCode').value,el=$('codeStrength');
+  if(!v){el.textContent='';return;}
+  const s=v.length>=12?'strong \u2661':v.length>=8?'good':v.length>=6?'okay':'too short';
+  el.textContent='strength: '+s+(v.length<6?' (needs 6+ characters)':'');
+  el.style.color=v.length>=8?'var(--green)':v.length>=6?'var(--gold)':'var(--pink)';
+}
+async function processImage(file,maxDim,q){
+  maxDim=maxDim||1000;q=q||0.82;
+  const bmp=await createImageBitmap(file);
+  const sc=Math.min(1,maxDim/Math.max(bmp.width,bmp.height));
+  const c=document.createElement('canvas');
+  c.width=Math.max(1,Math.round(bmp.width*sc));c.height=Math.max(1,Math.round(bmp.height*sc));
+  c.getContext('2d').drawImage(bmp,0,0,c.width,c.height);
+  if(bmp.close)bmp.close();
+  return c.toDataURL('image/jpeg',q);
+}
+async function processVideo(file){
+  if(file.size>25*1048576)throw 'that video is over 25 MB \u2014 a shorter clip works best.';
+  return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file);});
+}
+function bindPhoto(inputId,thumbId,set){
+  $(inputId).addEventListener('change',async e=>{
+    const f=e.target.files&&e.target.files[0];if(!f)return;
+    try{const d=await processImage(f);set(d);const t=$(thumbId);t.src=d;t.style.display='block';}
+    catch(err){alert('that photo didn\u2019t work \u2014 try another one.');}
+  });
+}
+function bindVideo(inputId,tagId,set){
+  $(inputId).addEventListener('change',async e=>{
+    const f=e.target.files&&e.target.files[0];if(!f)return;
+    try{const d=await processVideo(f);set(d);const t=$(tagId);t.textContent=f.name+' \u00b7 '+fmtSize(f.size);t.style.display='inline-block';}
+    catch(err){alert(err);}
+  });
+}
+function photoRow(host,k,prefix,set,arr){
+  const row=document.createElement('div');row.className='mrow';
+  const img=document.createElement('img');img.className='thumb';img.id='th-'+prefix+k;img.alt='';
+  const lab0=document.createElement('span');lab0.className='mlab';
+  const b=document.createElement('b');b.textContent=(prefix==='fr'?'frame ':'memory ')+(k+1);lab0.appendChild(b);lab0.appendChild(document.createTextNode('optional'));
+  const lab=document.createElement('label');lab.className='filebtn';lab.setAttribute('for','f-'+prefix+k);lab.textContent='choose photo';
+  const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.id='f-'+prefix+k;
+  inp.addEventListener('change',async()=>{
+    const f=inp.files&&inp.files[0];if(!f)return;
+    try{arr[k]=await processImage(f);img.src=arr[k];img.style.display='block';}
+    catch(err){alert('that photo didn\u2019t work \u2014 try another one.');}
+  });
+  row.appendChild(img);row.appendChild(lab0);row.appendChild(lab);row.appendChild(inp);
+  host.appendChild(row);
+}
+function buildMediaInputs(){
+  bindPhoto('f-throwback','th-throwback',d=>MEDIA.throwback=d);
+  const fh=$('framePhotos');for(let k=0;k<8;k++)photoRow(fh,k,'fr',null,MEDIA.frames);
+  const mh=$('memPhotos');for(let k=0;k<7;k++)photoRow(mh,k,'mm',null,MEDIA.memPhotos);
+  bindVideo('f-hervideo','vt-hervideo',d=>MEDIA.herVideo=d);
+  bindVideo('f-gardenvideo','vt-gardenvideo',d=>MEDIA.gardenVideo=d);
+}
+function extractBlock(src,name,open,close){
+  const m=src.match(new RegExp('const '+name+'=('+open+'[\\s\\S]*?'+close+')\\;'));
+  return m&&m[1];
+}
+async function init(){
+  setStatus('loading the original…');
+  try{
+    const [ih,js,css]=await Promise.all([
+      fetch('index.html').then(r=>{if(!r.ok)throw 0;return r.text();}),
+      fetch('script.js').then(r=>{if(!r.ok)throw 0;return r.text();}),
+      fetch('style.css').then(r=>{if(!r.ok)throw 0;return r.text();})
+    ]);
+    INDEX_HTML=ih;SCRIPT_JS=js;STYLE_CSS=css;
+    HTML_DOC=new DOMParser().parseFromString(ih,'text/html');
+    const introLines=new Function('return ('+extractBlock(js,'INTRO_LINES','\\[','\\]')+')')();
+    JS_DEF=new Function('INTRO_LINES','return ('+extractBlock(js,'MYO_TEXT_DEFAULTS','\\{','\\n\\}')+')')(introLines);
+    MEM_DEF=new Function('return ('+extractBlock(js,'CONSTELLATION_MEMORIES','\\[','\\]')+')')();
+    buildWordGroups();buildMediaInputs();syncSmart();codeHint();
+    $('herName').addEventListener('input',syncSmart);
+    $('yourName').addEventListener('input',syncSmart);
+    $('secretCode').addEventListener('input',codeHint);
+    $('genBtn').addEventListener('click',generate);
+    setStatus('ready \u2661 everything is loaded from the original site.');
+    if(window.umami&&umami.track)umami.track('studio-opened');
+  }catch(e){
+    setStatus('couldn\u2019t load the site files \u2014 open this page as <b>…/sanskar-ka/make-your-own.html</b> on the web, not as a saved file.');
+  }
+}
+
+/* ================= MAKE-YOUR-OWN STUDIO (4/5): generator + encryption ================= */
+const SHELL_CSS='*{box-sizing:border-box;margin:0;padding:0}'
++'body{background:radial-gradient(1000px 700px at 50% -10%,#241a3d 0%,#0d0a12 60%) fixed,#0d0a12;color:#f2e9f4;font-family:"DM Sans",system-ui,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}'
++'.lk{text-align:center;max-width:380px;width:100%}'
++'.lk-kicker{font-size:11px;letter-spacing:.35em;color:#f5c86e;margin-bottom:14px}'
++'.lk h1{font-size:44px;font-weight:600;color:#ff7aa8;margin-bottom:10px;font-family:Georgia,serif;font-style:italic}'
++'.lk p{color:#b9a8c9;font-size:14px;margin-bottom:22px}'
++'.lk input{width:100%;background:#0f0b18;border:1px solid #2c2340;border-radius:12px;color:#f2e9f4;font-size:17px;padding:14px;text-align:center;outline:none;margin-bottom:12px;font-family:inherit}'
++'.lk input:focus{border-color:#ff7aa8}'
++'.lk button{width:100%;background:linear-gradient(135deg,#ff7aa8,#c65df0);border:none;color:#fff;font-weight:600;font-size:16px;border-radius:12px;padding:14px;cursor:pointer;font-family:inherit}'
++'.lk button:disabled{opacity:.5}'
++'#lockErr{color:#ff7aa8;font-size:13px;margin-top:12px;min-height:20px}'
++'#lockNote{color:#7d6f94;font-size:12px;margin-top:6px;min-height:18px}';
+const DECRYPTOR_JS='async function b64d(s){const b=atob(s);const u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u;}\n'
++'async function doUnlock(){\n'
++'var pw=document.getElementById("lockCode").value;\n'
++'var err=document.getElementById("lockErr"),note=document.getElementById("lockNote"),go=document.getElementById("lockGo");\n'
++'err.textContent="";\n'
++'if(!window.crypto||!crypto.subtle){err.textContent="this browser can\\u2019t unlock it \\u2014 try Chrome, Safari or Firefox.";return;}\n'
++'if(!pw){err.textContent="type the code \\u2661";return;}\n'
++'go.disabled=true;note.textContent="unlocking\\u2026";\n'
++'try{\n'
++'var salt=await b64d(PAYLOAD.salt),iv=await b64d(PAYLOAD.iv),ct=await b64d(PAYLOAD.ct);\n'
++'var km=await crypto.subtle.importKey("raw",new TextEncoder().encode(pw),"PBKDF2",false,["deriveKey"]);\n'
++'var key=await crypto.subtle.deriveKey({name:"PBKDF2",salt:salt,iterations:600000,hash:"SHA-256"},km,{name:"AES-GCM",length:256},false,["decrypt"]);\n'
++'var pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:iv},key,ct);\n'
++'var html=new TextDecoder().decode(pt);\n'
++'document.open();document.write(html);document.close();\n'
++'}catch(e){err.textContent="not quite \\u2014 try again \\u2661";go.disabled=false;note.textContent="";}\n'
++'}\n'
++'document.getElementById("lockGo").addEventListener("click",doUnlock);\n'
++'document.getElementById("lockCode").addEventListener("keydown",function(e){if(e.key==="Enter")doUnlock();});';
+function shellHTML(p){
+  return '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n'
+  +'<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">\n'
+  +'<title>for you \u2661</title>\n<style>\n'+SHELL_CSS+'\n</style>\n</head>\n<body>\n'
+  +'<div class="lk">\n<div class="lk-kicker">SOMETHING JUST FOR YOU</div>\n<h1>this is locked \u2661</h1>\n'
+  +'<p>only the right code opens it.</p>\n'
+  +'<input type="password" id="lockCode" placeholder="\u2022 \u2022 \u2022 \u2022 \u2022 \u2022" autocomplete="off">\n'
+  +'<button id="lockGo">unlock \u2192</button>\n<div id="lockErr"></div>\n<div id="lockNote"></div>\n</div>\n'
+  +'<script>\nconst PAYLOAD='+JSON.stringify(p)+';\n'+DECRYPTOR_JS+'\n<\/script>\n</body>\n</html>';
+}
+async function encryptShell(html,password){
+  const enc=new TextEncoder();
+  const salt=crypto.getRandomValues(new Uint8Array(16));
+  const iv=crypto.getRandomValues(new Uint8Array(12));
+  const km=await crypto.subtle.importKey('raw',enc.encode(password),'PBKDF2',false,['deriveKey']);
+  const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt:salt,iterations:600000,hash:'SHA-256'},km,{name:'AES-GCM',length:256},false,['encrypt']);
+  const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv:iv},key,enc.encode(html));
+  const b64=u=>{let s='';for(let i=0;i<u.length;i++)s+=String.fromCharCode(u[i]);return btoa(s);};
+  return shellHTML({salt:b64(salt),iv:b64(iv),ct:b64(new Uint8Array(ct))});
+}
+function applyTextField(doc,f,v){
+  const spec=f.spec;
+  let el=spec.idx!==undefined?doc.querySelectorAll(spec.sel)[spec.idx]:doc.querySelector(spec.sel);
+  if(el&&spec.sub)el=el.querySelector(spec.sub);
+  if(!el)return;
+  if(spec.kind==='attr')el.setAttribute('placeholder',v);
+  else if(spec.kind==='html')el.innerHTML=String(v).replace(/\n/g,'<br>');
+  else if(spec.kind==='throwback'){const p=String(v).split('\n');el.innerHTML=esc(p[0]||'')+(p[1]?'<br><span>'+esc(p[1])+'</span>':'');}
+  else el.textContent=v;
+}
+function readConfig(code){
+  const texts={};
+  FIELDS.forEach(f=>{
+    const v=f.el.value;
+    if(v===f.def||!f.spec.js)return;
+    texts[f.spec.js]=f.spec.kind==='js-lines'?String(v).split('\n'):v;
+  });
+  const cfg={texts};
+  if(code)cfg.unlockCode=code;
+  const email=$('yourEmail').value.trim();if(email)cfg.sayEmail=email;
+  const cc=$('ccCloud').value.trim(),cp=$('ccPreset').value.trim();
+  if(cc&&cp)cfg.cloudinary={cloud:cc,preset:cp};
+  if(MEDIA.herVideo)cfg.herVideo=MEDIA.herVideo;
+  cfg.memories=[];
+  for(let k=0;k<7;k++){
+    const tF=FIELDS.find(f=>f.spec.mem===k&&f.spec.part==='title');
+    const cF=FIELDS.find(f=>f.spec.mem===k&&f.spec.part==='caption');
+    cfg.memories.push({title:tF?tF.el.value:'',caption:cF?cF.el.value:'',photo:MEDIA.memPhotos[k]||null});
+  }
+  return cfg;
+}
+function applyAll(doc,cfg){
+  const her=$('herName').value.trim();
+  FIELDS.forEach(f=>{
+    const s=f.spec,v=f.el.value;
+    if(v===f.def||s.js||s.mem!==undefined)return;
+    applyTextField(doc,f,v);
+  });
+  const bday=$('bday').value;
+  if(bday){const p=bday.split('-');const el=doc.querySelector('.birthday-date');if(el&&p.length===3)el.textContent=p[2]+' . '+p[1]+' . '+p[0];}
+  if(her){doc.title='For '+her+' \u2661';const og=doc.querySelector('meta[property="og:title"]');if(og)og.setAttribute('content','for '+her.toLowerCase()+' \u2661');}
+  const tp=doc.querySelector('.throwback-photo img');
+  if(MEDIA.throwback){if(tp)tp.src=MEDIA.throwback;}
+  else{const tw=doc.querySelector('.throwback-photo');if(tw)tw.style.display='none';}
+  const gv=doc.querySelector('#gPolVid');
+  if(gv){if(MEDIA.gardenVideo)gv.src=MEDIA.gardenVideo;else gv.remove();}
+  const hv=doc.querySelector('#herVideoEl');
+  if(hv){if(MEDIA.herVideo)hv.src=MEDIA.herVideo;else hv.removeAttribute('src');}
+  const frames=doc.querySelectorAll('#lfRail .frame');
+  frames.forEach((fr,k)=>{
+    if(MEDIA.frames[k]){const im=fr.querySelector('.image');if(im){im.innerHTML='';const img=doc.createElement('img');img.src=MEDIA.frames[k];img.alt='';im.appendChild(img);}}
+  });
+  doc.querySelectorAll('audio[src]').forEach(a=>{const s=a.getAttribute('src');if(s&&!/^(https?:|data:)/.test(s))a.setAttribute('src',ABS+s);});
+  doc.querySelectorAll('script[data-website-id],script[src*="umami"]').forEach(s=>s.remove());
+  const link=doc.querySelector('link[rel="stylesheet"][href^="style.css"]');
+  if(link){const st=doc.createElement('style');st.textContent=STYLE_CSS;link.replaceWith(st);}
+  const scr=doc.querySelector('script[src^="script.js"]');
+  if(scr){
+    const cfgEl=doc.createElement('script');
+    cfgEl.textContent='window.MYO_CONFIG='+JSON.stringify(cfg).replace(/</g,'\\u003c')+';';
+    const inl=doc.createElement('script');
+    inl.textContent=SCRIPT_JS;
+    scr.replaceWith(cfgEl,inl);
+  }
+}
+async function generate(){
+  syncSmart();
+  const code=$('secretCode').value;
+  if(code.length<6){setStatus('the secret code needs <b>6+ characters</b> \u2014 it\u2019s the key to the whole file.');$('secretCode').focus();return;}
+  if(!window.crypto||!crypto.subtle){setStatus('this browser can\u2019t do the encryption \u2014 please use Chrome, Safari or Firefox.');return;}
+  const btn=$('genBtn');btn.disabled=true;$('dlWrap').style.display='none';
+  try{
+    setStatus('baking your site…');
+    await new Promise(r=>setTimeout(r,30));
+    const cfg=readConfig(code);
+    const doc=new DOMParser().parseFromString(INDEX_HTML,'text/html');
+    applyAll(doc,cfg);
+    const html='<!DOCTYPE html>\n'+doc.documentElement.outerHTML;
+    setStatus('encrypting with your code… (AES-256, this takes a moment)');
+    await new Promise(r=>setTimeout(r,30));
+    const shell=await encryptShell(html,code);
+    const blob=new Blob([shell],{type:'text/html'});
+    const her=$('herName').value.trim().toLowerCase().replace(/[^a-z0-9]+/g,'-')||'you';
+    const a=$('dlBtn');
+    if(a.href&&a.href.startsWith('blob:'))URL.revokeObjectURL(a.href);
+    a.href=URL.createObjectURL(blob);a.download='for-'+her+'.html';a.textContent='download for-'+her+'.html';
+    $('dlWrap').style.display='block';
+    setStatus('done \u2661 your file is <b>encrypted</b> ('+fmtSize(blob.size)+'). open it, type the code, check it feels right \u2014 then send it to her, and the code separately.');
+    if(window.umami&&umami.track)umami.track('site-generated');
+    window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
+  }catch(e){setStatus('hmm, something broke: '+esc(e&&e.message||e));}
+  btn.disabled=false;
+}
+
+init();
 </script>
 </body>
 </html>

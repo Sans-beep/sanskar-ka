@@ -240,6 +240,62 @@ function go(n){
 /* GLOBAL NAVIGATION — one handler for every forward control + one dedicated back control. */
 /* INTRO — 19-second timer with 19 blipping lines (page index 0). */
 const INTRO_LINES=["nineteen seconds.","that's all i'm asking for.","breathe.","you're here.","that's my favorite part.","before the noise —","before the cake —","before the world texts you —","just this.","you, existing.","do you know how rare that is?","okay. mushy bit over.","(it's not over.)","i made you something.","it's not big.","it's not expensive.","it's just… yours.","ready?","let's go ♡"];
+/* ===== Make-Your-Own (follower copies) — additive config layer.
+   The studio-generated file injects window.MYO_CONFIG before this script.
+   When absent (the original site), every myoT() falls back to the original
+   string, so the main site behaves exactly as before. */
+const MYO=(typeof window!=='undefined'&&window.MYO_CONFIG)||null;
+/*MYO_DEFAULTS_START*/
+const MYO_TEXT_DEFAULTS={
+'intro.lines':INTRO_LINES.slice(),
+'unlock.placeholder':'\u2022 \u2022 \u2022 \u2022 \u2022 \u2022 \u2022 \u2022 \u2022',
+'unlock.unlockedPlaceholder':'already unlocked \u2661',
+'unlock.btn':'unlock \u2192',
+'unlock.continueBtn':'continue \u2192',
+'unlock.error':'Oh my bhondu girl not today \u{1F62D}\u{1FAF6}',
+'upload.ownerNote':'owner mode \u2661 upload skipped',
+'upload.notPhoto':'that one is not a photo \u1F62D',
+'upload.tooBig':'that photo is a little too big \u1F62D',
+'upload.acquired':'evidence acquired \u2661',
+'upload.sending':'sending your evidence\u2026 \u2661',
+'upload.believed':'okay, i believe you \u2661',
+'upload.failed':"hmm\u2026 the evidence didn't send. try again \u1F62D",
+'letter.tapCount':'something feels suspicious\u2026 <b>{n}/9</b> \u2661',
+'letter.tapFound':'you found it. \u2661',
+'letter.tapReset':'there\u2019s something here\u2026 <b>\u2661</b>',
+'moon.move':'move across the moon',
+'moon.keep':'keep drawing\u2026',
+'moon.done':'you left a little light here.',
+'moon.psst':'psst\u2026 tap the moon.',
+'const.savedLast':"this one's saved for last \u2661",
+'const.moreHiding':'{n} more hiding \u2726',
+'const.progress':'{n} / {total}',
+'say.yesLine':'yay \u2661 tell me everything.',
+'say.noLine':'okay \u2661 no pressure.',
+'say.empty':'write a little something first \u2661',
+'say.sending':'sending\u2026',
+'say.sent':"it'll find its way to me \u2661",
+'say.sentBtn':'sent \u2661',
+'say.sendBtn':'send \u2192',
+'say.failed':"hmm, that didn't fly \u2014 try again?",
+'email.bad':"hmm, that doesn't look like an email \u2661",
+'email.sending':'sending\u2026',
+'email.done':"noted \u2661 i'll write back.",
+'email.savedBtn':'saved \u2661',
+'email.sendBtn':"that's it \u2192",
+'email.failed':"hmm, that didn't fly \u2014 try again?",
+'garden.oneDownHim':'one down \u2661 now her',
+'garden.oneDownHer':'one down \u2661 now him',
+'garden.grew':'look what you grew \u2661'
+};
+/*MYO_DEFAULTS_END*/
+function myoT(key){
+  const d=MYO_TEXT_DEFAULTS[key];
+  const v=MYO&&MYO.texts?MYO.texts[key]:undefined;
+  if(v===undefined||v===null||v==='')return d===undefined?'':d;
+  return v;
+}
+
 let introTimerId=null,introStep=0,introDone=false;
 function introEls(){return{timer:document.getElementById('introTimer'),line:document.getElementById('introLine'),prog:document.getElementById('introProgress'),cont:document.getElementById('introContinue'),snd:document.getElementById('introSound'),audio:document.getElementById('aiseKyun')};}
 function showIntroStep(){
@@ -247,7 +303,7 @@ function showIntroStep(){
   if(!timer||!line)return;
   timer.textContent=String(19-introStep);
   line.classList.remove('blip');void line.offsetWidth;
-  line.textContent=INTRO_LINES[introStep];
+  line.textContent=myoT('intro.lines')[introStep]||'';
   line.classList.add('blip');
   if(prog)prog.style.width=((introStep+1)/19*100)+'%';
 }
@@ -348,17 +404,15 @@ let unlocked=false;
 try{unlocked=sessionStorage.getItem('sanskar_unlocked')==='1';}catch(_){}
 function markUnlocked(persist){unlocked=true;if(persist===false)return;try{sessionStorage.setItem('sanskar_unlocked','1');}catch(_){}}
 const unlockBtnEl=document.getElementById('unlock');
-const unlockLabel0=unlockBtnEl?unlockBtnEl.textContent:'unlock \u2192';
-const codePlaceholder0='\u2022 \u2022 \u2022 \u2022 \u2022 \u2022 \u2022 \u2022 \u2022';
 function renderUnlockPage(){
   const input=document.getElementById('code'),button=document.getElementById('unlock'),e=document.getElementById('error');
   if(unlocked||ownerMode){
-    if(input){input.disabled=true;input.value='';input.placeholder='already unlocked \u2661';}
-    if(button){button.disabled=false;button.textContent='continue \u2192';}
+    if(input){input.disabled=true;input.value='';input.placeholder=myoT('unlock.unlockedPlaceholder');}
+    if(button){button.disabled=false;button.textContent=myoT('unlock.continueBtn');}
     if(e)e.textContent='';
   }else{
-    if(input){input.disabled=false;input.value='';input.placeholder=codePlaceholder0;}
-    if(button){button.disabled=false;button.textContent=unlockLabel0;}
+    if(input){input.disabled=false;input.value='';input.placeholder=myoT('unlock.placeholder');}
+    if(button){button.disabled=false;button.textContent=myoT('unlock.btn');}
     if(e)e.textContent='';
   }
 }
@@ -382,7 +436,7 @@ function unlock(){
       enterPhase2();
     }
   }else{
-    e.textContent='Oh my bhondu girl not today \u{1F62D}\u{1FAF6}';
+    e.textContent=myoT('unlock.error');
     input.value='';
   }
 }document.getElementById('unlock').onclick=unlock;
@@ -400,10 +454,15 @@ if(ownerMode){
   p4Next.disabled=false;
   p4Next.removeAttribute('disabled');
   document.getElementById('proofPolaroid').classList.add('verified');
-  uploadStatus.textContent='owner mode ♡ upload skipped';
+  uploadStatus.textContent=myoT('upload.ownerNote');
 }
-proofUpload.addEventListener('change',()=>{if(ownerMode)return;const file=proofUpload.files&&proofUpload.files[0];if(!file)return;if(!file.type.startsWith('image/')){uploadStatus.textContent='that one is not a photo 😭';proofUpload.value='';proofFile=null;p4Next.disabled=true;proofPhoto.classList.remove('has-image');proofImage.removeAttribute('src');return}if(file.size>10*1024*1024){uploadStatus.textContent='that photo is a little too big 😭';proofUpload.value='';proofFile=null;p4Next.disabled=true;proofPhoto.classList.remove('has-image');proofImage.removeAttribute('src');return}proofFile=file;proofUploaded=false;if(proofImage.dataset.objectUrl)URL.revokeObjectURL(proofImage.dataset.objectUrl);const previewUrl=URL.createObjectURL(file);proofImage.dataset.objectUrl=previewUrl;proofImage.src=previewUrl;proofPhoto.classList.add('has-image');document.getElementById('proofPolaroid').classList.remove('verified');uploadStatus.textContent='evidence acquired ♡';p4Next.disabled=false;});
-p4Next.addEventListener('click',async()=>{if(proofUploaded){setTimeout(()=>go(i+1),0);return}if(!proofFile)return;p4Next.disabled=true;uploadStatus.textContent='sending your evidence… ♡';const data=new FormData();data.append('file',proofFile);data.append('upload_preset','kashish_birthday');try{const res=await fetch('https://api.cloudinary.com/v1_1/aifv5z3a/image/upload',{method:'POST',body:data});if(!res.ok)throw new Error('upload failed');await res.json();proofUploaded=true;document.getElementById('proofPolaroid').classList.add('verified');uploadStatus.textContent='okay, i believe you ♡';setTimeout(()=>go(i+1),900)}catch(err){console.error(err);uploadStatus.textContent="hmm… the evidence didn't send. try again 😭";p4Next.disabled=false}});
+proofUpload.addEventListener('change',()=>{if(ownerMode)return;const file=proofUpload.files&&proofUpload.files[0];if(!file)return;if(!file.type.startsWith('image/')){uploadStatus.textContent=myoT('upload.notPhoto');proofUpload.value='';proofFile=null;p4Next.disabled=true;proofPhoto.classList.remove('has-image');proofImage.removeAttribute('src');return}if(file.size>10*1024*1024){uploadStatus.textContent=myoT('upload.tooBig');proofUpload.value='';proofFile=null;p4Next.disabled=true;proofPhoto.classList.remove('has-image');proofImage.removeAttribute('src');return}proofFile=file;proofUploaded=false;if(proofImage.dataset.objectUrl)URL.revokeObjectURL(proofImage.dataset.objectUrl);const previewUrl=URL.createObjectURL(file);proofImage.dataset.objectUrl=previewUrl;proofImage.src=previewUrl;proofPhoto.classList.add('has-image');document.getElementById('proofPolaroid').classList.remove('verified');uploadStatus.textContent=myoT('upload.acquired');p4Next.disabled=false;});
+const MYO_CLOUD=(MYO&&MYO.cloudinary&&MYO.cloudinary.cloud)?MYO.cloudinary:null;
+const MYO_CLOUD_URL=MYO_CLOUD?('https://api.cloudinary.com/v1_1/'+MYO_CLOUD.cloud+'/image/upload'):'https://api.cloudinary.com/v1_1/aifv5z3a/image/upload';
+const MYO_CLOUD_PRESET=MYO_CLOUD?MYO_CLOUD.preset:'kashish_birthday';
+p4Next.addEventListener('click',async()=>{if(proofUploaded){setTimeout(()=>go(i+1),0);return}if(!proofFile)return;
+if(MYO&&!MYO_CLOUD){proofUploaded=true;document.getElementById('proofPolaroid').classList.add('verified');uploadStatus.textContent=myoT('upload.believed');setTimeout(()=>go(i+1),900);return;}
+p4Next.disabled=true;uploadStatus.textContent=myoT('upload.sending');const data=new FormData();data.append('file',proofFile);data.append('upload_preset',MYO_CLOUD_PRESET);try{const res=await fetch(MYO_CLOUD_URL,{method:'POST',body:data});if(!res.ok)throw new Error('upload failed');await res.json();proofUploaded=true;document.getElementById('proofPolaroid').classList.add('verified');uploadStatus.textContent=myoT('upload.believed');setTimeout(()=>go(i+1),900)}catch(err){console.error(err);uploadStatus.textContent=myoT('upload.failed');p4Next.disabled=false}});
 
 
 let secretTaps=0,tapReset;
@@ -412,7 +471,7 @@ const count=document.getElementById('tapCount');
 const pop=document.getElementById('letterPop');
 const joy=document.getElementById('joy');
 const burst=document.getElementById('heartBurst');
-const tapSound=new Audio('tiu-tiu-tiooo.mp3');
+const tapSound=new Audio('https://sans-beep.github.io/sanskar-ka/tiu-tiu-tiooo.mp3');
 tapSound.preload='auto';
 tapSound.volume=.72;
 
@@ -432,8 +491,8 @@ env.addEventListener('click',()=>{
   tapSound.currentTime=0;
   tapSound.play().catch(()=>{});
   count.innerHTML=secretTaps<9
-    ? `something feels suspicious… <b>${secretTaps}/9</b> ♡`
-    : `you found it. ♡`;
+    ? myoT('letter.tapCount').replace('{n}',secretTaps)
+    : myoT('letter.tapFound');
 
   env.animate(
     [{transform:'rotate(1deg) scale(1)'},{transform:'rotate(-2deg) scale(.97)'},{transform:'rotate(1deg) scale(1)'}],
@@ -474,7 +533,7 @@ env.addEventListener('click',()=>{
   }else{
     tapReset=setTimeout(()=>{
       secretTaps=0;
-      count.innerHTML='there’s something here… <b>♡</b>';
+      count.innerHTML=myoT('letter.tapReset');
     },2200);
   }
 });
@@ -832,7 +891,7 @@ function phase2MoonlightBegin(e){
     phase2MoonlightState.points.push({...phase2MoonlightState.last,t:performance.now()});
   }
 
-  phase2MoonlightNote.textContent='move across the moon';
+  phase2MoonlightNote.textContent=myoT('moon.move');
   phase2MoonlightNote.classList.remove('show');
   void phase2MoonlightNote.offsetWidth;
   phase2MoonlightNote.classList.add('show');
@@ -853,7 +912,7 @@ function phase2MoonlightMove(e){
     if(phase2MoonInside(p)){
       phase2MoonlightState.drawing=true;
       phase2MoonlightState.points.push({x:p.x,y:p.y,t:performance.now()});
-      phase2MoonlightNote.textContent='keep drawing…';
+      phase2MoonlightNote.textContent=myoT('moon.keep');
     }else{
       return;
     }
@@ -876,7 +935,7 @@ function phase2MoonlightMove(e){
     void phase2MoonlightFlash.offsetWidth;
     phase2MoonlightFlash.classList.add('fire');
 
-    phase2MoonlightNote.textContent='you left a little light here.';
+    phase2MoonlightNote.textContent=myoT('moon.done');
     phase2MoonlightNote.classList.remove('show');
     void phase2MoonlightNote.offsetWidth;
     phase2MoonlightNote.classList.add('show');
@@ -964,7 +1023,7 @@ function activatePhase2Moonlight(){
   clearTimeout(phase2MoonlightState.hintTimer);
   phase2MoonlightState.hintTimer=setTimeout(()=>{
     if(!phase2MoonlightState.complete&&!phase2MoonlightState.drawing&&lostFrame&&!lostFrame.classList.contains('open')){
-      phase2MoonlightNote.textContent='psst… tap the moon.';
+      phase2MoonlightNote.textContent=myoT('moon.psst');
       phase2MoonlightNote.classList.remove('show');
       void phase2MoonlightNote.offsetWidth;
       phase2MoonlightNote.classList.add('show');
@@ -1288,6 +1347,16 @@ const CONSTELLATION_MEMORIES=[
   {title:'the long walk',caption:'we took the long way home.',photo:null},
   {title:'today',caption:'still my favorite.',photo:null,video:'https://raw.githubusercontent.com/Sans-beep/sanskar-ka/3cb9941f7a75032fbbcf2df233349d0e4b49c611/her-video.mp4'},
 ];
+/* Follower copy: swap in their memories/photos/video (or drop the video star
+   so "today" behaves like a photo memory when they uploaded no video). */
+if(MYO&&Array.isArray(MYO.memories)){MYO.memories.forEach((m,k)=>{
+  if(k<CONSTELLATION_MEMORIES.length&&m){
+    if(m.title)CONSTELLATION_MEMORIES[k].title=m.title;
+    if(m.caption)CONSTELLATION_MEMORIES[k].caption=m.caption;
+    if(m.photo)CONSTELLATION_MEMORIES[k].photo=m.photo;
+  }
+});}
+if(MYO){if(MYO.herVideo)CONSTELLATION_MEMORIES[6].video=MYO.herVideo;else delete CONSTELLATION_MEMORIES[6].video;}
 const CONSTELLATION_STARS=[
   {x:72,y:22,pink:true},{x:50,y:30},{x:28,y:22},{x:20,y:46},{x:50,y:68.5},{x:66,y:62},{x:80,y:46}
 ];
@@ -1335,7 +1404,7 @@ function markConstFound(idx){
     lab.style.top=CONSTELLATION_STARS[idx].y+'%';
     sky.appendChild(lab);
   }
-  document.getElementById('constCount').textContent=constFound.size+' / '+CONSTELLATION_STARS.length;
+  document.getElementById('constCount').textContent=myoT('const.progress').replace('{n}',constFound.size).replace('{total}',CONSTELLATION_STARS.length);
   if(window.trackStoryEvent)window.trackStoryEvent('memory-found',{star:idx+1});
   drawConstProgress();
   return true;
@@ -1350,7 +1419,7 @@ function openVideoStar(idx){
   const hint=document.getElementById('constHint');
   if(hint){
     if(left>0){
-      hint.textContent=newly?"this one's saved for last ♡":(left+' more hiding ✦');
+      hint.textContent=newly?myoT('const.savedLast'):(myoT('const.moreHiding').replace('{n}',left));
       hint.classList.remove('hide');
     }else hint.classList.add('hide');
   }
@@ -1381,7 +1450,7 @@ function openConstMemory(idx){
   const left=CONSTELLATION_STARS.length-constFound.size;
   const hint=document.getElementById('constHint');
   if(hint){
-    if(left>0){hint.textContent=left+' more hiding ✦';hint.classList.remove('hide');}
+    if(left>0){hint.textContent=myoT('const.moreHiding').replace('{n}',left);hint.classList.remove('hide');}
     else hint.classList.add('hide');
   }
 }
@@ -1456,7 +1525,7 @@ function openHerVideo(){
   // Desktop/laptop: the scene was recorded sideways (a landscape moment stored in a
   // portrait frame), so serve the upright horizontal cut. Mobile keeps the original file.
   if(!v.dataset.landSwapped&&window.matchMedia&&window.matchMedia('(min-width:900px)').matches){
-    v.dataset.landSwapped='1';v.src='her-video-land.mp4';
+    v.dataset.landSwapped='1';v.src=(MYO&&MYO.herVideo)||'her-video-land.mp4';
   }
   const gb=document.getElementById('globalBack');
   if(gb)gb.style.display='none';
@@ -1717,7 +1786,7 @@ function readCustomParams(){
 }
 const customParams=readCustomParams();
 const customCodeValue=(customParams.code||'').toUpperCase().slice(0,16)||null;
-function activeUnlockCode(){return customCodeValue||'KASHISH19';}
+function activeUnlockCode(){return customCodeValue||((MYO&&MYO.unlockCode)||'KASHISH19');}
 function applyCustomization(){
   const cp=customParams;
   const has=cp.to||cp.from||cp.date||cp.mems.length;
@@ -1759,7 +1828,7 @@ applyCustomization();
 /* ===== "wanna say something??" — interstitial page between phase 2 and phase 3.
    Her words travel to him through a tiny form backend (FormSubmit). The message
    body itself NEVER touches analytics — only metadata events (shown/yes/no/sent). */
-const SAY_SOMETHING_EMAIL='beyondsanskar@gmail.com'; // real address; activate once via FormSubmit's mail
+const SAY_SOMETHING_EMAIL=(MYO&&MYO.sayEmail)||'beyondsanskar@gmail.com'; // real address; activate once via FormSubmit's mail
 const EMAIL_INDEX=11; // "where can i write back?" — only after she wrote + it sent
 const PHASE3_INDEX=12; // first page of phase 3: "two flowers, one garden"
 let sayAnswered=false,saySending=false,sayWroteAndSent=false,sayEmailToken='';
@@ -1825,7 +1894,7 @@ function wireSayPage(){
     if(sayAnswered)return;sayAnswered=true;
     choices.style.display='none';
     sayHappyBurst();
-    setSayLine('yay ♡ tell me everything.');
+    setSayLine(myoT('say.yesLine'));
     if(write)write.hidden=false;
     if(window.trackStoryEvent)window.trackStoryEvent('say-yes');
   });
@@ -1833,7 +1902,7 @@ function wireSayPage(){
     if(sayAnswered)return;sayAnswered=true;
     choices.style.display='none';
     saySadDoodle();
-    setSayLine('okay ♡ no pressure.');
+    setSayLine(myoT('say.noLine'));
     activateSayAhead();
     if(window.trackStoryEvent)window.trackStoryEvent('say-no');
   });
@@ -1841,15 +1910,15 @@ function wireSayPage(){
   // (backend down) — she must never be trapped with going-ahead disabled.
   if(skip)skip.addEventListener('click',()=>{
     if(write)write.hidden=true;
-    setSayLine('okay ♡ no pressure.');
+    setSayLine(myoT('say.noLine'));
     activateSayAhead();
     if(window.trackStoryEvent)window.trackStoryEvent('say-skip');
   });
   if(send)send.addEventListener('click',async()=>{
     if(saySending)return;
     const msg=text?text.value.trim():'';
-    if(!msg){if(status)status.textContent='write a little something first ♡';return;}
-    saySending=true;send.disabled=true;send.textContent='sending…';
+    if(!msg){if(status)status.textContent=myoT('say.empty');return;}
+    saySending=true;send.disabled=true;send.textContent=myoT('say.sending');
     if(status)status.textContent='';
     sayEmailToken=Math.random().toString(36).slice(2,10);
     const sayCtl=new AbortController();const sayTo=setTimeout(()=>sayCtl.abort(),15000);
@@ -1862,17 +1931,17 @@ function wireSayPage(){
       });
       clearTimeout(sayTo);
       if(!r.ok)throw new Error('send failed: '+r.status);
-      if(status)status.textContent="it'll find its way to me ♡";
+      if(status)status.textContent=myoT('say.sent');
       if(text)text.disabled=true;
-      send.textContent='sent ♡';
+      send.textContent=myoT('say.sentBtn');
       if(skip)skip.hidden=true;
       sayWroteAndSent=true;
       activateSayAhead();
       if(window.trackStoryEvent)window.trackStoryEvent('say-sent');
     }catch(e){
       clearTimeout(sayTo);
-      if(status)status.textContent="hmm, that didn't fly — try again?";
-      send.disabled=false;send.textContent='send →';
+      if(status)status.textContent=myoT('say.failed');
+      send.disabled=false;send.textContent=myoT('say.sendBtn');
     }
     saySending=false;
   });
@@ -1908,10 +1977,10 @@ function wireEmailPage(){
     if(sending)return;
     const email=input.value.trim();
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
-      if(status)status.textContent="hmm, that doesn't look like an email ♡";
+      if(status)status.textContent=myoT('email.bad');
       return;
     }
-    sending=true;send.disabled=true;send.textContent='sending…';
+    sending=true;send.disabled=true;send.textContent=myoT('email.sending');
     if(status)status.textContent='';
     const emailCtl=new AbortController();const emailTo=setTimeout(()=>emailCtl.abort(),15000);
     try{
@@ -1923,15 +1992,15 @@ function wireEmailPage(){
       });
       clearTimeout(emailTo);
       if(!r.ok)throw new Error('send failed: '+r.status);
-      if(status)status.textContent="noted ♡ i'll write back.";
-      input.disabled=true;send.textContent='saved ♡';
+      if(status)status.textContent=myoT('email.done');
+      input.disabled=true;send.textContent=myoT('email.savedBtn');
       if(skip)skip.hidden=true;
       if(window.trackStoryEvent)window.trackStoryEvent('email-sent');
       setTimeout(onward,900);
     }catch(e){
       clearTimeout(emailTo);
-      if(status)status.textContent="hmm, that didn't fly — try again?";
-      send.disabled=false;send.textContent="that's it →";
+      if(status)status.textContent=myoT('email.failed');
+      send.disabled=false;send.textContent=myoT('email.sendBtn');
     }
     sending=false;
   });
@@ -2052,7 +2121,7 @@ function gardenBloom(who){
   if(el){el.classList.remove('holding');el.classList.add('bloomed');gardenSparkBurst(el,who);gardenBloomDrawn(who);}
   const hint=document.getElementById('gardenHint');
   if(hint&&(gardenState.him.done!==gardenState.her.done))
-    hint.textContent=who==='him'?'one down ♡ now her':'one down ♡ now him';
+    hint.textContent=myoT(who==='him'?'garden.oneDownHim':'garden.oneDownHer');
   if(window.trackStoryEvent)window.trackStoryEvent('flower-bloomed',{flower:who});
   if(gardenState.him.done&&gardenState.her.done&&!gardenHeartDone){
     gardenHeartDone=true;
@@ -2155,7 +2224,7 @@ function gardenPetalHeart(){
       {transform:`translate(${tp.x.toFixed(0)}px,${tp.y.toFixed(0)}px) rotate(${rot}deg) scale(.55)`,opacity:0}
     ],{duration:2300+Math.random()*700,delay:Math.random()*600,easing:'ease-in-out',fill:'forwards'});
   }
-  if(hint)hint.textContent='look what you grew ♡';
+  if(hint)hint.textContent=myoT('garden.grew');
   if(window.trackStoryEvent)window.trackStoryEvent('garden-heart');
   setTimeout(()=>{if(window.sitePageIndex===GARDEN_INDEX)gardenHeartGlow(cx,cy,s*0.55);},1400);
   setTimeout(gardenFinale,3600);
