@@ -1719,7 +1719,8 @@ function wireSayPage(){
   const yes=document.getElementById('sayYes'),no=document.getElementById('sayNo'),
         ahead=document.getElementById('sayAhead'),choices=document.getElementById('sayChoices'),
         write=document.getElementById('sayWrite'),send=document.getElementById('saySend'),
-        text=document.getElementById('sayText'),status=document.getElementById('sayStatus');
+        text=document.getElementById('sayText'),status=document.getElementById('sayStatus'),
+        skip=document.getElementById('saySkip');
   if(!yes||!no||!ahead)return;
   const onward=document.getElementById('constOnward');
   if(onward)onward.addEventListener('click',()=>{go(10);});
@@ -1739,6 +1740,14 @@ function wireSayPage(){
     activateSayAhead();
     if(window.trackStoryEvent)window.trackStoryEvent('say-no');
   });
+  // Escape hatch: she tapped yes but changed her mind, or the send failed
+  // (backend down) — she must never be trapped with going-ahead disabled.
+  if(skip)skip.addEventListener('click',()=>{
+    if(write)write.hidden=true;
+    setSayLine('okay ♡ no pressure.');
+    activateSayAhead();
+    if(window.trackStoryEvent)window.trackStoryEvent('say-skip');
+  });
   if(send)send.addEventListener('click',async()=>{
     if(saySending)return;
     const msg=text?text.value.trim():'';
@@ -1755,6 +1764,7 @@ function wireSayPage(){
       if(status)status.textContent="it'll find its way to me ♡";
       if(text)text.disabled=true;
       send.textContent='sent ♡';
+      if(skip)skip.hidden=true;
       activateSayAhead();
       if(window.trackStoryEvent)window.trackStoryEvent('say-sent');
     }catch(e){
