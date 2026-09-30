@@ -1440,9 +1440,11 @@ function openConstMemory(idx){
   const photo=document.getElementById('constPhoto');
   document.getElementById('constTitle').textContent=m.title;
   document.getElementById('constText').textContent=m.caption;
-  if(photo)photo.innerHTML=m.photo
-    ? '<img src="'+m.photo+'" alt="">'
-    : '<div class="ph-empty">✦</div>';
+  if(photo){
+    const pu=m.photo&&m.photo.url?m.photo.url:m.photo;
+    if(m.photo&&m.photo.w&&m.photo.h)photo.style.aspectRatio=m.photo.w+'/'+m.photo.h;
+    photo.innerHTML=pu?'<img src="'+pu+'" alt="">':'<div class="ph-empty">✦</div>';
+  }
   card.classList.add('open');
   card.setAttribute('aria-hidden','false');
   card.style.setProperty('--tilt',((idx%2?1:-1)*(1+(idx%3)*.6)).toFixed(1)+'deg');
@@ -1786,7 +1788,7 @@ function readCustomParams(){
 }
 const customParams=readCustomParams();
 const customCodeValue=(customParams.code||'').toUpperCase().slice(0,16)||null;
-function activeUnlockCode(){return customCodeValue||((MYO&&MYO.unlockCode)||'KASHISH19');}
+function activeUnlockCode(){const c=customCodeValue||(MYO&&MYO.unlockCode)||'KASHISH19';return String(c).toUpperCase();}
 function applyCustomization(){
   const cp=customParams;
   const has=cp.to||cp.from||cp.date||cp.mems.length;

@@ -269,13 +269,13 @@ function codeHint(){
 }
 async function processImage(file,maxDim,q){
   maxDim=maxDim||1000;q=q||0.82;
-  const bmp=await createImageBitmap(file);
+  const bmp=await createImageBitmap(file,{imageOrientation:'from-image'});
   const sc=Math.min(1,maxDim/Math.max(bmp.width,bmp.height));
   const c=document.createElement('canvas');
   c.width=Math.max(1,Math.round(bmp.width*sc));c.height=Math.max(1,Math.round(bmp.height*sc));
   c.getContext('2d').drawImage(bmp,0,0,c.width,c.height);
   if(bmp.close)bmp.close();
-  return c.toDataURL('image/jpeg',q);
+  return {url:c.toDataURL('image/jpeg',q),w:c.width,h:c.height};
 }
 async function processVideo(file){
   if(file.size>25*1048576)throw 'that video is over 25 MB \u2014 a shorter clip works best.';
@@ -284,7 +284,7 @@ async function processVideo(file){
 function bindPhoto(inputId,thumbId,set){
   $(inputId).addEventListener('change',async e=>{
     const f=e.target.files&&e.target.files[0];if(!f)return;
-    try{const d=await processImage(f);set(d);const t=$(thumbId);t.src=d;t.style.display='block';}
+    try{const d=await processImage(f);set(d);const t=$(thumbId);t.src=d.url;t.style.display='block';}
     catch(err){alert('that photo didn\u2019t work \u2014 try another one.');}
   });
 }
@@ -304,7 +304,7 @@ function photoRow(host,k,prefix,set,arr){
   const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.id='f-'+prefix+k;
   inp.addEventListener('change',async()=>{
     const f=inp.files&&inp.files[0];if(!f)return;
-    try{arr[k]=await processImage(f);img.src=arr[k];img.style.display='block';}
+    try{arr[k]=await processImage(f);img.src=arr[k].url;img.style.display='block';}
     catch(err){alert('that photo didn\u2019t work \u2014 try another one.');}
   });
   row.appendChild(img);row.appendChild(lab0);row.appendChild(lab);row.appendChild(inp);
@@ -361,7 +361,7 @@ const SHELL_CSS='*{box-sizing:border-box;margin:0;padding:0}'
 +'#lockNote{color:#7d6f94;font-size:12px;margin-top:6px;min-height:18px}';
 const DECRYPTOR_JS='async function b64d(s){const b=atob(s);const u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u;}\n'
 +'async function doUnlock(){\n'
-+'var pw=document.getElementById("lockCode").value;\n'
++'var pw=document.getElementById("lockCode").value.trim();\n'
 +'var err=document.getElementById("lockErr"),note=document.getElementById("lockNote"),go=document.getElementById("lockGo");\n'
 +'err.textContent="";\n'
 +'if(!window.crypto||!crypto.subtle){err.textContent="this browser can\\u2019t unlock it \\u2014 try Chrome, Safari or Firefox.";return;}\n'
@@ -440,7 +440,13 @@ function applyAll(doc,cfg){
   if(bday){const p=bday.split('-');const el=doc.querySelector('.birthday-date');if(el&&p.length===3)el.textContent=p[2]+' . '+p[1]+' . '+p[0];}
   if(her){doc.title='For '+her+' \u2661';const og=doc.querySelector('meta[property="og:title"]');if(og)og.setAttribute('content','for '+her.toLowerCase()+' \u2661');}
   const tp=doc.querySelector('.throwback-photo img');
-  if(MEDIA.throwback){if(tp)tp.src=MEDIA.throwback;}
+  if(MEDIA.throwback){
+    if(tp){
+      tp.src=MEDIA.throwback.url;
+      const tw=doc.querySelector('.throwback-photo');
+      if(tw&&MEDIA.throwback.w&&MEDIA.throwback.h){tw.style.aspectRatio=MEDIA.throwback.w+'/'+MEDIA.throwback.h;tw.style.height='auto';}
+    }
+  }
   else{const tw=doc.querySelector('.throwback-photo');if(tw)tw.style.display='none';}
   const gv=doc.querySelector('#gPolVid');
   if(gv){if(MEDIA.gardenVideo)gv.src=MEDIA.gardenVideo;else gv.remove();}
@@ -448,7 +454,11 @@ function applyAll(doc,cfg){
   if(hv){if(MEDIA.herVideo)hv.src=MEDIA.herVideo;else hv.removeAttribute('src');}
   const frames=doc.querySelectorAll('#lfRail .frame');
   frames.forEach((fr,k)=>{
-    if(MEDIA.frames[k]){const im=fr.querySelector('.image');if(im){im.innerHTML='';const img=doc.createElement('img');img.src=MEDIA.frames[k];img.alt='';im.appendChild(img);}}
+    const ph=MEDIA.frames[k];if(!ph)return;const im=fr.querySelector('.image');if(!im)return;
+    im.innerHTML='';const img=doc.createElement('img');img.src=ph.url;img.alt='';
+    img.style.cssText='width:100%;height:100%;object-fit:cover;display:block';
+    if(ph.w&&ph.h){im.style.aspectRatio=ph.w+'/'+ph.h;im.style.height='auto';}
+    im.appendChild(img);
   });
   doc.querySelectorAll('audio[src]').forEach(a=>{const s=a.getAttribute('src');if(s&&!/^(https?:|data:)/.test(s))a.setAttribute('src',ABS+s);});
   doc.querySelectorAll('script[data-website-id],script[src*="umami"]').forEach(s=>s.remove());
@@ -465,7 +475,7 @@ function applyAll(doc,cfg){
 }
 async function generate(){
   syncSmart();
-  const code=$('secretCode').value;
+  const code=$('secretCode').value.trim();
   if(code.length<6){setStatus('the secret code needs <b>6+ characters</b> \u2014 it\u2019s the key to the whole file.');$('secretCode').focus();return;}
   if(!window.crypto||!crypto.subtle){setStatus('this browser can\u2019t do the encryption \u2014 please use Chrome, Safari or Firefox.');return;}
   const btn=$('genBtn');btn.disabled=true;$('dlWrap').style.display='none';
