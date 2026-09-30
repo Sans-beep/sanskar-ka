@@ -937,9 +937,10 @@ if(enterPhase2Button){
   });
 }
 
-// One clean Phase 2 wrapper. Phase 2 is the moon page (8) AND the constellation
-// (9): the song plays across both and only stops when she truly leaves phase 2.
-// (Phase 3's entry, when built, should stop it).
+// One clean Phase 2 wrapper. Phase 2 is the moon page (8), the constellation
+// (9), AND the "wanna say something??" interstitial (10): the song plays across
+// all three and only stops when she truly leaves — i.e. on "going ahead →"
+// into phase 3 (11) or navigating back before the moon.
 // No room/Lost Frame/fullscreen navigation layer.
 const phase2BaseGo=go;
 go=function(n){
@@ -947,7 +948,7 @@ go=function(n){
   if(i===9 && n!==9){
     closeHerVideo();
   }
-  if((i===8||i===9)&&(n!==8&&n!==9)){
+  if((i===8||i===9||i===10)&&(n!==8&&n!==9&&n!==10)){
     pausePhase2Song();
   }
   if(i===8 && n!==8){
