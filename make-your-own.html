@@ -23,10 +23,10 @@ main{max-width:720px;margin:0 auto;padding:18px 16px}
 .card p.hint{color:var(--dim);font-size:13px;line-height:1.6;margin:6px 0 14px}
 .card p.hint b{color:var(--gold)}
 .fld{margin:12px 0}
-.fld label{display:block;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
-.fld label .keep{float:right;text-transform:none;letter-spacing:0;color:#7d6f94;font-size:11px}
+.fld label{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
+.fld label .keep{flex:0 0 auto;text-transform:none;letter-spacing:0;color:#7d6f94;font-size:11px}
 .fld input[type=text],.fld input[type=email],.fld input[type=date],.fld input[type=password],.fld textarea{width:100%;background:#0f0b18;border:1px solid var(--line);border-radius:10px;color:var(--txt);font-family:"DM Sans",sans-serif;font-size:15px;padding:11px 12px;outline:none;transition:border .2s}
-.fld textarea{min-height:76px;resize:vertical;line-height:1.55;font-size:14px}
+.fld textarea{min-height:112px;resize:vertical;line-height:1.55;font-size:14px}
 .fld input:focus,.fld textarea:focus{border-color:var(--pink)}
 .fld .mini{font-size:12px;color:#7d6f94;margin-top:5px;line-height:1.5}
 .frow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -34,6 +34,8 @@ main{max-width:720px;margin:0 auto;padding:18px 16px}
 details.sec{border:1px solid var(--line);border-radius:12px;margin:10px 0;background:#120d1d;overflow:hidden}
 details.sec>summary{cursor:pointer;list-style:none;padding:13px 15px;font-size:15px;font-weight:600;display:flex;justify-content:space-between;align-items:center}
 details.sec>summary::-webkit-details-marker{display:none}
+details.sec>summary .chev{color:#7d6f94;font-size:11px;margin-left:9px;transition:transform .25s;display:inline-block}
+details.sec[open]>summary .chev{transform:rotate(180deg)}
 details.sec>summary .n{color:var(--pink);font-family:"Caveat",cursive;font-size:19px;margin-right:8px}
 details.sec>summary .rst{font-size:11px;color:#7d6f94;font-weight:400;border:1px solid var(--line);border-radius:20px;padding:4px 10px}
 details.sec>summary .rst:hover{color:var(--pink);border-color:var(--pink)}
@@ -201,7 +203,7 @@ function buildWordGroups(){
   SECTIONS.forEach(([key,title],si)=>{
     const det=document.createElement('details');det.className='sec';if(si<2)det.open=true;
     const sum=document.createElement('summary');
-    sum.innerHTML='<span><span class="n">'+(si+1)+'.</span>'+esc(title)+'</span>';
+    sum.innerHTML='<span><span class="n">'+(si+1)+'.</span>'+esc(title)+'<span class="chev">▾</span></span>';
     const rst=document.createElement('span');rst.className='rst';rst.textContent='reset section';
     rst.onclick=e=>{e.preventDefault();e.stopPropagation();resetSection(key);};
     sum.appendChild(rst);det.appendChild(sum);
