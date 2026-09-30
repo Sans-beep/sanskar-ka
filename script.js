@@ -317,6 +317,8 @@ tapSound.volume=.72;
 function closeLetter(){
   pop.classList.remove('open');
   pop.setAttribute('aria-hidden','true');
+  const song=document.getElementById('letterSong');
+  if(song){ clearTimeout(window.letterSongStop); fadeOutAudio(song,500,true); }
 }
 document.getElementById('closeLetter').onclick=closeLetter;
 pop.addEventListener('click',e=>{if(e.target===pop)closeLetter()});
@@ -354,10 +356,16 @@ env.addEventListener('click',()=>{
       burst.appendChild(el);
     });
 
+    // Start audio during the user gesture so mobile autoplay policies are more reliable.
+    const letterSong=document.getElementById('letterSong');
+    if(letterSong){letterSong.currentTime=20;fadeInAudio(letterSong,.56,900);}
     // The actual letter opens automatically after the heart burst.
     setTimeout(()=>{
       pop.classList.add('open');
       pop.setAttribute('aria-hidden','false');
+      const song=document.getElementById('letterSong');
+      clearTimeout(window.letterSongStop);
+      window.letterSongStop=setTimeout(()=>fadeOutAudio(song,900,true),40000);
     },620);
   }else{
     tapReset=setTimeout(()=>{
