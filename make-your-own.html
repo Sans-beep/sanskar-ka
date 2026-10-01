@@ -446,7 +446,14 @@ function applyAll(doc,cfg){
     if(tp){
       tp.src=MEDIA.throwback.url;
       const tw=doc.querySelector('.throwback-photo');
-      if(tw&&MEDIA.throwback.w&&MEDIA.throwback.h){tw.style.aspectRatio=MEDIA.throwback.w+'/'+MEDIA.throwback.h;tw.style.height='auto';}
+      if(tw&&MEDIA.throwback.w&&MEDIA.throwback.h){
+        /* fit the photo's own ratio inside a 255x340 box so the whole photo
+           shows but a tall portrait can never blow out the page */
+        const MAXW=255,MAXH=340;
+        let w=MAXW,h=Math.round(MAXW*MEDIA.throwback.h/MEDIA.throwback.w);
+        if(h>MAXH){h=MAXH;w=Math.round(MAXH*MEDIA.throwback.w/MEDIA.throwback.h);}
+        tw.style.width=w+'px';tw.style.height=h+'px';
+      }
     }
   }
   else{const tw=doc.querySelector('.throwback-photo');if(tw)tw.style.display='none';}
@@ -459,7 +466,7 @@ function applyAll(doc,cfg){
     const ph=MEDIA.frames[k];if(!ph)return;const im=fr.querySelector('.image');if(!im)return;
     im.innerHTML='';const img=doc.createElement('img');img.src=ph.url;img.alt='';
     img.style.cssText='width:100%;height:100%;object-fit:cover;display:block';
-    if(ph.w&&ph.h){im.style.aspectRatio=ph.w+'/'+ph.h;im.style.height='auto';}
+    if(ph.w&&ph.h){im.style.aspectRatio=ph.w+'/'+ph.h;im.style.height='auto';im.style.maxHeight='430px';}
     im.appendChild(img);
   });
   doc.querySelectorAll('audio[src]').forEach(a=>{const s=a.getAttribute('src');if(s&&!/^(https?:|data:)/.test(s))a.setAttribute('src',ABS+s);});
