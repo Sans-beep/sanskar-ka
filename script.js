@@ -579,6 +579,7 @@ function resetPhase2VideoPair(){
     preparePhase2Video(v);
     v.pause();
     try{v.currentTime=0}catch(_){} 
+    v.style.visibility='';
     v.classList.toggle('is-visible',k===0);
     v.style.transition='opacity 420ms cubic-bezier(.22,.72,.2,1)';
   });
@@ -626,13 +627,28 @@ async function crossfadePhase2Video(){
   // jump/flicker. Now only the visible copy runs until the seam.
   next.pause();
   try{next.currentTime=0}catch(_){}
-  next.classList.add('is-visible');
 
+  // Make the incoming copy compositor-visible but fully transparent, so it
+  // actually decodes and presents frames (a visibility:hidden video may not).
+  // requestVideoFrameCallback then PROVES a frame was presented before we
+  // blend it in — no more blank-compositor flash of the page background at
+  // the seam, which read as the characters flickering on real devices.
+  next.style.visibility='visible';
   const playPromise=next.play();
   if(playPromise?.catch)await playPromise.catch(()=>{});
+  await new Promise(res=>{
+    let done=false;
+    const finish=()=>{if(!done){done=true;res();}};
+    try{
+      if(typeof next.requestVideoFrameCallback==='function')next.requestVideoFrameCallback(()=>finish());
+    }catch(_){}
+    setTimeout(finish,1200);
+  });
+  next.style.visibility='';
+  next.classList.add('is-visible');
 
-  // Give the browser at least two paint opportunities to decode/show frame 0
-  // before fading the old layer away. This avoids a black/blank compositor frame.
+  // Give the browser at least two paint opportunities with the new layer
+  // fading in before fading the old layer away.
   await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
 
   current.classList.remove('is-visible');
@@ -698,6 +714,7 @@ function stopPhase2Video(){
   phase2Videos.forEach(v=>{
     v.pause();
     try{v.currentTime=0}catch(_){}
+    v.style.visibility='';
     v.classList.remove('is-visible');
   });
   if(phase2Videos[0])phase2Videos[0].classList.add('is-visible');

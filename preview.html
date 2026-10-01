@@ -14,8 +14,8 @@
 <meta name="twitter:title" content="for you ♡">
 <meta name="twitter:description" content="a little preview — every word unlocks on your day">
 <meta name="twitter:image" content="https://sans-beep.github.io/sanskar-ka/preview-og.jpg">
-<link rel="stylesheet" href="style.css?v=20261001-73">
-<link rel="stylesheet" href="preview.css?v=7">
+<link rel="stylesheet" href="style.css?v=20261001-81">
+<link rel="stylesheet" href="preview.css?v=8">
 </head>
 <body class="preview">
 <div class="shell"><main class="card">
@@ -171,7 +171,7 @@
     <p style="text-align:right;margin-top:28px" id="letterSig">— Sanskar ♡</p>
   </article>
 </div>
-<script src="script.js?v=20261001-73"></script><audio id="letterSong" preload="auto" src="tune-jo-na-kaha.mp3"></audio><audio id="phase1Song" preload="auto" src="hey-there-delilah.mp3"></audio><div id="lyricLayer" aria-hidden="true"><i class="lyr-doodle ld1">♡</i><span id="lyricLine"></span><i class="lyr-doodle ld2">✦</i></div>
+<script src="script.js?v=20261001-81"></script><audio id="letterSong" preload="auto" src="tune-jo-na-kaha.mp3"></audio><audio id="phase1Song" preload="auto" src="hey-there-delilah.mp3"></audio><div id="lyricLayer" aria-hidden="true"><i class="lyr-doodle ld1">♡</i><span id="lyricLine"></span><i class="lyr-doodle ld2">✦</i></div>
 <!-- preview-only: moon video tease, plays just before the code lock. the moon opens the real Lost Frame. -->
 <div class="moon-tease" id="moonTease" aria-hidden="true">
   <video class="mt-video is-visible" id="mtVideoA" playsinline muted preload="auto" src="https://raw.githubusercontent.com/Sans-beep/sanskar-ka/2d28655d14b456b009c8fc2bcdb7fbaf5f907b77/phase2-reference-moon-no-lyrics.mp4?v=20260925-3"></video>
@@ -209,21 +209,35 @@
     if(!cur||!nxt)return;
     xfade=true; clearTimeout(loopTimer);
     try{nxt.pause();nxt.currentTime=0;}catch(e){}
-    nxt.classList.add('is-visible');
+    /* Same no-flash gate as the main page: the incoming copy is made
+       compositor-visible but transparent, and the old copy only fades once
+       requestVideoFrameCallback proves a frame was presented. */
+    nxt.style.visibility='visible';
     playEl(nxt);
-    requestAnimationFrame(function(){requestAnimationFrame(function(){
-      cur.classList.remove('is-visible');
-      setTimeout(function(){
-        try{cur.pause();cur.currentTime=0;}catch(e){}
-        vidIdx=(vidIdx+1)%vids.length; xfade=false; scheduleLoop();
-      },480);
-    });});
+    var done=false;
+    function finish(){
+      if(done)return; done=true;
+      nxt.style.visibility='';
+      nxt.classList.add('is-visible');
+      requestAnimationFrame(function(){requestAnimationFrame(function(){
+        cur.classList.remove('is-visible');
+        setTimeout(function(){
+          try{cur.pause();cur.currentTime=0;}catch(e){}
+          vidIdx=(vidIdx+1)%vids.length; xfade=false; scheduleLoop();
+        },480);
+      });});
+    }
+    try{
+      if(typeof nxt.requestVideoFrameCallback==='function')nxt.requestVideoFrameCallback(finish);
+    }catch(e){}
+    setTimeout(finish,1200);
   }
   function startTease(){
     if(!vids.length)return;
     clearTimeout(loopTimer); xfade=false; vidIdx=0;
     vids.forEach(function(v,k){
       try{v.pause();v.currentTime=0;}catch(e){}
+      v.style.visibility='';
       v.classList.toggle('is-visible',k===0);
     });
     playEl(activeVid());

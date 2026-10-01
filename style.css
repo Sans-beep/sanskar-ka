@@ -212,7 +212,7 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
 /* ===== Phase 2 — cinematic video only ===== */
 .phase2-film{
   padding:0!important;
-  background:#050505!important;
+  background:#ffffff!important;
   overflow:hidden!important;
 }
 .phase2-film .film-stage{
@@ -223,7 +223,7 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
   width:100%!important;
   height:100%!important;
   overflow:hidden!important;
-  background:#050505!important;
+  background:#ffffff!important;
 }
 .phase2-film .phase2-video{
   position:absolute!important;
@@ -256,17 +256,18 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
   border-radius:0!important;
 }
 @media (min-width:700px){
-  /* Laptop: paper-light stage that merges with the video's white background.
-     The video keeps its 9:16 ratio so the border hugs the picture, not the screen. */
-  .phase2-film{background:#f5f0e6!important}
-  .phase2-film .film-stage{background:#f5f0e6!important}
+  /* Laptop: the stage is the video's own pure white, so the picture melts
+     into the page with no tone patch and no frame lines.
+     The video keeps its 9:16 ratio. */
+  .phase2-film{background:#ffffff!important}
+  .phase2-film .film-stage{background:#ffffff!important}
   .phase2-film .phase2-video{
     object-fit:contain!important;
     object-position:50% 50%!important;
     width:auto!important;
     aspect-ratio:9/16;
-    border:1px solid #2b2620!important;
-    box-shadow:0 0 0 8px #f5f0e6,0 0 0 9px rgba(43,38,32,.30),0 30px 80px rgba(43,38,32,.22)!important;
+    border:0!important;
+    box-shadow:none!important;
   }
   /* moonlight interaction: ink + warm gold on the light stage (base styles already match) */
 }
@@ -279,11 +280,6 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
   pointer-events:none;
   z-index:3;
   text-shadow:0 0 14px rgba(244,169,198,.95),0 0 34px rgba(244,169,198,.55),0 0 60px rgba(244,169,198,.3);
-  animation:phase2StarShine 2.6s ease-in-out infinite;
-}
-@keyframes phase2StarShine{
-  0%,100%{opacity:.6;transform:translate(-50%,-50%) scale(.85) rotate(-8deg)}
-  50%{opacity:1;transform:translate(-50%,-50%) scale(1.18) rotate(10deg)}
 }
 
 
