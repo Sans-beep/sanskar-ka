@@ -2342,6 +2342,14 @@ wireGarden();
   const load=()=>{try{const v=JSON.parse(localStorage.getItem(STORE)||'null');return v&&Array.isArray(v.released)?v:null;}catch(e){return null;}};
   const save=()=>{try{localStorage.setItem(STORE,JSON.stringify(S));}catch(e){}};
   const track=(n,d)=>{if(window.trackStoryEvent)window.trackStoryEvent(n,d||{});};
+  const FLOCK_DOODLES='<i class="c-doodle hd1">\u2661</i><i class="c-doodle hd2">\u2726</i><i class="c-doodle hd3">\u2736</i><i class="c-doodle hd4">\u2661</i><i class="c-doodle hd5">\u2726</i>';
+  let craneVideoT=0,craneZoomT=0,craneVideoTracked=false;
+  // Zoom the heart toward the viewer (like the constellation dive), then her video.
+  function zoomToCraneVideo(zoomMs){
+    clearTimeout(craneVideoT);clearTimeout(craneZoomT);
+    document.getElementById('p12').classList.add('crane-zoom');
+    craneVideoT=setTimeout(()=>{if(window.sitePageIndex!==IDX)return;openVideo();},zoomMs);
+  }
   // night stars, once
   (function stars(){const w=$('cStars');if(!w||w.children.length)return;for(let k=0;k<26;k++){const s=document.createElement('span');s.style.left=(Math.random()*100)+'%';s.style.top=(Math.random()*62)+'%';s.style.animationDelay=(-Math.random()*3)+'s';w.appendChild(s);}})();
   function setPaper(){const c=S.released.length%3;paper.className='crane-paper c'+c+(S.fold===1?' fold1':S.fold===2?' fold2':'');bird.className='crane-bird c'+c;}
@@ -2427,7 +2435,7 @@ wireGarden();
     if(window.sitePageIndex!==IDX||S.heart)return;S.heart=true;save();
     buildHeart();
     setTimeout(()=>{if(window.sitePageIndex!==IDX)return;finale.hidden=false;track('cranes-heart');
-      if(!S.videoSeen)setTimeout(()=>{if(window.sitePageIndex!==IDX||S.videoSeen)return;openVideo();},2400);
+      if(!S.videoSeen)craneZoomT=setTimeout(()=>{if(window.sitePageIndex!==IDX||S.videoSeen)return;zoomToCraneVideo(2200);},1600);
     },1200);
   }
   function openVideo(){
@@ -2436,27 +2444,31 @@ wireGarden();
     try{vid.currentTime=0;}catch(e){}
     vid.muted=true;vid.play().catch(()=>{});
     const sh=$('craneSoundHint');if(sh)sh.hidden=false;
+    if(!craneVideoTracked){craneVideoTracked=true;track('crane-video-played');}
   }
   function closeVideo(){
+    clearTimeout(craneVideoT);clearTimeout(craneZoomT);
     try{vid.pause();}catch(e){}
     videoBox.hidden=true;
     const gb=document.getElementById('globalBack');if(gb&&gb.dataset.craneBack!==undefined){gb.style.display=gb.dataset.craneBack;delete gb.dataset.craneBack;}
     S.videoSeen=true;save();endBox.hidden=false;
+    // zoom back out to the sky after the video
+    setTimeout(()=>document.getElementById('p12').classList.remove('crane-zoom'),350);
   }
   vid.addEventListener('click',()=>{vid.muted=!vid.muted;if(!vid.muted){const sh=$('craneSoundHint');if(sh)sh.hidden=true;}});
   $('craneVideoBack').addEventListener('click',closeVideo);
-  $('craneWatch').addEventListener('click',()=>{track('crane-video-played');openVideo();});
+  $('craneWatch').addEventListener('click',()=>{zoomToCraneVideo(1300);});
   $('craneAgain').addEventListener('click',()=>{
     if(!confirm('fold them all again? \u2661'))return;
     try{localStorage.removeItem(STORE);}catch(e){}
     S=fresh();
-    document.getElementById('p12').classList.remove('heart-done');
-    flock.classList.remove('heart-mode');flock.innerHTML='';
+    document.getElementById('p12').classList.remove('heart-done','crane-zoom');
+    flock.classList.remove('heart-mode');flock.innerHTML=FLOCK_DOODLES;
     finale.hidden=true;endBox.hidden=true;showFoldUI();
   });
   function restore(){
     S=load()||fresh();
-    flock.innerHTML='';flock.classList.remove('heart-mode');
+    flock.innerHTML=FLOCK_DOODLES;flock.classList.remove('heart-mode');
     finale.hidden=true;endBox.hidden=true;
     S.released.forEach((r,i)=>miniCrane(r.line,i%3));
     if(S.released.length>=3){
@@ -2469,6 +2481,6 @@ wireGarden();
     }else{showFoldUI();}
   }
   window.startCranes=function(){restore();};
-  window.stopCranes=function(){if(!videoBox.hidden)closeVideo();};
+  window.stopCranes=function(){clearTimeout(craneVideoT);clearTimeout(craneZoomT);document.getElementById('p12').classList.remove('crane-zoom');if(!videoBox.hidden)closeVideo();};
   // track first view via go() hook below
 })();
