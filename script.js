@@ -2123,25 +2123,52 @@ wireEmailPage();
     }).then(r=>{clearTimeout(to);if(!r.ok)throw new Error(r.status);track('crane-lines-sent');})
       .catch(()=>{clearTimeout(to);S.sent=false;save();});
   }
-  function buildHeart(){
+  function buildHeart(animate){
+    const page=document.getElementById('p12');
+    const kids=[...flock.querySelectorAll('.mini-crane')];
+    // FLIP: pin each crane where it is now (px), then let the left/top
+    // transition fly it into formation. Without this the cranes snap from
+    // `auto` (no transition possible) and the heart looks pre-made.
+    let starts=null;
+    if(animate!==false&&kids.length){
+      const pr=page.getBoundingClientRect();
+      starts=kids.map(k=>{const r=k.getBoundingClientRect();return [r.left-pr.left+r.width/2,r.top-pr.top+r.height/2];});
+    }
     flock.classList.add('heart-mode');
-    document.getElementById('p12').classList.add('heart-done');
+    page.classList.add('heart-done');
     if(!flock.querySelector('.crane-heart-svg')){
       const heart=document.createElementNS('http://www.w3.org/2000/svg','svg');
       heart.setAttribute('viewBox','0 0 100 92');heart.setAttribute('class','crane-heart-svg');
       heart.innerHTML='<path d="M50 84 C20 60 6 40 6 26 C6 12 18 4 30 4 C40 4 47 10 50 18 C53 10 60 4 70 4 C82 4 94 12 94 26 C94 40 80 60 50 84 Z" fill="none" stroke="rgba(255,217,138,.85)" stroke-width="2"/>';
       flock.appendChild(heart);
     }
-    const pts=[[50,30],[32,52],[68,52]],kids=[...flock.querySelectorAll('.mini-crane')];
-    kids.forEach((k,i)=>{const p=pts[i%3];k.style.left=p[0]+'%';k.style.top=p[1]+'%';});
+    const pts=[[50,30],[32,52],[68,52]];
+    const fr=flock.getBoundingClientRect(),pr2=page.getBoundingClientRect(),fx=fr.left-pr2.left,fy=fr.top-pr2.top;
+    kids.forEach((k,i)=>{
+      const p=pts[i%3];
+      if(starts){
+        k.style.transitionDelay=(i*140)+'ms';
+        k.style.left=(starts[i][0]-fx)+'px';
+        k.style.top=(starts[i][1]-fy)+'px';
+      }else{
+        k.style.transitionDelay='';
+        k.style.left=p[0]+'%';k.style.top=p[1]+'%';
+      }
+    });
+    if(starts){
+      void flock.offsetWidth; // commit the pinned spots before flying
+      kids.forEach((k,i)=>{const p=pts[i%3];k.style.left=p[0]+'%';k.style.top=p[1]+'%';});
+      setTimeout(()=>kids.forEach(k=>{k.style.transitionDelay='';}),1800);
+    }
     hint.textContent='';
   }
   function formHeart(){
     if(window.sitePageIndex!==IDX||S.heart)return;S.heart=true;save();
-    buildHeart();
+    buildHeart(true);
+    // finale line lands as the formation completes (~1.4s of flight)
     setTimeout(()=>{if(window.sitePageIndex!==IDX)return;finale.hidden=false;track('cranes-heart');
       if(!S.videoSeen)craneZoomT=setTimeout(()=>{if(window.sitePageIndex!==IDX||S.videoSeen)return;zoomToCraneVideo(2200);},1600);
-    },1200);
+    },1900);
   }
   function openVideo(){
     videoBox.hidden=false;
@@ -2179,7 +2206,7 @@ wireEmailPage();
     if(S.released.length>=3){
       if(!S.heart){formHeart();}
       else{
-        buildHeart();
+        buildHeart(false); // already formed earlier: show it settled, no replay
         finale.hidden=false;endBox.hidden=!S.videoSeen;hint.textContent='';
         paper.hidden=true;bird.hidden=true;linesBox.hidden=true;count.textContent='';
       }
