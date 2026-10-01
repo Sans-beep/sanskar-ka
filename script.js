@@ -128,7 +128,8 @@ function stopPhase1Song(){
 /* Page order: p0 intro (0), p1 hey (1), p2 birthday (2), p3 throwback (3),
    p4 delivery (4), p5 chocolate (5), p6 letter (6), p7 unlock (7),
    p8 moon (8), p9 constellation (9), p10 say (10), p11 reply-email (11),
-   p12 garden (12).
+   p12 cranes (12). (Section ids are NOT indices: p-email sits at index 11,
+   and after the garden's removal p12 cranes sits at index 12.)
    The birthday slide is back WITHOUT its song; the intro plays aise-kyun.
    NOTE: the intro timer (p0) plays ONLY in preview.html (body.preview) —
    the main site starts on p1 and never shows p0. */
@@ -212,10 +213,8 @@ function go(n){
   if(n===9)startConstSky();else if(oldIndex===9)stopConstSky();
   if(n===10&&window.trackStoryEvent)window.trackStoryEvent('say-shown');
   if(n===11&&window.trackStoryEvent)window.trackStoryEvent('email-shown');
-  if(n===12)startGarden();else if(oldIndex===12)stopGarden();
-  if(n===12&&window.trackStoryEvent)window.trackStoryEvent('phase3-shown');
-  if(n===13&&typeof startCranes==='function')startCranes();else if(oldIndex===13&&typeof stopCranes==='function')stopCranes();
-  if(n===13&&window.trackStoryEvent)window.trackStoryEvent('cranes-shown');
+  if(n===12&&typeof startCranes==='function')startCranes();else if(oldIndex===12&&typeof stopCranes==='function')stopCranes();
+  if(n===12&&window.trackStoryEvent)window.trackStoryEvent('cranes-shown');
   const thread=document.getElementById('storyThread');
   if(thread){thread.classList.remove('play');void thread.offsetWidth;thread.classList.add('play');}
   if(n===0&&isPreviewPage)startIntro();
@@ -285,10 +284,7 @@ const MYO_TEXT_DEFAULTS={
 'email.done':"noted \u2661 i'll write back.",
 'email.savedBtn':'saved \u2661',
 'email.sendBtn':"that's it \u2192",
-'email.failed':"hmm, that didn't fly \u2014 try again?",
-'garden.oneDownHim':'one down \u2661 now her',
-'garden.oneDownHer':'one down \u2661 now him',
-'garden.grew':'look what you grew \u2661'
+'email.failed':"hmm, that didn't fly \u2014 try again?"
 };
 /*MYO_DEFAULTS_END*/
 function myoT(key){
@@ -297,18 +293,6 @@ function myoT(key){
   if(v===undefined||v===null||v==='')return d===undefined?'':d;
   return v;
 }
-/* Studio-uploaded videos keep their own ratio: the whole video stays visible,
-   the frame just reshapes inside its max box. MYO-gated, so the original site is untouched. */
-document.addEventListener('loadedmetadata',function(e){
-  if(!MYO)return;
-  var v=e.target;
-  if(v&&v.id==='gPolVid'&&v.videoWidth>0&&v.videoHeight>0){
-    var MW=168,MH=220,w=MW,h=Math.round(MW*v.videoHeight/v.videoWidth);
-    if(h>MH){h=MH;w=Math.round(MH*v.videoWidth/v.videoHeight);}
-    v.style.width=w+'px';v.style.height=h+'px';
-  }
-},true);
-
 let introTimerId=null,introStep=0,introDone=false;
 function introEls(){return{timer:document.getElementById('introTimer'),line:document.getElementById('introLine'),prog:document.getElementById('introProgress'),cont:document.getElementById('introContinue'),snd:document.getElementById('introSound'),audio:document.getElementById('aiseKyun')};}
 function showIntroStep(){
@@ -1861,12 +1845,12 @@ function applyCustomization(){
 }
 applyCustomization();
 
-/* ===== "wanna say something??" — interstitial page between phase 2 and phase 3.
+/* ===== "wanna say something??" — interstitial page between phase 2 and the cranes.
    Her words travel to him through a tiny form backend (FormSubmit). The message
    body itself NEVER touches analytics — only metadata events (shown/yes/no/sent). */
 const SAY_SOMETHING_EMAIL=(MYO&&MYO.sayEmail)||'beyondsanskar@gmail.com'; // real address; activate once via FormSubmit's mail
 const EMAIL_INDEX=11; // "where can i write back?" — only after she wrote + it sent
-const PHASE3_INDEX=12; // first page of phase 3: "two flowers, one garden"
+const CRANES_INDEX=12; // paper cranes — the onward page after say/email
 let sayAnswered=false,saySending=false,sayWroteAndSent=false,sayEmailToken='';
 
 function setSayLine(t){
@@ -1984,9 +1968,9 @@ function wireSayPage(){
   ahead.addEventListener('click',()=>{
     if(ahead.disabled)return;
     // She wrote something and it reached him → ask where he can write back.
-    // Otherwise (no / never-mind / send failed) → straight to the garden.
+    // Otherwise (no / never-mind / send failed) → straight to the cranes.
     if(sayWroteAndSent&&pages.length>EMAIL_INDEX){go(EMAIL_INDEX);}
-    else if(pages.length>PHASE3_INDEX){go(PHASE3_INDEX);}
+    else if(pages.length>CRANES_INDEX){go(CRANES_INDEX);}
     else{const s=document.getElementById('saySoon');if(s)s.hidden=false;}
   });
 }
@@ -2004,7 +1988,7 @@ function wireEmailPage(){
         skip=document.getElementById('emailSkip'),status=document.getElementById('emailStatus');
   if(!input||!send)return;
   let sending=false;
-  const onward=()=>{if(pages.length>PHASE3_INDEX)go(PHASE3_INDEX);};
+  const onward=()=>{if(pages.length>CRANES_INDEX)go(CRANES_INDEX);};
   if(skip)skip.addEventListener('click',()=>{
     if(window.trackStoryEvent)window.trackStoryEvent('email-skipped');
     onward();
@@ -2043,289 +2027,10 @@ function wireEmailPage(){
 }
 wireEmailPage();
 
-/* ===== Phase 3: "two flowers, one garden" (index 12) =====
-   She holds each bud to bloom it (real photos: orange = him, yellow = her).
-   When both bloom, petals swirl up into a heart, then her photo appears.
-   All motion is transform/opacity-only (WAAPI + CSS) — GPU-cheap. */
-const GARDEN_INDEX=12;
-const HOLD_MS=1400, RING_C=339.3;
-let gardenInit=false, gardenHeartDone=false, gardenFinaleShown=false, gardenRaf=0, gardenLast=0;
-const gardenState={him:{p:0,done:false,holding:false},her:{p:0,done:false,holding:false}};
-
-function gardenInitSky(){
-  if(gardenInit)return;gardenInit=true;
-  const mk=(id,n,sz)=>{
-    const el=document.getElementById(id);if(!el)return;
-    const sh=[];
-    for(let k=0;k<n;k++){
-      sh.push(`${(Math.random()*100).toFixed(1)}vw ${(Math.random()*68).toFixed(1)}vh 0 ${(Math.random()*1.3+.5).toFixed(1)}px rgba(255,250,235,${(Math.random()*.5+.45).toFixed(2)})`);
-    }
-    el.style.width=sz+'px';el.style.height=sz+'px';el.style.boxShadow=sh.join(',');
-  };
-  mk('gStarsA',70,2);mk('gStarsB',45,3);
-  const sky=document.getElementById('gardenSky');
-  if(sky){
-    // ambient petals drifting up, forever (like the animated mockup)
-    const cols=['linear-gradient(135deg,#ffb066,#e07b1f)','linear-gradient(135deg,#ffe27a,#eaa90f)','linear-gradient(135deg,#ffc6d4,#f27ba0)'];
-    for(let k=0;k<9;k++){
-      const s=document.createElement('span');s.className='g-amb-petal';
-      s.style.background=cols[k%3];s.style.left=(4+Math.random()*92)+'%';
-      s.style.width=(10+Math.random()*8).toFixed(0)+'px';s.style.height=(13+Math.random()*9).toFixed(0)+'px';
-      s.style.animationDelay=(Math.random()*10).toFixed(1)+'s';
-      s.style.animationDuration=(8+Math.random()*6).toFixed(1)+'s';
-      sky.appendChild(s);
-    }
-    // pink butterflies
-    for(let k=0;k<3;k++){
-      const b=document.createElement('div');b.className='g-bfly';
-      b.innerHTML='<span class="bl"></span><span class="br"></span>';
-      b.style.left=(12+k*30+Math.random()*8)+'%';b.style.top=(24+Math.random()*30)+'%';
-      b.style.animationDelay=(-k*4.7).toFixed(1)+'s';
-      sky.appendChild(b);
-    }
-    // soft drifting cloud wisps
-    [[18,30],[55,58]].forEach(([l,t],k)=>{
-      const c=document.createElement('div');c.className='g-cloud';
-      c.style.left=l+'%';c.style.top=t+'%';c.style.animationDelay=(-k*13)+'s';
-      sky.appendChild(c);
-    });
-  }
-  // grass tufts + tiny wildflowers along the bed
-  const bed0=document.getElementById('gardenBed');
-  if(bed0){
-    const g=['❀','✿','❋','✦','❀','✿','❋','✦','❀','✿'];
-    for(let k=0;k<10;k++){
-      const s=document.createElement('span');s.className='g-grass';s.textContent=g[k];
-      s.style.left=(2+k*10+Math.random()*4)+'%';s.style.bottom=(1+Math.random()*9)+'px';
-      s.style.color=k%3?'#7fbf7a':'#f2a9c0';s.style.fontSize=(13+Math.random()*9).toFixed(0)+'px';
-      s.style.animationDelay=(Math.random()*4).toFixed(1)+'s';
-      bed0.appendChild(s);
-    }
-  }
-  buildDrawnBloom('gDrawnHim','him');buildDrawnBloom('gDrawnHer','her');
-  const pv=document.getElementById('gPolVid');
-  if(pv&&!pv.dataset.tapped){pv.dataset.tapped='1';
-    pv.addEventListener('click',()=>{
-      pv.muted=!pv.muted;pv.play().catch(()=>{});
-      const h=document.getElementById('gSoundHint');if(h)h.hidden=!pv.muted;
-    });}
-  const ff=document.getElementById('gFireflies');
-  if(ff)for(let k=0;k<7;k++){
-    const s=document.createElement('span');
-    s.style.left=(8+Math.random()*84)+'%';s.style.top=(32+Math.random()*52)+'%';
-    s.style.animationDelay=(Math.random()*7).toFixed(1)+'s';
-    s.style.animationDuration=(5+Math.random()*5).toFixed(1)+'s';
-    ff.appendChild(s);
-  }
-}
-function gardenHoldTick(ts){
-  if(window.sitePageIndex!==GARDEN_INDEX){gardenRaf=0;return;}
-  const dt=Math.min(60,ts-(gardenLast||ts));gardenLast=ts;
-  ['him','her'].forEach(who=>{
-    const st=gardenState[who];if(!st||st.done||!st.holding)return;
-    st.p+=dt/HOLD_MS;
-    const fg=document.querySelector('#gFlower'+(who==='him'?'Him':'Her')+' .g-ring-fg');
-    if(fg)fg.style.strokeDashoffset=(RING_C*(1-Math.min(1,st.p))).toFixed(1);
-    if(st.p>=1)gardenBloom(who);
-  });
-  gardenRaf=requestAnimationFrame(gardenHoldTick);
-}
-function gardenEnsureTick(){
-  if(!gardenRaf&&window.sitePageIndex===GARDEN_INDEX){gardenLast=0;gardenRaf=requestAnimationFrame(gardenHoldTick);}
-}
-/* Little sparkle burst when a flower opens (fixed-position, WAAPI). */
-function gardenSparkBurst(el,who){
-  const r=el.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+72;
-  const glyphs=['✦','♡','❋','✦','♡','✦','❋','♡','✦','♡'];
-  glyphs.forEach((g,k)=>{
-    const s=document.createElement('span');s.textContent=g;
-    s.style.cssText=`position:fixed;left:${cx}px;top:${cy}px;font-size:${(14+Math.random()*10).toFixed(0)}px;color:${who==='him'?'#ffb066':'#ffe27a'};pointer-events:none;z-index:60;`;
-    document.body.appendChild(s);
-    const ang=(k/glyphs.length)*Math.PI*2+Math.random()*.5,dist=60+Math.random()*70;
-    const dx=Math.cos(ang)*dist,dy=Math.sin(ang)*dist;
-    s.animate([
-      {transform:'translate(-50%,-50%) scale(.4)',opacity:0},
-      {transform:`translate(calc(-50% + ${dx.toFixed(0)}px),calc(-50% + ${dy.toFixed(0)}px)) scale(1.1)`,opacity:1,offset:.35},
-      {transform:`translate(calc(-50% + ${(dx*1.25).toFixed(0)}px),calc(-50% + ${(dy*1.25).toFixed(0)}px)) scale(.7)`,opacity:0}
-    ],{duration:900+Math.random()*500,easing:'cubic-bezier(.2,.7,.3,1)'}).onfinish=()=>s.remove();
-  });
-}
-function gardenBloom(who){
-  const st=gardenState[who];if(!st||st.done)return;
-  st.done=true;st.holding=false;
-  const el=document.getElementById(who==='him'?'gFlowerHim':'gFlowerHer');
-  if(el){el.classList.remove('holding');el.classList.add('bloomed');gardenSparkBurst(el,who);gardenBloomDrawn(who);}
-  const hint=document.getElementById('gardenHint');
-  if(hint&&(gardenState.him.done!==gardenState.her.done))
-    hint.textContent=myoT(who==='him'?'garden.oneDownHim':'garden.oneDownHer');
-  if(window.trackStoryEvent)window.trackStoryEvent('flower-bloomed',{flower:who});
-  if(gardenState.him.done&&gardenState.her.done&&!gardenHeartDone){
-    gardenHeartDone=true;
-    setTimeout(()=>{if(window.sitePageIndex===GARDEN_INDEX)gardenPetalHeart();},1100);
-  }
-}
-/* Illustrated marigold blooms (no photos) — built once, unfurled on bloom. */
-const DRAWN_PAL={
-  him:{lo:'#ffb35c',ld:'#e07b1f',li:'#ffc879',ld2:'#ef8a1f',cc:'#f7c05a',cd:'#b34d0e'},
-  her:{lo:'#ffe066',ld:'#eaa90f',li:'#fff3a0',ld2:'#f5b81e',cc:'#ffe97a',cd:'#b57e04'}
-};
-function buildDrawnBloom(id,who){
-  const c=document.getElementById(id);if(!c||c.dataset.built)return;c.dataset.built='1';
-  const pal=DRAWN_PAL[who];
-  const mk=(n,w,h,dist,c0,c1)=>{
-    for(let k=0;k<n;k++){
-      const a=(k/n)*Math.PI*2+(k%2?0.13:-0.06);
-      const p=document.createElement('span');p.className='g-petal';
-      const t=`rotate(${(a*180/Math.PI).toFixed(1)}deg) translateY(${(-dist).toFixed(0)}px)`;
-      p.dataset.t=t;
-      p.style.width=w+'px';p.style.height=h+'px';
-      p.style.margin=`${(-h/2).toFixed(0)}px 0 0 ${(-w/2).toFixed(0)}px`;
-      p.style.background=`linear-gradient(180deg,${c0},${c1})`;
-      p.style.transform=t+' scale(.2)';
-      c.appendChild(p);
-    }
-  };
-  mk(13,30,46,44,pal.lo,pal.ld);
-  mk(9,24,36,26,pal.li,pal.ld2);
-  const core=document.createElement('span');core.className='g-core';
-  core.style.background=`radial-gradient(circle at 38% 32%,${pal.cc},${pal.cd} 72%)`;
-  core.style.transform='scale(0)';
-  c.appendChild(core);
-}
-function gardenBloomDrawn(who){
-  const c=document.getElementById(who==='him'?'gDrawnHim':'gDrawnHer');
-  if(!c||c.dataset.done)return;c.dataset.done='1';
-  c.animate([{transform:'scale(0)'},{transform:'scale(1.12)'},{transform:'scale(1)'}],
-    {duration:800,easing:'ease-out',fill:'forwards'});
-  c.querySelectorAll('.g-petal').forEach((p,k)=>{
-    p.animate([{transform:p.dataset.t+' scale(.15)',opacity:0},
-               {transform:p.dataset.t+' scale(1)',opacity:1}],
-      {duration:550,delay:150+k*40,easing:'cubic-bezier(.2,.9,.3,1.3)',fill:'forwards'});
-  });
-  const core=c.querySelector('.g-core');
-  if(core)core.animate([{transform:'scale(0)',opacity:0},{transform:'scale(1)',opacity:1}],
-    {duration:500,delay:650,easing:'cubic-bezier(.2,.9,.3,1.4)',fill:'forwards'});
-}
-/* A glowing heart outline lingers where the petals gathered, then dissolves. */
-function gardenHeartGlow(cx,cy,s){
-  const layer=document.getElementById('gardenPetals');if(!layer)return;
-  const NS='http://www.w3.org/2000/svg';
-  const svg=document.createElementNS(NS,'svg');
-  const w=34*s,h=31*s;
-  svg.setAttribute('viewBox','0 0 100 92');
-  svg.setAttribute('width',w.toFixed(0));svg.setAttribute('height',h.toFixed(0));
-  svg.style.cssText=`position:absolute;left:${(cx-w/2).toFixed(0)}px;top:${(cy-h/2).toFixed(0)}px;overflow:visible;pointer-events:none;`;
-  svg.classList.add('g-heart-glow');
-  const pth=document.createElementNS(NS,'path');
-  pth.setAttribute('d','M50 88 C20 60 5 42 5 28 C5 12 17 4 28 4 C38 4 46 12 50 20 C54 12 62 4 72 4 C83 4 95 12 95 28 C95 42 80 60 50 88 Z');
-  pth.setAttribute('fill','none');pth.setAttribute('stroke','#ffe3a1');pth.setAttribute('stroke-width','4');
-  svg.appendChild(pth);layer.appendChild(svg);
-  setTimeout(()=>svg.remove(),2700);
-}
-function heartXY(t,cx,cy,s){
-  return{x:cx+16*Math.pow(Math.sin(t),3)*s,
-         y:cy-(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t))*s};
-}
-/* Petals rise from both blooms and gather into a heart in the sky. */
-function gardenPetalHeart(){
-  if(window.sitePageIndex!==GARDEN_INDEX){gardenHeartDone=false;return;}
-  const layer=document.getElementById('gardenPetals'),bed=document.getElementById('gardenBed'),
-        page=document.getElementById('p11'),hint=document.getElementById('gardenHint');
-  if(!layer||!bed||!page)return;
-  const pr=page.getBoundingClientRect();
-  const starts=[...bed.querySelectorAll('.g-flower')].map(f=>{
-    const r=f.getBoundingClientRect();
-    return{x:r.left-pr.left+r.width/2,y:r.top-pr.top+72};
-  });
-  // Heart sits in the open sky between the hint and the flower bed.
-  const cx=pr.width/2, s=Math.min(pr.width,pr.height)*0.016;
-  let cy=pr.height*0.36;
-  if(hint){
-    const hr=hint.getBoundingClientRect(),br=bed.getBoundingClientRect();
-    cy=(hr.bottom-pr.top+br.top-pr.top)/2-60;
-  }
-  const N=44;
-  for(let k=0;k<N;k++){
-    const tp=heartXY((k/N)*Math.PI*2+Math.random()*.12,cx,cy,s);
-    const st=starts[k%2];
-    const mx=st.x+(Math.random()*120-60),my=st.y-110-Math.random()*60;
-    const el=document.createElement('span'),him=k%2===0;
-    el.style.background=him?'linear-gradient(135deg,#ffb066,#f08a2d)':'linear-gradient(135deg,#ffe27a,#f5b81e)';
-    layer.appendChild(el);
-    const rot=(Math.random()*260-130).toFixed(0);
-    el.animate([
-      {transform:`translate(${st.x.toFixed(0)}px,${st.y.toFixed(0)}px) rotate(0deg) scale(.5)`,opacity:0},
-      {transform:`translate(${mx.toFixed(0)}px,${my.toFixed(0)}px) rotate(${rot}deg) scale(1)`,opacity:1,offset:.42},
-      {transform:`translate(${tp.x.toFixed(0)}px,${tp.y.toFixed(0)}px) rotate(${rot}deg) scale(1)`,opacity:1,offset:.78},
-      {transform:`translate(${tp.x.toFixed(0)}px,${tp.y.toFixed(0)}px) rotate(${rot}deg) scale(.55)`,opacity:0}
-    ],{duration:2300+Math.random()*700,delay:Math.random()*600,easing:'ease-in-out',fill:'forwards'});
-  }
-  if(hint)hint.textContent=myoT('garden.grew');
-  if(window.trackStoryEvent)window.trackStoryEvent('garden-heart');
-  setTimeout(()=>{if(window.sitePageIndex===GARDEN_INDEX)gardenHeartGlow(cx,cy,s*0.55);},1400);
-  setTimeout(gardenFinale,3600);
-}
-function gardenFinale(){
-  if(window.sitePageIndex!==GARDEN_INDEX||gardenFinaleShown)return;
-  gardenFinaleShown=true;
-  const f=document.getElementById('gardenFinale'),bed=document.getElementById('gardenBed'),
-        hint=document.getElementById('gardenHint'),ahead=document.getElementById('gardenAhead');
-  if(bed){bed.classList.add('garden-bed-done');setTimeout(()=>{bed.style.display='none';},950);}
-  if(f)f.hidden=false;
-  if(hint){hint.style.opacity='0';setTimeout(()=>{hint.style.display='none';},850);}
-  const gv=document.getElementById('gPolVid');
-  if(gv){gv.muted=true;try{gv.currentTime=0;}catch(e){}gv.play().catch(()=>{});
-    const sh=document.getElementById('gSoundHint');if(sh)sh.hidden=false;}
-  if(ahead)ahead.disabled=false;
-  if(window.trackStoryEvent)window.trackStoryEvent('garden-complete');
-}
-function startGarden(){
-  gardenInitSky();
-  // She bloomed both but left before the heart/finale: replay on return.
-  if(gardenState.him.done&&gardenState.her.done&&!gardenFinaleShown){
-    gardenHeartDone=false;
-    setTimeout(()=>{if(window.sitePageIndex===GARDEN_INDEX&&!gardenFinaleShown){gardenHeartDone=true;gardenPetalHeart();}},800);
-  }
-}
-function stopGarden(){
-  const gv=document.getElementById('gPolVid');if(gv)gv.pause();
-  if(gardenRaf){cancelAnimationFrame(gardenRaf);gardenRaf=0;}
-  ['him','her'].forEach(who=>{gardenState[who].holding=false;});
-  document.querySelectorAll('.g-flower.holding').forEach(el=>el.classList.remove('holding'));
-  const layer=document.getElementById('gardenPetals');
-  if(layer)layer.innerHTML='';
-}
-function wireGarden(){
-  const pairs=[['him',document.getElementById('gFlowerHim')],['her',document.getElementById('gFlowerHer')]];
-  if(!pairs[0][1]||!pairs[1][1])return;
-  pairs.forEach(([who,el])=>{
-    el.addEventListener('pointerdown',e=>{
-      e.preventDefault();
-      const st=gardenState[who];if(!st||st.done)return;
-      st.holding=true;el.classList.add('holding');gardenEnsureTick();
-    });
-    const release=()=>{const st=gardenState[who];if(st)st.holding=false;el.classList.remove('holding');};
-    el.addEventListener('pointerup',release);
-    el.addEventListener('pointercancel',release);
-    el.addEventListener('pointerleave',release);
-    el.addEventListener('keydown',e=>{
-      if(e.key===' '||e.key==='Enter'){e.preventDefault();const st=gardenState[who];if(st&&!st.done){st.holding=true;el.classList.add('holding');gardenEnsureTick();}}
-    });
-    el.addEventListener('keyup',release);
-  });
-  const ahead=document.getElementById('gardenAhead');
-  if(ahead)ahead.addEventListener('click',()=>{
-    if(ahead.disabled)return;
-    const PHASE4_INDEX=13;
-    if(pages.length>PHASE4_INDEX)go(PHASE4_INDEX);
-    else{const s=document.getElementById('gardenSoon');if(s)s.hidden=false;}
-  });
-}
-wireGarden();
 
 /* ---------- phase 4: paper cranes ---------- */
 (function cranes(){
-  const IDX=13, STORE='cranesV1';
+  const IDX=12, STORE='cranesV1';
   const ARROWS=['\u2192','\u2193','\u2197'];
   const FOLD_HINTS=['swipe the paper to fold \u2661','again \u2014 one more fold','last fold, make it count \u2726'];
   const BIRD_HINT='give it something to carry \u2661';

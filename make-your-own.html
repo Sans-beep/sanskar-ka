@@ -123,8 +123,8 @@ details.adv .body{padding-top:10px}
       <div class="fld"><label>her video <span class="keep">the 7th star ♡</span></label>
         <div class="mrow"><span class="vthumb" id="vt-hervideo"></span><label class="filebtn" for="f-hervideo">choose video</label><input type="file" id="f-hervideo" accept="video/*"></div>
       </div>
-      <div class="fld"><label>garden video <span class="keep">the finale polaroid</span></label>
-        <div class="mrow"><span class="vthumb" id="vt-gardenvideo"></span><label class="filebtn" for="f-gardenvideo">choose video</label><input type="file" id="f-gardenvideo" accept="video/*"></div>
+      <div class="fld"><label>finale video <span class="keep">the crane video</span></label>
+        <div class="mrow"><span class="vthumb" id="vt-finalevideo"></span><label class="filebtn" for="f-finalevideo">choose video</label><input type="file" id="f-finalevideo" accept="video/*"></div>
       </div>
     </div>
   </section>
@@ -149,8 +149,8 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 
 /* ================= MAKE-YOUR-OWN STUDIO (2/5): schemas + form ================= */
-const SECTIONS=[['intro','the 19-second intro'],['p1','1 · hey'],['p2','2 · birthday morning'],['p3','3 · throwback'],['p4','4 · delivery'],['p5','5 · proof'],['p6','6 · the letter'],['letter','the letter pop-up'],['p7','7 · the code lock'],['p8','8 · the lost frame'],['p9','9 · constellation'],['p10','10 · say something'],['pemail','11 · reply address'],['p11','12 · the garden'],['global','everywhere bits']];
-const JS_LABELS={'intro.lines':'the 19 intro lines (one per line)','unlock.placeholder':'code input placeholder','unlock.unlockedPlaceholder':'placeholder, already unlocked','unlock.btn':'unlock button','unlock.continueBtn':'continue button (unlocked)','unlock.error':'wrong-code message','upload.ownerNote':'owner-mode note','upload.notPhoto':'"not a photo" message','upload.tooBig':'"photo too big" message','upload.acquired':'"evidence acquired"','upload.sending':'"sending…" message','upload.believed':'"okay, i believe you"','upload.failed':'upload-failed message','letter.tapCount':'seal tap counter ({n} = taps)','letter.tapFound':'seal found message','letter.tapReset':'seal reset hint','moon.move':'"move across the moon"','moon.keep':'"keep drawing…"','moon.done':'"you left a little light here"','moon.psst':'"psst… tap the moon"','const.savedLast':'"saved for last" hint','const.moreHiding':'stars-remaining hint ({n} = left)','const.progress':'counter ({n} found, {total} total)','say.yesLine':'yes → line','say.noLine':'no → line','say.empty':'empty-message nudge','say.sending':'"sending…"','say.sent':'sent confirmation','say.sentBtn':'sent button','say.sendBtn':'send button','say.failed':'send-failed message','email.bad':'bad-email message','email.sending':'"sending…"','email.done':'done line','email.savedBtn':'saved button','email.sendBtn':'"that\'s it →" button','email.failed':'send-failed message','garden.oneDownHim':'"one down ♡ now her"','garden.oneDownHer':'"one down ♡ now him"','garden.grew':'"look what you grew ♡"'};
+const SECTIONS=[['intro','the 19-second intro'],['p1','1 · hey'],['p2','2 · birthday morning'],['p3','3 · throwback'],['p4','4 · delivery'],['p5','5 · proof'],['p6','6 · the letter'],['letter','the letter pop-up'],['p7','7 · the code lock'],['p8','8 · the lost frame'],['p9','9 · constellation'],['p10','10 · say something'],['pemail','11 · reply address'],['global','everywhere bits']];
+const JS_LABELS={'intro.lines':'the 19 intro lines (one per line)','unlock.placeholder':'code input placeholder','unlock.unlockedPlaceholder':'placeholder, already unlocked','unlock.btn':'unlock button','unlock.continueBtn':'continue button (unlocked)','unlock.error':'wrong-code message','upload.ownerNote':'owner-mode note','upload.notPhoto':'"not a photo" message','upload.tooBig':'"photo too big" message','upload.acquired':'"evidence acquired"','upload.sending':'"sending…" message','upload.believed':'"okay, i believe you"','upload.failed':'upload-failed message','letter.tapCount':'seal tap counter ({n} = taps)','letter.tapFound':'seal found message','letter.tapReset':'seal reset hint','moon.move':'"move across the moon"','moon.keep':'"keep drawing…"','moon.done':'"you left a little light here"','moon.psst':'"psst… tap the moon"','const.savedLast':'"saved for last" hint','const.moreHiding':'stars-remaining hint ({n} = left)','const.progress':'counter ({n} found, {total} total)','say.yesLine':'yes → line','say.noLine':'no → line','say.empty':'empty-message nudge','say.sending':'"sending…"','say.sent':'sent confirmation','say.sentBtn':'sent button','say.sendBtn':'send button','say.failed':'send-failed message','email.bad':'bad-email message','email.sending':'"sending…"','email.done':'done line','email.savedBtn':'saved button','email.sendBtn':'"that\'s it →" button','email.failed':'send-failed message'};
 /* field spec: {sec,label,sel,kind,idx,sub,js,mem,part,smart}  kind: text|html|attr|js|js-lines|custom */
 const F=(sec,label,sel,kind)=>({sec,label,sel,kind:kind||'text'});
 const FIELD_SPECS=[
@@ -167,7 +167,6 @@ F('p8','"there\'s more" button','#lostFrameCta'),F('p8','header','#lostFrame .he
 F('p9','top · left','.const-top span:first-child'),F('p9','top · right','.const-top span:last-child'),F('p9','finale kicker','.const-finale-kicker'),F('p9','finale line','.const-finale-line'),F('p9','"one more thing" button','#constOnward'),F('p9','video caption','.her-cap'),F('p9','muted hint','#herMuted'),F('p9','back to stars','#herBack'),
 F('p10','top line','#p10 .top span:first-child'),F('p10','kicker','#p10 .kicker'),F('p10','title','#p10 .say-title','html'),F('p10','yes button','#sayYes'),F('p10','no button','#sayNo'),F('p10','card title','#p10 .say-card-title'),F('p10','textarea hint','#sayText','attr'),F('p10','skip','#saySkip'),F('p10','going-ahead button','#sayAhead'),F('p10','soon note','#saySoon'),
 F('pemail','top line','#p-email .top span:first-child'),F('pemail','kicker','#p-email .kicker'),F('pemail','title','#p-email .say-title','html'),F('pemail','copy','#p-email .copy','html'),F('pemail','email hint','#sayEmail','attr'),F('pemail','skip','#emailSkip'),
-F('p11','top line','#p11 .top span:first-child'),F('p11','kicker','#p11 .kicker'),F('p11','garden title','.garden-title','html'),F('p11','his flower label','#gFlowerHim .g-label'),F('p11','her flower label','#gFlowerHer .g-label'),F('p11','caption','.g-cap'),F('p11','sound hint','#gSoundHint'),F('p11','going-ahead button','#gardenAhead'),F('p11','soon note','#gardenSoon'),
 F('global','back button','#globalBack'),F('global','code-reveal · granting','#revealGrant'),F('global','code-reveal · waiting','#revealWait'),F('global','code-reveal · found line','#revealFound'),F('global','code-reveal · number','#revealNumber'),F('global','code-reveal · finale','#revealFinal','html'),F('global','enter phase 2','#enterPhase2'),F('global','hidden joy','#joy'),
 ];
 const JS_FIELD_SPECS=[
@@ -178,7 +177,6 @@ const JS_FIELD_SPECS=[
 ['p9','const.savedLast'],['p9','const.moreHiding'],['p9','const.progress'],
 ['p10','say.yesLine'],['p10','say.noLine'],['p10','say.empty'],['p10','say.sending'],['p10','say.sent'],['p10','say.sentBtn'],['p10','say.sendBtn'],['p10','say.failed'],
 ['pemail','email.bad'],['pemail','email.sending'],['pemail','email.done'],['pemail','email.savedBtn'],['pemail','email.sendBtn'],['pemail','email.failed'],
-['p11','garden.oneDownHim'],['p11','garden.oneDownHer'],['p11','garden.grew'],
 ];
 const FIELDS=[]; /* {spec, el, def} */
 function qEl(spec){
@@ -247,7 +245,7 @@ function resetSection(key){
 }
 
 /* ================= MAKE-YOUR-OWN STUDIO (3/5): smart fields + media + init ================= */
-const MEDIA={throwback:null,frames:Array(8).fill(null),memPhotos:Array(7).fill(null),herVideo:null,gardenVideo:null};
+const MEDIA={throwback:null,frames:Array(8).fill(null),memPhotos:Array(7).fill(null),herVideo:null,finaleVideo:null};
 function setStatus(t){$('status').innerHTML=t;}
 function fmtSize(b){return b>1048576?(b/1048576).toFixed(1)+' MB':Math.round(b/1024)+' KB';}
 function syncSmart(){
@@ -317,7 +315,7 @@ function buildMediaInputs(){
   const fh=$('framePhotos');for(let k=0;k<8;k++)photoRow(fh,k,'fr',null,MEDIA.frames);
   const mh=$('memPhotos');for(let k=0;k<7;k++)photoRow(mh,k,'mm',null,MEDIA.memPhotos);
   bindVideo('f-hervideo','vt-hervideo',d=>MEDIA.herVideo=d);
-  bindVideo('f-gardenvideo','vt-gardenvideo',d=>MEDIA.gardenVideo=d);
+  bindVideo('f-finalevideo','vt-finalevideo',d=>MEDIA.finaleVideo=d);
 }
 function extractBlock(src,name,open,close){
   const m=src.match(new RegExp('const '+name+'=('+open+'[\\s\\S]*?'+close+')\\;'));
@@ -457,8 +455,8 @@ function applyAll(doc,cfg){
     }
   }
   else{const tw=doc.querySelector('.throwback-photo');if(tw)tw.style.display='none';}
-  const gv=doc.querySelector('#gPolVid');
-  if(gv){if(MEDIA.gardenVideo)gv.src=MEDIA.gardenVideo;else gv.remove();}
+  const gv=doc.querySelector('#craneVid');
+  if(gv&&MEDIA.finaleVideo)gv.src=MEDIA.finaleVideo;
   const hv=doc.querySelector('#herVideoEl');
   if(hv){if(MEDIA.herVideo)hv.src=MEDIA.herVideo;else hv.removeAttribute('src');}
   const frames=doc.querySelectorAll('#lfRail .frame');
