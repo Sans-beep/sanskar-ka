@@ -2036,7 +2036,7 @@ wireEmailPage();
 
 /* ---------- phase 4: paper cranes ---------- */
 (function cranes(){
-  const IDX=12, STORE='cranesV1';
+  const IDX=12, SENT_KEY='cranesSentV1'; // only the sent-once guard is stored; fold progress lives in memory
   const ARROWS=['\u2192','\u2193','\u2197'];
   const FOLD_HINTS=['swipe the paper to fold \u2661','again \u2014 one more fold','last fold, make it count \u2726'];
   const BIRD_HINT='give it something to carry \u2661';
@@ -2049,9 +2049,12 @@ wireEmailPage();
         endBox=$('craneEnd'),videoBox=$('craneVideo'),vid=$('craneVid');
   const svgFor=c=>'<svg class="crane-svg" viewBox="0 0 120 100" aria-hidden="true"><path class="wing w1" d="M60 58 L14 16 L54 48 Z"/><path class="wing w2" d="M60 58 L106 16 L66 48 Z"/><path class="crane-tail" d="M44 62 L20 48 L40 67 Z"/><path class="crane-body" d="M42 62 L60 55 L82 60 L62 69 Z"/><path class="crane-neck" d="M80 60 L95 34 L99 38 L84 63 Z"/><path class="crane-beak" d="M95 34 L104 37 L95 41 Z"/><circle class="crane-head" cx="96" cy="37" r="3.2"/></svg>';
   let S=null; // {fold,birdOn,line,released:[{line}],heart,sent,videoSeen}
-  const fresh=()=>({fold:0,birdOn:false,line:'',released:[],heart:false,sent:false,videoSeen:false});
-  const load=()=>{try{const v=JSON.parse(localStorage.getItem(STORE)||'null');return v&&Array.isArray(v.released)?v:null;}catch(e){return null;}};
-  const save=()=>{try{localStorage.setItem(STORE,JSON.stringify(S));}catch(e){}};
+  const fresh=()=>({fold:0,birdOn:false,line:'',released:[],heart:false,sent:wasSent(),videoSeen:false});
+  // Fold progress is never saved: every refresh (or revisit) starts her with fresh
+  // paper, like the constellation. Only the sent-once guard persists, so a
+  // refresh can never double-send the lines.
+  const wasSent=()=>{try{return localStorage.getItem(SENT_KEY)==='1';}catch(e){return false;}};
+  const save=()=>{try{localStorage.setItem(SENT_KEY,S.sent?'1':'0');}catch(e){}};
   const track=(n,d)=>{if(window.trackStoryEvent)window.trackStoryEvent(n,d||{});};
   const FLOCK_DOODLES='<i class="c-doodle hd1">\u2661</i><i class="c-doodle hd2">\u2726</i><i class="c-doodle hd3">\u2736</i><i class="c-doodle hd4">\u2661</i><i class="c-doodle hd5">\u2726</i>';
   let craneVideoT=0,craneZoomT=0,heartT=0,craneVideoTracked=false;
@@ -2220,14 +2223,14 @@ wireEmailPage();
   $('craneWatch').addEventListener('click',()=>{zoomToCraneVideo(1300);});
   $('craneAgain').addEventListener('click',()=>{
     if(!confirm('fold them all again? \u2661'))return;
-    try{localStorage.removeItem(STORE);}catch(e){}
-    S=fresh();
+    S=fresh(); // sent-once guard survives inside fresh() via SENT_KEY
     document.getElementById('p12').classList.remove('heart-done','crane-zoom','flock-on');
     flock.classList.remove('heart-mode');flock.innerHTML=FLOCK_DOODLES;
     finale.hidden=true;endBox.hidden=true;showFoldUI();
   });
   function restore(){
-    S=load()||fresh();
+    S=fresh();
+    try{localStorage.removeItem('cranesV1');}catch(e){} // one-time cleanup of the old progress key
     flock.innerHTML=FLOCK_DOODLES;flock.classList.remove('heart-mode');
     document.getElementById('p12').classList.remove('flock-on'); // miniCrane re-adds it per released crane
     finale.hidden=true;endBox.hidden=true;
