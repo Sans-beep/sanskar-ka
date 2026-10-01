@@ -126,6 +126,10 @@ details.adv .body{padding-top:10px}
       <div class="fld"><label>finale video <span class="keep">the crane video</span></label>
         <div class="mrow"><span class="vthumb" id="vt-finalevideo"></span><label class="filebtn" for="f-finalevideo">choose video</label><input type="file" id="f-finalevideo" accept="video/*"></div>
       </div>
+      <div class="fld"><label>meme eggs <span class="keep">this-is-fine dog + sun shades, optional</span></label>
+        <div class="mrow"><img class="thumb" id="th-memedog" alt=""><label class="filebtn" for="f-memedog">dog</label><input type="file" id="f-memedog" accept="image/*"></div>
+        <div class="mrow"><img class="thumb" id="th-memeshades" alt=""><label class="filebtn" for="f-memeshades">shades</label><input type="file" id="f-memeshades" accept="image/*"></div>
+      </div>
     </div>
   </section>
 
@@ -150,7 +154,7 @@ const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'
 
 /* ================= MAKE-YOUR-OWN STUDIO (2/5): schemas + form ================= */
 const SECTIONS=[['intro','the 19-second intro'],['p1','1 · hey'],['p2','2 · birthday morning'],['p3','3 · throwback'],['p4','4 · delivery'],['p5','5 · proof'],['p6','6 · the letter'],['letter','the letter pop-up'],['p7','7 · the code lock'],['p8','8 · the lost frame'],['p9','9 · constellation'],['p10','10 · say something'],['pemail','11 · reply address'],['p12','12 · paper cranes'],['global','everywhere bits']];
-const JS_LABELS={'intro.lines':'the 19 intro lines (one per line)','unlock.placeholder':'code input placeholder','unlock.unlockedPlaceholder':'placeholder, already unlocked','unlock.btn':'unlock button','unlock.continueBtn':'continue button (unlocked)','unlock.error':'wrong-code message','upload.ownerNote':'owner-mode note','upload.notPhoto':'"not a photo" message','upload.tooBig':'"photo too big" message','upload.acquired':'"evidence acquired"','upload.sending':'"sending…" message','upload.believed':'"okay, i believe you"','upload.failed':'upload-failed message','letter.tapCount':'seal tap counter ({n} = taps)','letter.tapFound':'seal found message','letter.tapReset':'seal reset hint','moon.move':'"move across the moon"','moon.keep':'"keep drawing…"','moon.done':'"you left a little light here"','moon.psst':'"psst… tap the moon"','const.savedLast':'"saved for last" hint','const.moreHiding':'stars-remaining hint ({n} = left)','const.progress':'counter ({n} found, {total} total)','say.yesLine':'yes → line','say.noLine':'no → line','say.empty':'empty-message nudge','say.sending':'"sending…"','say.sent':'sent confirmation','say.sentBtn':'sent button','say.sendBtn':'send button','say.failed':'send-failed message','email.bad':'bad-email message','email.sending':'"sending…"','email.done':'done line','email.savedBtn':'saved button','email.sendBtn':'"that\'s it →" button','email.failed':'send-failed message','crane.foldHints':'fold hints (one per line)','crane.birdHint':'bird hint','crane.moreToFold':'"n more to fold" ({n} = left)','crane.foldAgainConfirm':'fold-again confirm'};
+const JS_LABELS={'intro.lines':'the 19 intro lines (one per line)','unlock.placeholder':'code input placeholder','unlock.unlockedPlaceholder':'placeholder, already unlocked','unlock.btn':'unlock button','unlock.continueBtn':'continue button (unlocked)','unlock.error':'wrong-code message','upload.ownerNote':'owner-mode note','upload.notPhoto':'"not a photo" message','upload.tooBig':'"photo too big" message','upload.acquired':'"evidence acquired"','upload.sending':'"sending…" message','upload.believed':'"okay, i believe you"','upload.failed':'upload-failed message','letter.tapCount':'seal tap counter ({n} = taps)','letter.tapFound':'seal found message','letter.tapReset':'seal reset hint','moon.move':'"move across the moon"','moon.keep':'"keep drawing…"','moon.done':'"you left a little light here"','moon.psst':'"psst… tap the moon"','p2.wxTitle':'forecast card title','p2.wxL1':'forecast line 1','p2.wxL2':'forecast line 2','p2.wxL3':'forecast line 3','p2.dogCap':'meme \u00b7 dog caption','p2.dogCapDawn':'dog caption once the sun rises','p2.sunCap':'meme \u00b7 sun caption','const.savedLast':'"saved for last" hint','const.moreHiding':'stars-remaining hint ({n} = left)','const.progress':'counter ({n} found, {total} total)','say.yesLine':'yes → line','say.noLine':'no → line','say.empty':'empty-message nudge','say.sending':'"sending…"','say.sent':'sent confirmation','say.sentBtn':'sent button','say.sendBtn':'send button','say.failed':'send-failed message','email.bad':'bad-email message','email.sending':'"sending…"','email.done':'done line','email.savedBtn':'saved button','email.sendBtn':'"that\'s it →" button','email.failed':'send-failed message','crane.foldHints':'fold hints (one per line)','crane.birdHint':'bird hint','crane.moreToFold':'"n more to fold" ({n} = left)','crane.foldAgainConfirm':'fold-again confirm'};
 /* field spec: {sec,label,sel,kind,idx,sub,js,mem,part,smart}  kind: text|html|attr|js|js-lines|custom */
 const F=(sec,label,sel,kind)=>({sec,label,sel,kind:kind||'text'});
 const FIELD_SPECS=[
@@ -176,7 +180,8 @@ F('p12','video caption','#p12 .her-cap'),F('p12','sound hint','#craneSoundHint')
 F('global','back button','#globalBack'),F('global','code-reveal · granting','#revealGrant'),F('global','code-reveal · waiting','#revealWait'),F('global','code-reveal · found line','#revealFound'),F('global','code-reveal · number','#revealNumber'),F('global','code-reveal · finale','#revealFinal','html'),F('global','enter phase 2','#enterPhase2'),F('global','hidden joy','#joy'),
 ];
 const JS_FIELD_SPECS=[
-['intro','intro.lines','js-lines'],['p7','unlock.placeholder'],['p7','unlock.unlockedPlaceholder'],['p7','unlock.btn'],['p7','unlock.continueBtn'],['p7','unlock.error'],
+['intro','intro.lines','js-lines'],['p2','p2.wxTitle'],['p2','p2.wxL1'],['p2','p2.wxL2'],['p2','p2.wxL3'],['p2','p2.dogCap'],['p2','p2.dogCapDawn'],['p2','p2.sunCap'],
+['p7','unlock.placeholder'],['p7','unlock.unlockedPlaceholder'],['p7','unlock.btn'],['p7','unlock.continueBtn'],['p7','unlock.error'],
 ['p5','upload.notPhoto'],['p5','upload.tooBig'],['p5','upload.acquired'],['p5','upload.sending'],['p5','upload.believed'],['p5','upload.failed'],['p5','upload.ownerNote'],
 ['p6','letter.tapCount'],['p6','letter.tapFound'],['p6','letter.tapReset'],
 ['p8','moon.move'],['p8','moon.keep'],['p8','moon.done'],['p8','moon.psst'],
@@ -252,7 +257,7 @@ function resetSection(key){
 }
 
 /* ================= MAKE-YOUR-OWN STUDIO (3/5): smart fields + media + init ================= */
-const MEDIA={throwback:null,frames:Array(8).fill(null),memPhotos:Array(7).fill(null),herVideo:null,finaleVideo:null};
+const MEDIA={throwback:null,frames:Array(8).fill(null),memPhotos:Array(7).fill(null),herVideo:null,finaleVideo:null,memeDog:null,memeShades:null};
 function setStatus(t){$('status').innerHTML=t;}
 function fmtSize(b){return b>1048576?(b/1048576).toFixed(1)+' MB':Math.round(b/1024)+' KB';}
 function syncSmart(){
@@ -323,6 +328,8 @@ function buildMediaInputs(){
   const mh=$('memPhotos');for(let k=0;k<7;k++)photoRow(mh,k,'mm',null,MEDIA.memPhotos);
   bindVideo('f-hervideo','vt-hervideo',d=>MEDIA.herVideo=d);
   bindVideo('f-finalevideo','vt-finalevideo',d=>MEDIA.finaleVideo=d);
+  bindPhoto('f-memedog','th-memedog',d=>MEDIA.memeDog=d);
+  bindPhoto('f-memeshades','th-memeshades',d=>MEDIA.memeShades=d);
 }
 function extractBlock(src,name,open,close){
   const m=src.match(new RegExp('const '+name+'=('+open+'[\\s\\S]*?'+close+')\\;'));
@@ -464,6 +471,10 @@ function applyAll(doc,cfg){
   else{const tw=doc.querySelector('.throwback-photo');if(tw)tw.style.display='none';}
   const gv=doc.querySelector('#craneVid');
   if(gv&&MEDIA.finaleVideo)gv.src=MEDIA.finaleVideo;
+  const md=doc.querySelector('#memeDog img');
+  if(md)md.src=MEDIA.memeDog?MEDIA.memeDog.url:ABS+'meme-dog.png';
+  const ms=doc.querySelector('#sunShades');
+  if(ms)ms.src=MEDIA.memeShades?MEDIA.memeShades.url:ABS+'meme-shades.png';
   const hv=doc.querySelector('#herVideoEl');
   if(hv){if(MEDIA.herVideo)hv.src=MEDIA.herVideo;else hv.removeAttribute('src');}
   const frames=doc.querySelectorAll('#lfRail .frame');

@@ -44,6 +44,7 @@ body.preview .her-cap,
 body.preview .g-sound-hint,
 body.preview .reveal-line,
 body.preview #introLine,
+body.preview .wx-card,
 body.preview .detail{
   filter:blur(11px);
   pointer-events:none;
@@ -56,6 +57,8 @@ body.preview .const-photo img,
 body.preview .g-polaroid img,
 body.preview .proof-photo img,
 body.preview .photo-placeholder,
+body.preview .meme-dog img,
+body.preview .sun-shades,
 body.preview video{
   filter:blur(30px) brightness(.62) saturate(.8);
   pointer-events:none;

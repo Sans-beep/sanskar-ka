@@ -1,6 +1,147 @@
 
-function startBirthdayWeather(){const p=document.getElementById('p2');if(!p)return;p.classList.remove('sunrise');clearTimeout(window.birthdayWeatherTimer);window.birthdayWeatherTimer=setTimeout(()=>p.classList.add('sunrise'),4600)}
-function resetBirthdayWeather(){const p=document.getElementById('p2');if(!p)return;clearTimeout(window.birthdayWeatherTimer);p.classList.remove('sunrise')}
+/* ===== Page 2: storm -> sunrise, canvas rain, lightning, hidden meme eggs ===== */
+function p2applyMyoT(){
+  const set=(id,key)=>{const el=document.getElementById(id);if(el)el.textContent=myoT(key);};
+  set('wxTitle','p2.wxTitle');set('wxL1','p2.wxL1');set('wxL2','p2.wxL2');set('wxL3','p2.wxL3');
+  set('dogCap','p2.dogCap');set('sunCap','p2.sunCap');
+}
+function p2startRain(){
+  p2stopRain();
+  const cv=document.getElementById('rainCanvas'),p=document.getElementById('p2');
+  if(!cv||!p)return;
+  const ctx=cv.getContext('2d');
+  const dpr=Math.min(2,window.devicePixelRatio||1);
+  let w=0,h=0;
+  const size=()=>{w=p.clientWidth||window.innerWidth;h=p.clientHeight||window.innerHeight;
+    cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);};
+  size();
+  const mk=init=>{const l=Math.random();
+    return{x:Math.random()*w,y:init?Math.random()*h:-24,
+      len:l<.33?9+Math.random()*8:(l<.66?13+Math.random()*10:19+Math.random()*14),
+      sp:l<.33?7+Math.random()*4:(l<.66?11+Math.random()*5:16+Math.random()*7),
+      op:l<.33?.1+Math.random()*.12:(l<.66?.18+Math.random()*.15:.28+Math.random()*.2),
+      lw:l<.66?1:1.7};};
+  const N=w<520?110:170,drops=[];
+  for(let i=0;i<N;i++)drops.push(mk(true));
+  let run=true,raf=0;const wind=1.7;
+  const tick=()=>{
+    if(!run)return;
+    ctx.clearRect(0,0,w,h);ctx.lineCap='round';
+    for(const d of drops){
+      ctx.strokeStyle='rgba(202,216,228,'+d.op.toFixed(3)+')';ctx.lineWidth=d.lw;
+      ctx.beginPath();ctx.moveTo(d.x,d.y);ctx.lineTo(d.x-wind*2.4,d.y+d.len);ctx.stroke();
+      d.y+=d.sp;d.x-=wind;
+      if(d.y>h+24||d.x<-30)Object.assign(d,mk(false));
+    }
+    raf=requestAnimationFrame(tick);
+  };
+  tick();
+  window.p2Rain={stop(){run=false;cancelAnimationFrame(raf);},resize:size};
+  window.addEventListener('resize',size);
+  window.p2Rain._rs=size;
+}
+function p2stopRain(){
+  const r=window.p2Rain;
+  if(r){try{r.stop();if(r._rs)window.removeEventListener('resize',r._rs);}catch(_){/*noop*/}window.p2Rain=null;}
+}
+function p2strike(){
+  const p=document.getElementById('p2');
+  if(!p||!p.classList.contains('active')||p.classList.contains('sunrise'))return;
+  const bolt=document.getElementById('bolt'),flash=document.getElementById('skyFlash');
+  if(!bolt||!flash)return;
+  bolt.style.left=(6+Math.random()*62)+'%';
+  const seq=[[0,1,1],[130,0,0],[210,1,0],[360,0,0]];
+  seq.forEach(([t,f,b])=>setTimeout(()=>{flash.classList.toggle('on',!!f);bolt.classList.toggle('on',!!b);},t));
+}
+function p2scheduleBolt(){
+  p2stopBolt();
+  const p=document.getElementById('p2');
+  if(!p||p.classList.contains('sunrise'))return;
+  window.p2BoltTimer=setTimeout(()=>{p2strike();p2scheduleBolt();},3800+Math.random()*5200);
+}
+function p2stopBolt(){clearTimeout(window.p2BoltTimer);window.p2BoltTimer=null;
+  const bolt=document.getElementById('bolt'),flash=document.getElementById('skyFlash');
+  if(bolt)bolt.classList.remove('on');if(flash)flash.classList.remove('on');}
+/* --- hidden meme eggs: forecast card, this-is-fine dog, sun shades --- */
+let p2bgTaps=[],p2sunTaps=[],p2dogTimer=0,p2shadesOn=false;
+function p2track(n){try{if(window.trackStoryEvent)window.trackStoryEvent(n);}catch(_){/*noop*/}}
+function p2toggleWx(force){
+  const c=document.getElementById('wxCard');if(!c)return;
+  const show=force!==undefined?force:c.hidden;
+  if(show){c.hidden=false;requestAnimationFrame(()=>requestAnimationFrame(()=>c.classList.add('open')));p2track('p2-forecast');}
+  else{c.classList.remove('open');clearTimeout(p2toggleWx._t);p2toggleWx._t=setTimeout(()=>{c.hidden=true;},300);}
+}
+function p2showDog(){
+  const d=document.getElementById('memeDog');if(!d||!d.hidden)return;
+  d.hidden=false;void d.offsetWidth;d.classList.add('show');
+  p2track('p2-dog');
+  clearTimeout(p2dogTimer);p2dogTimer=setTimeout(()=>p2hideDog(),5600);
+}
+function p2hideDog(instant){
+  const d=document.getElementById('memeDog');if(!d||d.hidden)return;
+  clearTimeout(p2dogTimer);
+  if(instant){d.hidden=true;d.classList.remove('show','bye');return;}
+  d.classList.add('bye');setTimeout(()=>{d.hidden=true;d.classList.remove('show','bye');},520);
+}
+function p2toggleShades(){
+  const sh=document.getElementById('sunShades'),cap=document.getElementById('sunCap');
+  if(!sh||!cap)return;
+  p2shadesOn=!p2shadesOn;
+  clearTimeout(p2toggleShades._t);
+  if(p2shadesOn){
+    sh.hidden=false;void sh.offsetWidth;sh.classList.add('drop');
+    cap.hidden=false;cap.style.opacity='1';
+    p2toggleShades._t=setTimeout(()=>{cap.style.opacity='0';},3200);
+    p2track('p2-shades');
+  }else{sh.hidden=true;sh.classList.remove('drop');cap.hidden=true;}
+}
+function p2hideShades(){p2shadesOn=false;const sh=document.getElementById('sunShades'),cap=document.getElementById('sunCap');
+  if(sh){sh.hidden=true;sh.classList.remove('drop');}if(cap)cap.hidden=true;clearTimeout(p2toggleShades._t);}
+function p2tapsInit(){
+  const p=document.getElementById('p2');if(!p||p.dataset.tapsInit)return;p.dataset.tapsInit='1';
+  p.addEventListener('click',e=>{
+    if(!p.classList.contains('active'))return;
+    const t=e.target,card=document.getElementById('wxCard');
+    if(t.closest('#wxDate')){p2toggleWx();return;}
+    if(t.closest('.btn')||t.closest('.wx-card')||t.closest('input'))return;
+    if(card&&!card.hidden){p2toggleWx(false);return;}
+    if(p.classList.contains('sunrise')){
+      const s=document.getElementById('p2sun');
+      if(s){const r=s.getBoundingClientRect(),pad=30;
+        if(e.clientX>r.left-pad&&e.clientX<r.right+pad&&e.clientY>r.top-pad&&e.clientY<r.bottom+pad){
+          const now=Date.now();p2sunTaps=p2sunTaps.filter(x=>now-x<1600);p2sunTaps.push(now);
+          if(p2sunTaps.length>=3){p2sunTaps=[];p2toggleShades();}
+          return;
+        }}
+      return;
+    }
+    const now=Date.now();p2bgTaps=p2bgTaps.filter(x=>now-x<1600);p2bgTaps.push(now);
+    if(p2bgTaps.length>=5){p2bgTaps=[];p2showDog();}
+  });
+}
+function startBirthdayWeather(){
+  const p=document.getElementById('p2');if(!p)return;
+  p2tapsInit();p2applyMyoT();
+  p.classList.remove('sunrise');
+  p2hideDog(true);p2hideShades();p2toggleWx(false);
+  const card=document.getElementById('wxCard');if(card){card.hidden=true;card.classList.remove('open');}
+  p2bgTaps=[];p2sunTaps=[];
+  clearTimeout(window.birthdayWeatherTimer);
+  p2startRain();p2scheduleBolt();
+  window.birthdayWeatherTimer=setTimeout(()=>{
+    p.classList.add('sunrise');
+    const dog=document.getElementById('memeDog');
+    if(dog&&!dog.hidden){const cap=document.getElementById('dogCap');if(cap)cap.textContent=myoT('p2.dogCapDawn');}
+    setTimeout(()=>{p2stopRain();p2stopBolt();},1900);
+  },4600);
+}
+function resetBirthdayWeather(){
+  const p=document.getElementById('p2');if(!p)return;
+  clearTimeout(window.birthdayWeatherTimer);
+  p.classList.remove('sunrise');
+  p2stopRain();p2stopBolt();p2hideDog(true);p2hideShades();
+  const card=document.getElementById('wxCard');if(card){clearTimeout(p2toggleWx._t);card.hidden=true;card.classList.remove('open');}
+}
 function fadeInAudio(a,target=.5,duration=700){
   if(!a)return;
   if(a._fadeTimer)clearInterval(a._fadeTimer);
@@ -288,7 +429,14 @@ const MYO_TEXT_DEFAULTS={
 'crane.foldHints':['swipe the paper to fold \u2661','again \u2014 one more fold','last fold, make it count \u2726'],
 'crane.birdHint':'give it something to carry \u2661',
 'crane.moreToFold':'{n} more to fold \u2726',
-'crane.foldAgainConfirm':'fold them all again? \u2661'
+'crane.foldAgainConfirm':'fold them all again? \u2661',
+'p2.wxTitle':'KASHISHVILLE',
+'p2.wxL1':'today: 100% chance of cake',
+'p2.wxL2':'scattered compliments, all day',
+'p2.wxL3':'winds of gossip \u00b7 19 km/h',
+'p2.dogCap':'this is fine.',
+'p2.dogCapDawn':'oh. oh nice.',
+'p2.sunCap':'ok he\u2019s showing off now'
 };
 /*MYO_DEFAULTS_END*/
 function myoT(key){
@@ -1088,6 +1236,10 @@ if(phase2MoonlightHit){
     void phase2MoonlightFlash.offsetWidth;
     phase2MoonlightFlash.classList.add('fire');
   });
+  // The layer's CSS sets pointer-events:auto, so without this it stays hittable
+  // (opacity-0 but intercepting) on every page until phase 2 is first entered.
+  // enterPhase2() re-enables it via activatePhase2Moonlight().
+  deactivatePhase2MoonlightHit();
 }
 
 function enterPhase2(){
