@@ -2146,7 +2146,7 @@ wireEmailPage();
     flock.classList.add('heart-mode');
     page.classList.add('heart-done');
     // the heart draws itself: gold gradient stroke sweeping up from the
-    // bottom tip, soft glow blooming behind, comet-head riding the stroke
+    // bottom tip, soft glow blooming behind (no blur filters — they lag phones)
     const NS='http://www.w3.org/2000/svg';
     const D='M50 84 C20 60 6 40 6 26 C6 12 18 4 30 4 C40 4 47 10 50 18 C53 10 60 4 70 4 C82 4 94 12 94 26 C94 40 80 60 50 84 Z';
     const oldHeart=flock.querySelector('.crane-heart-svg');if(oldHeart)oldHeart.remove();
@@ -2154,14 +2154,9 @@ wireEmailPage();
     heart.setAttribute('viewBox','0 0 100 92');heart.setAttribute('class','crane-heart-svg');
     heart.innerHTML=
       '<defs><linearGradient id="hhGrad" x1="0" y1="0" x2="0" y2="1">'+
-      '<stop offset="0" stop-color="#ffe9b8"/><stop offset=".55" stop-color="#ffd189"/><stop offset="1" stop-color="#f2b45c"/></linearGradient>'+
-      '<filter id="hhGlow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="2.6" result="b"/>'+
-      '<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>'+
-      '<path class="hh-glow" d="'+D+'" fill="none" stroke="#ffc978" stroke-width="6" stroke-linecap="round" filter="url(#hhGlow)"/>'+
-      '<path class="hh-draw" pathLength="100" d="'+D+'" fill="none" stroke="url(#hhGrad)" stroke-width="2.4" stroke-linecap="round"/>'+
-      '<g class="hh-comet" opacity="0"><circle r="2.8" fill="#fff6dd" filter="url(#hhGlow)"/>'+
-      '<animateMotion dur="1.7s" begin="0.45s" fill="freeze" path="'+D+'"/>'+
-      '<animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.1;.8;1" begin="0.45s" dur="2.3s" fill="freeze"/></g>';
+      '<stop offset="0" stop-color="#ffe9b8"/><stop offset=".55" stop-color="#ffd189"/><stop offset="1" stop-color="#f2b45c"/></linearGradient></defs>'+
+      '<path class="hh-glow" d="'+D+'" fill="none" stroke="#ffc978" stroke-width="7" stroke-linecap="round"/>'+
+      '<path class="hh-draw" pathLength="100" d="'+D+'" fill="none" stroke="url(#hhGrad)" stroke-width="2.4" stroke-linecap="round"/>';
     flock.appendChild(heart);
     const pts=[[50,30],[32,52],[68,52]];
     const fr=flock.getBoundingClientRect(),pr2=page.getBoundingClientRect();
@@ -2180,7 +2175,7 @@ wireEmailPage();
           {transform:'translate(calc(-50% + '+(dx*0.42).toFixed(1)+'px), calc(-50% + '+(dy*0.42-56).toFixed(1)+'px)) rotate('+(-tilt/2)+'deg) scale(1.02)',offset:.58},
           {transform:'translate(-50%,-50%) rotate(0deg) scale(1)'}
         ],{duration:1450,delay:i*170,easing:'cubic-bezier(.22,.8,.28,1)',fill:'backwards'});
-        flight.onfinish=()=>{k.classList.add('landed');try{sparkle(ex,ey,10);}catch(e){}};
+        flight.onfinish=()=>{k.classList.add('landed');try{sparkle(ex,ey,5);}catch(e){}};
       }else{k.classList.add('landed');}
     });
     if(starts)setTimeout(()=>kids.forEach(k=>{k.style.transition='';}),2400);
