@@ -4,7 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>make your own ♡</title>
-<script defer src="https://cloud.umami.is/script.js" data-website-id="a185121f-03b3-4c7e-b61d-20452f515db2" data-domains="sans-beep.github.io" data-tag="studio"></script>
+<script>
+/* owner mode (?owner): your own testing visits stay out of the studio analytics */
+if(!new URLSearchParams(location.search).has('owner')){
+  var u=document.createElement('script');u.defer=true;
+  u.src='https://cloud.umami.is/script.js';
+  u.setAttribute('data-website-id','a185121f-03b3-4c7e-b61d-20452f515db2');
+  u.setAttribute('data-domains','sans-beep.github.io');
+  u.setAttribute('data-tag','studio');
+  document.head.appendChild(u);
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
