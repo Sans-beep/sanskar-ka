@@ -2140,12 +2140,24 @@ wireEmailPage();
     }
     flock.classList.add('heart-mode');
     page.classList.add('heart-done');
-    if(!flock.querySelector('.crane-heart-svg')){
-      const heart=document.createElementNS('http://www.w3.org/2000/svg','svg');
-      heart.setAttribute('viewBox','0 0 100 92');heart.setAttribute('class','crane-heart-svg');
-      heart.innerHTML='<path d="M50 84 C20 60 6 40 6 26 C6 12 18 4 30 4 C40 4 47 10 50 18 C53 10 60 4 70 4 C82 4 94 12 94 26 C94 40 80 60 50 84 Z" fill="none" stroke="rgba(255,217,138,.85)" stroke-width="2"/>';
-      flock.appendChild(heart);
-    }
+    // the heart draws itself: gold gradient stroke sweeping up from the
+    // bottom tip, soft glow blooming behind, comet-head riding the stroke
+    const NS='http://www.w3.org/2000/svg';
+    const D='M50 84 C20 60 6 40 6 26 C6 12 18 4 30 4 C40 4 47 10 50 18 C53 10 60 4 70 4 C82 4 94 12 94 26 C94 40 80 60 50 84 Z';
+    const oldHeart=flock.querySelector('.crane-heart-svg');if(oldHeart)oldHeart.remove();
+    const heart=document.createElementNS(NS,'svg');
+    heart.setAttribute('viewBox','0 0 100 92');heart.setAttribute('class','crane-heart-svg');
+    heart.innerHTML=
+      '<defs><linearGradient id="hhGrad" x1="0" y1="0" x2="0" y2="1">'+
+      '<stop offset="0" stop-color="#ffe9b8"/><stop offset=".55" stop-color="#ffd189"/><stop offset="1" stop-color="#f2b45c"/></linearGradient>'+
+      '<filter id="hhGlow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="2.6" result="b"/>'+
+      '<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>'+
+      '<path class="hh-glow" d="'+D+'" fill="none" stroke="#ffc978" stroke-width="6" stroke-linecap="round" filter="url(#hhGlow)"/>'+
+      '<path class="hh-draw" pathLength="100" d="'+D+'" fill="none" stroke="url(#hhGrad)" stroke-width="2.4" stroke-linecap="round"/>'+
+      '<g class="hh-comet" opacity="0"><circle r="2.8" fill="#fff6dd" filter="url(#hhGlow)"/>'+
+      '<animateMotion dur="1.7s" begin="0.45s" fill="freeze" path="'+D+'"/>'+
+      '<animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.1;.8;1" begin="0.45s" dur="2.3s" fill="freeze"/></g>';
+    flock.appendChild(heart);
     const pts=[[50,30],[32,52],[68,52]];
     const fr=flock.getBoundingClientRect(),pr2=page.getBoundingClientRect();
     kids.forEach((k,i)=>{
@@ -2156,13 +2168,15 @@ wireEmailPage();
       if(starts&&k.animate){
         const ex=fr.left-pr2.left+fr.width*p[0]/100, ey=fr.top-pr2.top+fr.height*p[1]/100;
         const dx=starts[i][0]-ex, dy=starts[i][1]-ey, tilt=i%2?-9:9;
-        // …then fly in along a soft arc, tilting like paper on air
-        k.animate([
+        // …then fly in along a soft arc, tilting like paper on air;
+        // a sparkle burst + gentle bob as each one lands on the heart
+        const flight=k.animate([
           {transform:'translate(calc(-50% + '+dx.toFixed(1)+'px), calc(-50% + '+dy.toFixed(1)+'px)) rotate('+tilt+'deg) scale(.94)'},
           {transform:'translate(calc(-50% + '+(dx*0.42).toFixed(1)+'px), calc(-50% + '+(dy*0.42-56).toFixed(1)+'px)) rotate('+(-tilt/2)+'deg) scale(1.02)',offset:.58},
           {transform:'translate(-50%,-50%) rotate(0deg) scale(1)'}
         ],{duration:1450,delay:i*170,easing:'cubic-bezier(.22,.8,.28,1)',fill:'backwards'});
-      }
+        flight.onfinish=()=>{k.classList.add('landed');try{sparkle(ex,ey,10);}catch(e){}};
+      }else{k.classList.add('landed');}
     });
     if(starts)setTimeout(()=>kids.forEach(k=>{k.style.transition='';}),2400);
     hint.textContent='';
@@ -2174,12 +2188,12 @@ wireEmailPage();
     if(window.sitePageIndex!==IDX)return;
     clearTimeout(heartT);
     buildHeart(true);
-    // finale line lands as the formation completes (~1.4s of flight)
+    // finale line lands as the heart finishes drawing (~2.15s)
     heartT=setTimeout(()=>{if(window.sitePageIndex!==IDX)return;finale.hidden=false;
       if(!S.heart){S.heart=true;save();track('cranes-heart');}
       if(S.videoSeen){endBox.hidden=false;}
       else{craneZoomT=setTimeout(()=>{if(window.sitePageIndex!==IDX||S.videoSeen)return;zoomToCraneVideo(2200);},1600);}
-    },1900);
+    },2400);
   }
   function formHeart(){replayHeart();}
   function openVideo(){

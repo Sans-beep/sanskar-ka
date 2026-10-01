@@ -689,8 +689,19 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
 .crane-flock.heart-mode .mini-crane{position:absolute;transform:translate(-50%,-50%)}
 .mini-crane svg{width:56px;height:auto;filter:drop-shadow(0 3px 8px rgba(0,0,0,.45))}
 .mini-crane .mini-line{font-family:Caveat,cursive;font-size:13px;color:#ffd9ec;margin-top:2px;max-width:110px}
-.crane-heart-svg{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:190px;opacity:0;transition:opacity 1.4s ease;pointer-events:none}
-.crane-flock.heart-mode .crane-heart-svg{opacity:.9}
+.crane-heart-svg{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:214px;pointer-events:none;overflow:visible}
+/* the heart draws itself: gold gradient stroke sweeps up from the bottom tip,
+   a soft glow blooms behind it, a comet-head rides the stroke as it draws */
+.crane-heart-svg .hh-draw{stroke-dasharray:100;stroke-dashoffset:100;animation:hhDraw 1.7s cubic-bezier(.45,.05,.35,1) .45s forwards}
+@keyframes hhDraw{to{stroke-dashoffset:0}}
+.crane-heart-svg .hh-glow{opacity:0;animation:hhGlowIn 1.6s ease 1.4s forwards}
+@keyframes hhGlowIn{to{opacity:.5}}
+/* settled cranes: bigger, warm glow, gentle bob on the heart's curves */
+.crane-flock.heart-mode .mini-crane svg{width:64px;filter:drop-shadow(0 4px 10px rgba(0,0,0,.5)) drop-shadow(0 0 12px rgba(255,196,120,.55))}
+.mini-crane.landed{animation:craneBob 3.6s ease-in-out infinite}
+.mini-crane.landed.mc1{animation-delay:-1.2s}
+.mini-crane.landed.mc2{animation-delay:-2.4s}
+@keyframes craneBob{0%,100%{transform:translate(-50%,-50%) translateY(0) rotate(0deg)}50%{transform:translate(-50%,-50%) translateY(-7px) rotate(2deg)}}
 /* doodles that gather around the heart */
 .crane-flock .hd{opacity:0;transition:opacity 1.2s ease}
 .crane-flock.heart-mode .hd{opacity:1}
