@@ -2082,7 +2082,9 @@ wireEmailPage();
     const d=document.createElement('div');d.className='mini-crane mc'+c;
     d.innerHTML=svgFor(c)+'<div class="mini-line"></div>';
     d.querySelector('.mini-line').textContent=line;
-    flock.appendChild(d);return d;
+    flock.appendChild(d);
+    document.getElementById('p12').classList.add('flock-on'); // kicker fades: the flock is the header now
+    return d;
   }
   function sparkle(x,y,n){for(let k=0;k<(n||8);k++){const s=document.createElement('div');s.className='crane-spark';s.textContent=['\u2661','\u2726','\u2736'][k%3];s.style.left=(x+(Math.random()*70-35))+'px';s.style.top=(y+(Math.random()*30-15))+'px';document.body.appendChild(s);setTimeout(()=>s.remove(),1050);}}
   function doFold(){
@@ -2220,13 +2222,14 @@ wireEmailPage();
     if(!confirm('fold them all again? \u2661'))return;
     try{localStorage.removeItem(STORE);}catch(e){}
     S=fresh();
-    document.getElementById('p12').classList.remove('heart-done','crane-zoom');
+    document.getElementById('p12').classList.remove('heart-done','crane-zoom','flock-on');
     flock.classList.remove('heart-mode');flock.innerHTML=FLOCK_DOODLES;
     finale.hidden=true;endBox.hidden=true;showFoldUI();
   });
   function restore(){
     S=load()||fresh();
     flock.innerHTML=FLOCK_DOODLES;flock.classList.remove('heart-mode');
+    document.getElementById('p12').classList.remove('flock-on'); // miniCrane re-adds it per released crane
     finale.hidden=true;endBox.hidden=true;
     S.released.forEach((r,i)=>miniCrane(r.line,i%3));
     if(S.released.length>=3){
