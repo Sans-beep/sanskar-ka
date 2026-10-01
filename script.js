@@ -1187,12 +1187,26 @@ go=function(n){
   // Session labeling happens inside flush(), once Umami is actually ready.
 
   // Navigation: record every story page reached.
+  // Dwell time: how long each page actually holds her attention. Reported
+  // when she moves on (or closes the tab), so the dashboard shows seconds
+  // per page alongside the visit counts.
+  let dwellPage=window.sitePageIndex||0,dwellSince=Date.now();
+  const reportDwell=(reason)=>{
+    try{
+      const secs=Math.round((Date.now()-dwellSince)/1000);
+      if(secs>=3)send('page-dwell',{page:dwellPage+1,seconds:secs,reason});
+    }catch(_){}
+    dwellSince=Date.now();
+  };
+  window.addEventListener('pagehide',()=>reportDwell('tab-closed'));
   const previousGo=window.go;
   if(typeof previousGo==='function'){
     window.go=function(n){
       const from=window.sitePageIndex;
+      if(from!==n)reportDwell('navigated');
       const result=previousGo(n);
       if(from!==n){
+        dwellPage=n;
         send('phase-view',{phase:n+1,from_page:from+1});
         send('phase-transition',{from_page:from+1,to_page:n+1,direction:n>from?'forward':'back'});
       }
