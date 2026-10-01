@@ -214,6 +214,8 @@ function go(n){
   if(n===11&&window.trackStoryEvent)window.trackStoryEvent('email-shown');
   if(n===12)startGarden();else if(oldIndex===12)stopGarden();
   if(n===12&&window.trackStoryEvent)window.trackStoryEvent('phase3-shown');
+  if(n===13&&typeof startCranes==='function')startCranes();else if(oldIndex===13&&typeof stopCranes==='function')stopCranes();
+  if(n===13&&window.trackStoryEvent)window.trackStoryEvent('cranes-shown');
   const thread=document.getElementById('storyThread');
   if(thread){thread.classList.remove('play');void thread.offsetWidth;thread.classList.add('play');}
   if(n===0&&isPreviewPage)startIntro();
@@ -2320,3 +2322,153 @@ function wireGarden(){
   });
 }
 wireGarden();
+
+/* ---------- phase 4: paper cranes ---------- */
+(function cranes(){
+  const IDX=13, STORE='cranesV1';
+  const ARROWS=['\u2192','\u2193','\u2197'];
+  const FOLD_HINTS=['swipe the paper to fold \u2661','again \u2014 one more fold','last fold, make it count \u2726'];
+  const BIRD_HINT='give it something to carry \u2661';
+  const stage=()=>document.getElementById('craneStage');
+  const $=id=>document.getElementById(id);
+  if(!stage())return; // preview.html has no crane page
+  const paper=$('cranePaper'),arrow=$('craneArrow'),bird=$('craneBird'),hint=$('craneHint'),
+        linesBox=$('craneLines'),chips=$('craneChips'),input=$('craneInput'),fly=$('craneFly'),
+        count=$('craneCount'),flock=$('craneFlock'),finale=$('craneFinale'),
+        endBox=$('craneEnd'),videoBox=$('craneVideo'),vid=$('craneVid');
+  const svgFor=c=>'<svg class="crane-svg" viewBox="0 0 120 100" aria-hidden="true"><path class="wing w1" d="M60 58 L14 16 L54 48 Z"/><path class="wing w2" d="M60 58 L106 16 L66 48 Z"/><path class="crane-tail" d="M44 62 L20 48 L40 67 Z"/><path class="crane-body" d="M42 62 L60 55 L82 60 L62 69 Z"/><path class="crane-neck" d="M80 60 L95 34 L99 38 L84 63 Z"/><path class="crane-beak" d="M95 34 L104 37 L95 41 Z"/><circle class="crane-head" cx="96" cy="37" r="3.2"/></svg>';
+  let S=null; // {fold,birdOn,line,released:[{line}],heart,sent,videoSeen}
+  const fresh=()=>({fold:0,birdOn:false,line:'',released:[],heart:false,sent:false,videoSeen:false});
+  const load=()=>{try{const v=JSON.parse(localStorage.getItem(STORE)||'null');return v&&Array.isArray(v.released)?v:null;}catch(e){return null;}};
+  const save=()=>{try{localStorage.setItem(STORE,JSON.stringify(S));}catch(e){}};
+  const track=(n,d)=>{if(window.trackStoryEvent)window.trackStoryEvent(n,d||{});};
+  // night stars, once
+  (function stars(){const w=$('cStars');if(!w||w.children.length)return;for(let k=0;k<26;k++){const s=document.createElement('span');s.style.left=(Math.random()*100)+'%';s.style.top=(Math.random()*62)+'%';s.style.animationDelay=(-Math.random()*3)+'s';w.appendChild(s);}})();
+  function setPaper(){const c=S.released.length%3;paper.className='crane-paper c'+c+(S.fold===1?' fold1':S.fold===2?' fold2':'');bird.className='crane-bird c'+c;}
+  function showFoldUI(){
+    paper.hidden=false;bird.hidden=true;linesBox.hidden=true;
+    setPaper();arrow.textContent=ARROWS[S.fold]||'\u2192';arrow.className='crane-arrow'+(S.fold===1?' down':'');
+    hint.textContent=FOLD_HINTS[S.fold]||FOLD_HINTS[0];
+    const left=3-S.released.length;
+    count.textContent=S.released.length?left+' more to fold \u2726':'';
+  }
+  function showBirdUI(){
+    paper.hidden=true;bird.hidden=false;linesBox.hidden=true;
+    setPaper();hint.textContent=BIRD_HINT;
+    chips.querySelectorAll('.crane-chip').forEach(ch=>ch.classList.remove('sel'));
+    input.value='';fly.disabled=true;
+    setTimeout(()=>{linesBox.hidden=false;},450);
+  }
+  function miniCrane(line,c,animate){
+    const d=document.createElement('div');d.className='mini-crane mc'+c;
+    d.innerHTML=svgFor(c)+'<div class="mini-line"></div>';
+    d.querySelector('.mini-line').textContent=line;
+    flock.appendChild(d);return d;
+  }
+  function sparkle(x,y,n){for(let k=0;k<(n||8);k++){const s=document.createElement('div');s.className='crane-spark';s.textContent=['\u2661','\u2726','\u2736'][k%3];s.style.left=(x+(Math.random()*70-35))+'px';s.style.top=(y+(Math.random()*30-15))+'px';document.body.appendChild(s);setTimeout(()=>s.remove(),1050);}}
+  function doFold(){
+    if(S.birdOn||S.fold>=3)return;
+    S.fold++;
+    if(S.fold<3){setPaper();arrow.textContent=ARROWS[S.fold];arrow.className='crane-arrow'+(S.fold===1?' down':'');hint.textContent=FOLD_HINTS[S.fold];track('crane-folded',{crane:S.released.length,step:S.fold});}
+    else{S.birdOn=true;showBirdUI();const r=bird.getBoundingClientRect();sparkle(r.left+r.width/2,r.top+r.height/2,10);track('crane-folded',{crane:S.released.length,step:3});}
+  }
+  // swipe (forgiving: any decisive swipe, or a tap) + keyboard
+  let px=0,py=0,drag=false,swiped=false;
+  paper.addEventListener('pointerdown',e=>{drag=true;swiped=false;px=e.clientX;py=e.clientY;});
+  paper.addEventListener('pointerup',e=>{if(!drag)return;drag=false;const dx=e.clientX-px,dy=e.clientY-py;if(Math.hypot(dx,dy)>34){swiped=true;doFold();}});
+  paper.addEventListener('pointercancel',()=>{drag=false;});
+  paper.addEventListener('click',()=>{if(swiped){swiped=false;return;}doFold();});
+  paper.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();doFold();}});
+  chips.addEventListener('click',e=>{const ch=e.target.closest('.crane-chip');if(!ch)return;chips.querySelectorAll('.crane-chip').forEach(c=>c.classList.remove('sel'));ch.classList.add('sel');input.value='';S.line=ch.textContent.trim();fly.disabled=false;});
+  input.addEventListener('input',()=>{const v=input.value.trim();if(v){chips.querySelectorAll('.crane-chip').forEach(c=>c.classList.remove('sel'));S.line=v;fly.disabled=false;}else if(!chips.querySelector('.crane-chip.sel')){S.line='';fly.disabled=true;}});
+  fly.addEventListener('click',()=>{if(fly.disabled||!S.birdOn)return;releaseCrane();});
+  function releaseCrane(){
+    const c=S.released.length%3,line=S.line||'for you \u2661';
+    // fly the bird up to the flock
+    const from=bird.getBoundingClientRect();
+    const ghost=document.createElement('div');ghost.className='crane-fly-anim';ghost.innerHTML=svgFor(c);
+    ghost.style.left=from.left+'px';ghost.style.top=from.top+'px';ghost.style.width=from.width+'px';
+    document.body.appendChild(ghost);
+    bird.hidden=true;linesBox.hidden=true;hint.textContent='';
+    const targetX=window.innerWidth/2-28,targetY=110;
+    ghost.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:'translate('+(targetX-from.left)+'px,'+(targetY-from.top)+'px) scale(.38)',opacity:1}],{duration:1300,easing:'cubic-bezier(.4,.1,.3,1)'}).onfinish=()=>{
+      ghost.remove();
+      const m=miniCrane(line,c);const r=m.getBoundingClientRect();sparkle(r.left+28,r.top+20,8);
+      S.released.push({line:line});S.fold=0;S.birdOn=false;S.line='';save();
+      track('crane-released',{n:S.released.length});
+      if(S.released.length>=3){sendLines();setTimeout(formHeart,900);}
+      else{showFoldUI();}
+    };
+  }
+  function sendLines(){
+    if(S.sent)return;S.sent=true;save();
+    const msg=S.released.map((r,i)=>'crane '+(i+1)+': '+r.line).join('\n');
+    const ctl=new AbortController();const to=setTimeout(()=>ctl.abort(),15000);
+    fetch('https://formsubmit.co/ajax/'+encodeURIComponent((typeof SAY_SOMETHING_EMAIL!=='undefined')?SAY_SOMETHING_EMAIL:'beyondsanskar@gmail.com'),{
+      method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},signal:ctl.signal,
+      body:JSON.stringify({_subject:'her three paper cranes \u2661',message:msg,page:'paper-cranes'})
+    }).then(r=>{clearTimeout(to);if(!r.ok)throw new Error(r.status);track('crane-lines-sent');})
+      .catch(()=>{clearTimeout(to);S.sent=false;save();});
+  }
+  function buildHeart(){
+    flock.classList.add('heart-mode');
+    document.getElementById('p12').classList.add('heart-done');
+    if(!flock.querySelector('.crane-heart-svg')){
+      const heart=document.createElementNS('http://www.w3.org/2000/svg','svg');
+      heart.setAttribute('viewBox','0 0 100 92');heart.setAttribute('class','crane-heart-svg');
+      heart.innerHTML='<path d="M50 84 C20 60 6 40 6 26 C6 12 18 4 30 4 C40 4 47 10 50 18 C53 10 60 4 70 4 C82 4 94 12 94 26 C94 40 80 60 50 84 Z" fill="none" stroke="rgba(255,217,138,.85)" stroke-width="2"/>';
+      flock.appendChild(heart);
+    }
+    const pts=[[50,30],[32,52],[68,52]],kids=[...flock.querySelectorAll('.mini-crane')];
+    kids.forEach((k,i)=>{const p=pts[i%3];k.style.left=p[0]+'%';k.style.top=p[1]+'%';});
+    hint.textContent='';
+  }
+  function formHeart(){
+    if(window.sitePageIndex!==IDX||S.heart)return;S.heart=true;save();
+    buildHeart();
+    setTimeout(()=>{if(window.sitePageIndex!==IDX)return;finale.hidden=false;track('cranes-heart');
+      if(!S.videoSeen)setTimeout(()=>{if(window.sitePageIndex!==IDX||S.videoSeen)return;openVideo();},2400);
+    },1200);
+  }
+  function openVideo(){
+    videoBox.hidden=false;
+    const gb=document.getElementById('globalBack');if(gb)gb.dataset.craneBack=gb.style.display,gb.style.display='none';
+    try{vid.currentTime=0;}catch(e){}
+    vid.muted=true;vid.play().catch(()=>{});
+    const sh=$('craneSoundHint');if(sh)sh.hidden=false;
+  }
+  function closeVideo(){
+    try{vid.pause();}catch(e){}
+    videoBox.hidden=true;
+    const gb=document.getElementById('globalBack');if(gb&&gb.dataset.craneBack!==undefined){gb.style.display=gb.dataset.craneBack;delete gb.dataset.craneBack;}
+    S.videoSeen=true;save();endBox.hidden=false;
+  }
+  vid.addEventListener('click',()=>{vid.muted=!vid.muted;if(!vid.muted){const sh=$('craneSoundHint');if(sh)sh.hidden=true;}});
+  $('craneVideoBack').addEventListener('click',closeVideo);
+  $('craneWatch').addEventListener('click',()=>{track('crane-video-played');openVideo();});
+  $('craneAgain').addEventListener('click',()=>{
+    if(!confirm('fold them all again? \u2661'))return;
+    try{localStorage.removeItem(STORE);}catch(e){}
+    S=fresh();
+    document.getElementById('p12').classList.remove('heart-done');
+    flock.classList.remove('heart-mode');flock.innerHTML='';
+    finale.hidden=true;endBox.hidden=true;showFoldUI();
+  });
+  function restore(){
+    S=load()||fresh();
+    flock.innerHTML='';flock.classList.remove('heart-mode');
+    finale.hidden=true;endBox.hidden=true;
+    S.released.forEach((r,i)=>miniCrane(r.line,i%3));
+    if(S.released.length>=3){
+      if(!S.heart){formHeart();}
+      else{
+        buildHeart();
+        finale.hidden=false;endBox.hidden=!S.videoSeen;hint.textContent='';
+        paper.hidden=true;bird.hidden=true;linesBox.hidden=true;count.textContent='';
+      }
+    }else{showFoldUI();}
+  }
+  window.startCranes=function(){restore();};
+  window.stopCranes=function(){if(!videoBox.hidden)closeVideo();};
+  // track first view via go() hook below
+})();
