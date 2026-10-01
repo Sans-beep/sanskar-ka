@@ -284,7 +284,11 @@ const MYO_TEXT_DEFAULTS={
 'email.done':"noted \u2661 i'll write back.",
 'email.savedBtn':'saved \u2661',
 'email.sendBtn':"that's it \u2192",
-'email.failed':"hmm, that didn't fly \u2014 try again?"
+'email.failed':"hmm, that didn't fly \u2014 try again?",
+'crane.foldHints':['swipe the paper to fold \u2661','again \u2014 one more fold','last fold, make it count \u2726'],
+'crane.birdHint':'give it something to carry \u2661',
+'crane.moreToFold':'{n} more to fold \u2726',
+'crane.foldAgainConfirm':'fold them all again? \u2661'
 };
 /*MYO_DEFAULTS_END*/
 function myoT(key){
@@ -2038,8 +2042,8 @@ wireEmailPage();
 (function cranes(){
   const IDX=12, SENT_KEY='cranesSentV1'; // only the sent-once guard is stored; fold progress lives in memory
   const ARROWS=['\u2192','\u2193','\u2197'];
-  const FOLD_HINTS=['swipe the paper to fold \u2661','again \u2014 one more fold','last fold, make it count \u2726'];
-  const BIRD_HINT='give it something to carry \u2661';
+  const FOLD_HINTS=myoT('crane.foldHints');
+  const BIRD_HINT=myoT('crane.birdHint');
   const stage=()=>document.getElementById('craneStage');
   const $=id=>document.getElementById(id);
   if(!stage())return; // preview.html has no crane page
@@ -2072,7 +2076,7 @@ wireEmailPage();
     setPaper();arrow.textContent=ARROWS[S.fold]||'\u2192';arrow.className='crane-arrow'+(S.fold===1?' down':'');
     hint.textContent=FOLD_HINTS[S.fold]||FOLD_HINTS[0];
     const left=3-S.released.length;
-    count.textContent=S.released.length?left+' more to fold \u2726':'';
+    count.textContent=S.released.length?myoT('crane.moreToFold').replace('{n}',left):'';
   }
   function showBirdUI(){
     paper.hidden=true;bird.hidden=false;linesBox.hidden=true;
@@ -2217,7 +2221,7 @@ wireEmailPage();
   $('craneVideoBack').addEventListener('click',closeVideo);
   $('craneWatch').addEventListener('click',()=>{zoomToCraneVideo(1300);});
   $('craneAgain').addEventListener('click',()=>{
-    if(!confirm('fold them all again? \u2661'))return;
+    if(!confirm(myoT('crane.foldAgainConfirm')))return;
     S=fresh(); // sent-once guard survives inside fresh() via SENT_KEY
     document.getElementById('p12').classList.remove('heart-done','crane-zoom','flock-on');
     flock.classList.remove('heart-mode');flock.innerHTML=FLOCK_DOODLES;
