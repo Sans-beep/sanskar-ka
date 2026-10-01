@@ -295,6 +295,17 @@ function myoT(key){
   if(v===undefined||v===null||v==='')return d===undefined?'':d;
   return v;
 }
+/* Studio-uploaded videos keep their own ratio: the whole video stays visible,
+   the frame just reshapes inside its max box. MYO-gated, so the original site is untouched. */
+document.addEventListener('loadedmetadata',function(e){
+  if(!MYO)return;
+  var v=e.target;
+  if(v&&v.id==='gPolVid'&&v.videoWidth>0&&v.videoHeight>0){
+    var MW=168,MH=220,w=MW,h=Math.round(MW*v.videoHeight/v.videoWidth);
+    if(h>MH){h=MH;w=Math.round(MH*v.videoWidth/v.videoHeight);}
+    v.style.width=w+'px';v.style.height=h+'px';
+  }
+},true);
 
 let introTimerId=null,introStep=0,introDone=false;
 function introEls(){return{timer:document.getElementById('introTimer'),line:document.getElementById('introLine'),prog:document.getElementById('introProgress'),cont:document.getElementById('introContinue'),snd:document.getElementById('introSound'),audio:document.getElementById('aiseKyun')};}
@@ -1442,7 +1453,14 @@ function openConstMemory(idx){
   document.getElementById('constText').textContent=m.caption;
   if(photo){
     const pu=m.photo&&m.photo.url?m.photo.url:m.photo;
-    if(m.photo&&m.photo.w&&m.photo.h)photo.style.aspectRatio=m.photo.w+'/'+m.photo.h;
+    photo.style.aspectRatio='';photo.style.width='';photo.style.height='';photo.style.margin='';
+    if(m.photo&&m.photo.w&&m.photo.h){
+      /* fit the photo's own ratio inside the card: the whole photo stays visible,
+         the card never grows taller than ~half the viewport (no-op on the original site, photos are null there) */
+      var aw=photo.clientWidth||276,MH=Math.round(window.innerHeight*0.52),w=aw,h=Math.round(aw*m.photo.h/m.photo.w);
+      if(h>MH){h=MH;w=Math.round(MH*m.photo.w/m.photo.h);}
+      photo.style.width=w+'px';photo.style.height=h+'px';photo.style.margin='0 auto';
+    }
     photo.innerHTML=pu?'<img src="'+pu+'" alt="">':'<div class="ph-empty">✦</div>';
   }
   card.classList.add('open');

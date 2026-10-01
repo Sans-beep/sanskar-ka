@@ -466,7 +466,15 @@ function applyAll(doc,cfg){
     const ph=MEDIA.frames[k];if(!ph)return;const im=fr.querySelector('.image');if(!im)return;
     im.innerHTML='';const img=doc.createElement('img');img.src=ph.url;img.alt='';
     img.style.cssText='width:100%;height:100%;object-fit:cover;display:block';
-    if(ph.w&&ph.h){im.style.aspectRatio=ph.w+'/'+ph.h;im.style.height='auto';im.style.maxHeight='430px';}
+    if(ph.w&&ph.h){
+      /* fit the photo's own ratio inside (frame width x 56vh): the whole photo
+         stays visible on any screen, the frame just wraps it (rail centers them) */
+      im.style.aspectRatio=ph.w+'/'+ph.h;
+      im.style.height='auto';
+      im.style.width='min(100%,'+(56*ph.w/ph.h).toFixed(2)+'vh)';
+      im.style.margin='0 auto';
+      fr.style.height='auto';
+    }
     im.appendChild(img);
   });
   doc.querySelectorAll('audio[src]').forEach(a=>{const s=a.getAttribute('src');if(s&&!/^(https?:|data:)/.test(s))a.setAttribute('src',ABS+s);});
