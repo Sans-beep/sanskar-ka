@@ -377,6 +377,9 @@ globalBack.onclick=function(e){
   e.preventDefault();
   e.stopPropagation();
   if(busy || i===0 || (i===1 && !isPreviewPage))return;
+  // the crane page isn't always reached via the email page (she may have
+  // tapped "no" and skipped it) — go back to where she actually came from
+  if(i===12&&typeof window.cranesBackTarget==='number'){go(window.cranesBackTarget);return;}
   go(i-1);
 };
 setCurrentPage(isPreviewPage?0:1);
@@ -1851,6 +1854,9 @@ applyCustomization();
 const SAY_SOMETHING_EMAIL=(MYO&&MYO.sayEmail)||'beyondsanskar@gmail.com'; // real address; activate once via FormSubmit's mail
 const EMAIL_INDEX=11; // "where can i write back?" — only after she wrote + it sent
 const CRANES_INDEX=12; // paper cranes — the onward page after say/email
+const SAY_INDEX=10; // "wanna say something??" — back target when she skipped the email page
+// where the crane page's ← back button returns: the page she actually came from
+window.cranesBackTarget=EMAIL_INDEX;
 let sayAnswered=false,saySending=false,sayWroteAndSent=false,sayEmailToken='';
 
 function setSayLine(t){
@@ -1969,8 +1975,8 @@ function wireSayPage(){
     if(ahead.disabled)return;
     // She wrote something and it reached him → ask where he can write back.
     // Otherwise (no / never-mind / send failed) → straight to the cranes.
-    if(sayWroteAndSent&&pages.length>EMAIL_INDEX){go(EMAIL_INDEX);}
-    else if(pages.length>CRANES_INDEX){go(CRANES_INDEX);}
+    if(sayWroteAndSent&&pages.length>EMAIL_INDEX){window.cranesBackTarget=EMAIL_INDEX;go(EMAIL_INDEX);}
+    else if(pages.length>CRANES_INDEX){window.cranesBackTarget=SAY_INDEX;go(CRANES_INDEX);}
     else{const s=document.getElementById('saySoon');if(s)s.hidden=false;}
   });
 }
@@ -1988,7 +1994,7 @@ function wireEmailPage(){
         skip=document.getElementById('emailSkip'),status=document.getElementById('emailStatus');
   if(!input||!send)return;
   let sending=false;
-  const onward=()=>{if(pages.length>CRANES_INDEX)go(CRANES_INDEX);};
+  const onward=()=>{window.cranesBackTarget=EMAIL_INDEX;if(pages.length>CRANES_INDEX)go(CRANES_INDEX);};
   if(skip)skip.addEventListener('click',()=>{
     if(window.trackStoryEvent)window.trackStoryEvent('email-skipped');
     onward();
@@ -2048,7 +2054,7 @@ wireEmailPage();
   const save=()=>{try{localStorage.setItem(STORE,JSON.stringify(S));}catch(e){}};
   const track=(n,d)=>{if(window.trackStoryEvent)window.trackStoryEvent(n,d||{});};
   const FLOCK_DOODLES='<i class="c-doodle hd1">\u2661</i><i class="c-doodle hd2">\u2726</i><i class="c-doodle hd3">\u2736</i><i class="c-doodle hd4">\u2661</i><i class="c-doodle hd5">\u2726</i>';
-  let craneVideoT=0,craneZoomT=0,craneVideoTracked=false;
+  let craneVideoT=0,craneZoomT=0,heartT=0,craneVideoTracked=false;
   // Zoom the heart toward the viewer (like the constellation dive), then her video.
   function zoomToCraneVideo(zoomMs){
     clearTimeout(craneVideoT);clearTimeout(craneZoomT);
@@ -2126,9 +2132,7 @@ wireEmailPage();
   function buildHeart(animate){
     const page=document.getElementById('p12');
     const kids=[...flock.querySelectorAll('.mini-crane')];
-    // FLIP: pin each crane where it is now (px), then let the left/top
-    // transition fly it into formation. Without this the cranes snap from
-    // `auto` (no transition possible) and the heart looks pre-made.
+    // capture where each crane sits right now (page coords)
     let starts=null;
     if(animate!==false&&kids.length){
       const pr=page.getBoundingClientRect();
@@ -2143,33 +2147,41 @@ wireEmailPage();
       flock.appendChild(heart);
     }
     const pts=[[50,30],[32,52],[68,52]];
-    const fr=flock.getBoundingClientRect(),pr2=page.getBoundingClientRect(),fx=fr.left-pr2.left,fy=fr.top-pr2.top;
+    const fr=flock.getBoundingClientRect(),pr2=page.getBoundingClientRect();
     kids.forEach((k,i)=>{
       const p=pts[i%3];
-      if(starts){
-        k.style.transitionDelay=(i*140)+'ms';
-        k.style.left=(starts[i][0]-fx)+'px';
-        k.style.top=(starts[i][1]-fy)+'px';
-      }else{
-        k.style.transitionDelay='';
-        k.style.left=p[0]+'%';k.style.top=p[1]+'%';
+      // park at the final spot in the same frame (never painted mid-snap)…
+      k.style.transition='none';
+      k.style.left=p[0]+'%';k.style.top=p[1]+'%';
+      if(starts&&k.animate){
+        const ex=fr.left-pr2.left+fr.width*p[0]/100, ey=fr.top-pr2.top+fr.height*p[1]/100;
+        const dx=starts[i][0]-ex, dy=starts[i][1]-ey, tilt=i%2?-9:9;
+        // …then fly in along a soft arc, tilting like paper on air
+        k.animate([
+          {transform:'translate(calc(-50% + '+dx.toFixed(1)+'px), calc(-50% + '+dy.toFixed(1)+'px)) rotate('+tilt+'deg) scale(.94)'},
+          {transform:'translate(calc(-50% + '+(dx*0.42).toFixed(1)+'px), calc(-50% + '+(dy*0.42-56).toFixed(1)+'px)) rotate('+(-tilt/2)+'deg) scale(1.02)',offset:.58},
+          {transform:'translate(-50%,-50%) rotate(0deg) scale(1)'}
+        ],{duration:1450,delay:i*170,easing:'cubic-bezier(.22,.8,.28,1)',fill:'backwards'});
       }
     });
-    if(starts){
-      void flock.offsetWidth; // commit the pinned spots before flying
-      kids.forEach((k,i)=>{const p=pts[i%3];k.style.left=p[0]+'%';k.style.top=p[1]+'%';});
-      setTimeout(()=>kids.forEach(k=>{k.style.transitionDelay='';}),1800);
-    }
+    if(starts)setTimeout(()=>kids.forEach(k=>{k.style.transition='';}),2400);
     hint.textContent='';
   }
-  function formHeart(){
-    if(window.sitePageIndex!==IDX||S.heart)return;S.heart=true;save();
+  // The heart is never pre-made: every entry with 3 cranes replays the
+  // formation flight (like the constellation redraws every visit), then the
+  // finale / end state follows from the saved flags.
+  function replayHeart(){
+    if(window.sitePageIndex!==IDX)return;
+    clearTimeout(heartT);
     buildHeart(true);
     // finale line lands as the formation completes (~1.4s of flight)
-    setTimeout(()=>{if(window.sitePageIndex!==IDX)return;finale.hidden=false;track('cranes-heart');
-      if(!S.videoSeen)craneZoomT=setTimeout(()=>{if(window.sitePageIndex!==IDX||S.videoSeen)return;zoomToCraneVideo(2200);},1600);
+    heartT=setTimeout(()=>{if(window.sitePageIndex!==IDX)return;finale.hidden=false;
+      if(!S.heart){S.heart=true;save();track('cranes-heart');}
+      if(S.videoSeen){endBox.hidden=false;}
+      else{craneZoomT=setTimeout(()=>{if(window.sitePageIndex!==IDX||S.videoSeen)return;zoomToCraneVideo(2200);},1600);}
     },1900);
   }
+  function formHeart(){replayHeart();}
   function openVideo(){
     videoBox.hidden=false;
     const gb=document.getElementById('globalBack');if(gb)gb.dataset.craneBack=gb.style.display,gb.style.display='none';
@@ -2204,15 +2216,12 @@ wireEmailPage();
     finale.hidden=true;endBox.hidden=true;
     S.released.forEach((r,i)=>miniCrane(r.line,i%3));
     if(S.released.length>=3){
-      if(!S.heart){formHeart();}
-      else{
-        buildHeart(false); // already formed earlier: show it settled, no replay
-        finale.hidden=false;endBox.hidden=!S.videoSeen;hint.textContent='';
-        paper.hidden=true;bird.hidden=true;linesBox.hidden=true;count.textContent='';
-      }
+      // she finished before: hide the fold tools, replay the formation
+      paper.hidden=true;bird.hidden=true;linesBox.hidden=true;count.textContent='';
+      replayHeart();
     }else{showFoldUI();}
   }
   window.startCranes=function(){restore();};
-  window.stopCranes=function(){clearTimeout(craneVideoT);clearTimeout(craneZoomT);document.getElementById('p12').classList.remove('crane-zoom');if(!videoBox.hidden)closeVideo();};
+  window.stopCranes=function(){clearTimeout(heartT);clearTimeout(craneVideoT);clearTimeout(craneZoomT);document.getElementById('p12').classList.remove('crane-zoom');if(!videoBox.hidden)closeVideo();};
   // track first view via go() hook below
 })();
