@@ -1307,6 +1307,15 @@ go=function(n){
   if(!sessionId){sessionId='s_'+Math.random().toString(36).slice(2,10);try{sessionStorage.setItem('storydb_sid',sessionId);}catch(_){}}
   const queue=[];
   let sending=false;
+  let sdbDevice=null;
+  function sdbGetDevice(){
+    if(sdbDevice)return sdbDevice;
+    try{
+      const ua=navigator.userAgent||'';
+      sdbDevice=/Mobi|Android|iPhone|iPod/i.test(ua)?'mobile':(/iPad|Tablet/i.test(ua)?'tablet':'desktop');
+    }catch(_){sdbDevice='unknown';}
+    return sdbDevice;
+  }
   /* Direct PostgREST insert — no third-party SDK to fail. keepalive lets
      events land even if she closes the tab mid-flush. */
   function postRow(row){
@@ -1339,6 +1348,7 @@ go=function(n){
     let idx=0;try{idx=window.sitePageIndex||0;}catch(_){}
     const d=(data&&typeof data==='object')?Object.assign({},data):{};
     try{d.source=document.body.classList.contains('preview')?'preview':'main';}catch(_){}
+    d.device=sdbGetDevice();
     queue.push({visitor_id:visitorId,session_id:sessionId,name:String(name||'untitled'),page:pageId(idx),data:d});
     if(queue.length>80)queue.shift();
     flush();

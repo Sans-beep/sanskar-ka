@@ -109,6 +109,20 @@ function ago(t){
   var h=Math.round(m/60);if(h<24)return h+'h ago';
   return Math.round(h/24)+'d ago';
 }
+function absTime(t){
+  try{
+    var d=new Date(t);
+    return d.toLocaleDateString(undefined,{day:'numeric',month:'short'})+' '+d.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'});
+  }catch(e){return '';}
+}
+function whenText(t){return ago(t)+' · '+absTime(t);}
+function fmtDur(s){
+  s=Math.max(0,Math.round(s));
+  if(s<60)return s+'s';
+  var m=Math.floor(s/60);s=s%60;
+  if(m<60)return s?m+'m '+s+'s':m+'m';
+  return Math.floor(m/60)+'h '+(m%60)+'m';
+}
 function pretty(ev){
   var d=ev.data||{},cls='',txt='';
   switch(ev.name){
@@ -127,8 +141,14 @@ function pretty(ev){
     case 'email-sent':txt='left an address so you can write back';break;
     case 'intro-complete':txt='watched the whole intro';break;
     case 'phase1-song-started':txt='the music started';break;
+    case 'page-dwell':{
+      var secs=Math.round(d.seconds||0);
+      if(secs<3)return null;
+      var pg=PAGES['p'+((d.page||1)-1)]||'a page';
+      txt='lingered '+fmtDur(secs)+' on '+pg+(d.reason==='tab-closed'?' (then left)':'');
+      break;
+    }
     default:
-      if(ev.name==='page-dwell')return null;
       txt=esc(ev.name.replace(/-/g,' '));break;
   }
   return {txt:txt,cls:cls};
@@ -143,8 +163,9 @@ function addEv(ev,top){
   var p=pretty(ev);if(!p||!matchSrc(ev))return;
   if(ev.session_id!==lastSession){
     lastSession=ev.session_id;
+    var dev=(ev.data&&ev.data.device)||'';
     var s=document.createElement('div');s.className='sess';
-    s.textContent=(seenSessions[ev.session_id]?'she came back ♡':'a visit begins');
+    s.textContent=(seenSessions[ev.session_id]?'she came back ♡':'a visit begins')+(dev?' · '+dev:'');
     seenSessions[ev.session_id]=1;
     top?feed.prepend(s):feed.appendChild(s);
   }
@@ -152,12 +173,12 @@ function addEv(ev,top){
   var el=document.createElement('div');el.className='ev '+p.cls;
   var src=evSource(ev);
   var badge=src==='preview'?' <span class="srcbadge pv">preview</span>':'';
-  el.innerHTML='<span class="dot"></span><div><div class="txt">'+p.txt+badge+'</div><div class="when" data-t="'+ev.created_at+'">'+ago(ev.created_at)+'</div></div>';
+  el.innerHTML='<span class="dot"></span><div><div class="txt">'+p.txt+badge+'</div><div class="when" data-t="'+ev.created_at+'">'+whenText(ev.created_at)+'</div></div>';
   top?feed.prepend(el):feed.appendChild(el);
   while(feed.children.length>220)feed.removeChild(feed.lastChild);
 }
 setInterval(function(){
-  feed.querySelectorAll('.when').forEach(function(w){w.textContent=ago(w.getAttribute('data-t'));});
+  feed.querySelectorAll('.when').forEach(function(w){w.textContent=whenText(w.getAttribute('data-t'));});
 },15000);
 
 async function doLogin(){
