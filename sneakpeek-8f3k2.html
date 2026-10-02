@@ -15,7 +15,7 @@
 <meta name="twitter:description" content="a little preview — every word unlocks on your day">
 <meta name="twitter:image" content="https://sans-beep.github.io/sanskar-ka/preview-og.jpg">
 <link rel="stylesheet" href="style.css?v=20261002-82">
-<link rel="stylesheet" href="preview.css?v=10">
+<link rel="stylesheet" href="preview.css?v=11">
 </head>
 <body class="preview">
 <div class="shell"><main class="card">
@@ -27,7 +27,8 @@
 <section class="page" id="p5"><div class="top"><span>A LITTLE SWEETNESS</span><span>19.10.26</span></div><div class="inner"><i class="doodle d1">♡</i><i class="doodle d2">✎</i><div class="pv-clock" aria-hidden="true"><span class="pv-tick t12"></span><span class="pv-tick t3"></span><span class="pv-tick t6"></span><span class="pv-tick t9"></span><span class="pv-hand pv-hour"></span><span class="pv-hand pv-min"></span><span class="pv-hand pv-sec"></span><i class="pv-pin"></i></div><div class="pv-clock-line">not today —<br>there's still time ♡</div><button class="btn next" type="button">continue →</button><div class="pv-upload-hidden" aria-hidden="true"><div class="proof-polaroid" id="proofPolaroid"><div class="tape"></div><div class="proof-photo" id="proofPhoto"><span class="photo-placeholder">show me the chocolate ♡</span><img id="proofImage" alt="Your chocolate photo preview"><div class="proof-caption">evidence</div></div><div class="verified-stamp">VERIFIED ♡</div></div><label class="upload-label" for="proofUpload">choose photo →</label><input class="upload-input" id="proofUpload" type="file" accept="image/*"><div class="upload-status" id="uploadStatus"></div><button class="btn p4-next" id="p4Next" disabled>continue →</button></div></div></section>
 <section class="page" id="p6"><div class="top"><span>ONE MORE THING</span><span>19.10.26</span></div><div class="inner"><i class="doodle d1">♡</i><i class="doodle d2">✦</i><div class="kicker">the letter</div><div class="copy" style="font-size:38px;margin-top:12px">there's something<br>in the letter you'll need later.</div><div class="envelope hit" id="secretEnvelope" aria-label="Tap the envelope nine times"><div class="seal">19</div></div><div class="tap-count" id="tapCount">there's something here… <b>♡</b></div><div class="note">open the letter. keep the little code.</div><i class="doodle">⌁</i><button class="btn next">I have it →</button></div></section>
 <section class="page" id="p7"><div class="top"><span>PRIVATE ENTRY</span><span>19.10.26</span></div><div class="inner"><i class="doodle d1">♡</i><i class="doodle d2">⌁</i><div class="kicker">the next chapter is locked</div><div class="copy" style="font-size:39px;margin-top:14px">enter the code<br>from the letter.</div><input id="code" maxlength="20" placeholder="• • • • • • • • •" autocomplete="off"><button class="btn" id="unlock">unlock →</button><div class="error" id="error"></div><div class="tiny">no cheating, bhondu girl.</div>
-<div class="pv-countwrap"><div class="pv-count" id="pvCount">--d : --h : --m : --s</div></div></div></section>
+<div class="pv-countwrap"><div class="pv-count" id="pvCount">--d : --h : --m : --s</div></div>
+<div class="pv-saywrap"><button class="pv-saylink" id="pvSayLink" type="button">psst… wanna say something to the person behind this? 😝</button><div class="pv-saycard" id="pvSayCard" hidden><textarea id="pvSayText" rows="3" maxlength="500" placeholder="whatever's on your mind…"></textarea><button class="btn" id="pvSaySend" type="button">send →</button><div class="pv-saystatus" id="pvSayStatus"></div></div></div></div></section>
 
 <section class="page phase2-film" id="p8">
   <div class="film-stage" id="filmStage">
@@ -177,7 +178,6 @@
   <div class="mt-star" aria-hidden="true">✦</div>
   <div class="mt-countwrap"><div class="mt-count" id="mtCount">--d : --h : --m : --s</div></div>
   <button class="mt-moontap" id="mtMoonTap" aria-label="tap the moon"></button>
-  <div class="mt-taphint" id="mtTapHint">psst&hellip; tap the moon</div>
   <button class="btn mt-continue" id="mtContinue">continue &rarr;</button>
 </div>
 <script>
@@ -289,6 +289,18 @@
     overlay.setAttribute('aria-hidden','true');
     realGo(7);
   });
+  /* The tease is a modal moment: the global back must never appear above it.
+     (Closing the tease's Lost Frame calls syncGlobalBack, which used to pop
+     the back button up over the still-open tease — covering "continue →" so
+     taps hit back instead and the tease could never be left.) */
+  if(typeof window.syncGlobalBack==='function'){
+    var _pvSyncBack=window.syncGlobalBack;
+    window.syncGlobalBack=function(){
+      _pvSyncBack();
+      var t=document.getElementById('moonTease'), b=document.getElementById('globalBack');
+      if(t&&t.classList.contains('open')&&b)b.style.display='none';
+    };
+  }
 })();
 /* preview-only: countdown to her day, ticking on the lock page */
 (function(){
@@ -322,6 +334,39 @@
   }
   ub.onclick=function(e){if(e)e.preventDefault();previewUnlock();};
   codeEl.onkeydown=function(e){if(e.key==='Enter'){e.preventDefault();previewUnlock();}};
+})();
+/* preview-only: "say something to the person behind this" — straight to his Gmail.
+   Message bodies never touch analytics; this posts to FormSubmit only. */
+(function(){
+  if(!document.body.classList.contains('preview'))return;
+  var link=document.getElementById('pvSayLink'),card=document.getElementById('pvSayCard');
+  if(!link||!card)return;
+  var sending=false;
+  link.addEventListener('click',function(){card.hidden=!card.hidden;});
+  document.getElementById('pvSaySend').addEventListener('click',async function(){
+    if(sending)return;
+    var text=document.getElementById('pvSayText'),status=document.getElementById('pvSayStatus'),btn=this;
+    var msg=text?text.value.trim():'';
+    if(!msg){if(status)status.textContent='write something first ♡';return;}
+    sending=true;btn.disabled=true;btn.textContent='sending…';if(status)status.textContent='';
+    var email=(typeof SAY_SOMETHING_EMAIL!=='undefined')?SAY_SOMETHING_EMAIL:'beyondsanskar@gmail.com';
+    var ctl=new AbortController();var to=setTimeout(function(){ctl.abort();},15000);
+    try{
+      var r=await fetch('https://formsubmit.co/ajax/'+encodeURIComponent(email),{
+        method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},
+        signal:ctl.signal,
+        body:JSON.stringify({_subject:'she said something ♡ (preview)',message:msg,page:'preview-lock',ref:Math.random().toString(36).slice(2,10)})
+      });
+      clearTimeout(to);
+      if(!r.ok)throw new Error('send failed: '+r.status);
+      if(status)status.textContent="it'll find its way to me ♡";
+      if(text)text.disabled=true;btn.textContent='sent ♡';
+    }catch(e){
+      clearTimeout(to);
+      if(status)status.textContent="hmm, that didn't fly — try again?";
+      btn.disabled=false;btn.textContent='send →';sending=false;
+    }
+  });
 })();
 </script>
 </body></html>

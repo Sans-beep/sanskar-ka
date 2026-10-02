@@ -187,3 +187,14 @@ body.preview .pv-upload-hidden{display:none!important;}
   font-family:Caveat,cursive;font-size:31px;line-height:1.3;color:#f3e6d4;
   text-shadow:0 2px 14px rgba(0,0,0,.55);margin:0 0 26px;
 }
+
+/* ---- preview-only: "say something to the person behind this" on the lock page ---- */
+.pv-saywrap{margin-top:24px;text-align:center;}
+.pv-saylink{background:none;border:0;font-family:Caveat,cursive;font-size:21px;color:#c9a86a;cursor:pointer;padding:8px 12px;opacity:.88;-webkit-tap-highlight-color:transparent;}
+.pv-saylink:hover{opacity:1;}
+.pv-saycard{margin:12px auto 0;max-width:320px;background:rgba(255,255,255,.045);border:1px solid rgba(245,217,139,.28);border-radius:14px;padding:14px;box-shadow:0 14px 34px rgba(0,0,0,.35);}
+.pv-saycard textarea{width:100%;box-sizing:border-box;background:rgba(0,0,0,.28);border:1px solid rgba(245,217,139,.22);border-radius:10px;color:#f6ecd9;font-family:Caveat,cursive;font-size:19px;line-height:1.35;padding:10px 12px;resize:vertical;min-height:74px;}
+.pv-saycard textarea:focus{outline:none;border-color:rgba(245,217,139,.55);}
+.pv-saycard textarea:disabled{opacity:.6;}
+.pv-saycard .btn{margin-top:10px;}
+.pv-saystatus{font-family:Caveat,cursive;font-size:18px;color:#e8c98a;min-height:24px;margin-top:8px;}
