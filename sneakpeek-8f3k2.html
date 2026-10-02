@@ -15,7 +15,7 @@
 <meta name="twitter:description" content="a little preview — every word unlocks on your day">
 <meta name="twitter:image" content="https://sans-beep.github.io/sanskar-ka/preview-og.jpg">
 <link rel="stylesheet" href="style.css?v=20261002-82">
-<link rel="stylesheet" href="preview.css?v=11">
+<link rel="stylesheet" href="preview.css?v=12">
 </head>
 <body class="preview">
 <div class="shell"><main class="card">
@@ -28,7 +28,7 @@
 <section class="page" id="p6"><div class="top"><span>ONE MORE THING</span><span>19.10.26</span></div><div class="inner"><i class="doodle d1">♡</i><i class="doodle d2">✦</i><div class="kicker">the letter</div><div class="copy" style="font-size:38px;margin-top:12px">there's something<br>in the letter you'll need later.</div><div class="envelope hit" id="secretEnvelope" aria-label="Tap the envelope nine times"><div class="seal">19</div></div><div class="tap-count" id="tapCount">there's something here… <b>♡</b></div><div class="note">open the letter. keep the little code.</div><i class="doodle">⌁</i><button class="btn next">I have it →</button></div></section>
 <section class="page" id="p7"><div class="top"><span>PRIVATE ENTRY</span><span>19.10.26</span></div><div class="inner"><i class="doodle d1">♡</i><i class="doodle d2">⌁</i><div class="kicker">the next chapter is locked</div><div class="copy" style="font-size:39px;margin-top:14px">enter the code<br>from the letter.</div><input id="code" maxlength="20" placeholder="• • • • • • • • •" autocomplete="off"><button class="btn" id="unlock">unlock →</button><div class="error" id="error"></div><div class="tiny">no cheating, bhondu girl.</div>
 <div class="pv-countwrap"><div class="pv-count" id="pvCount">--d : --h : --m : --s</div></div>
-<div class="pv-saywrap"><button class="pv-saylink" id="pvSayLink" type="button">psst… wanna say something to the person behind this? 😝</button><div class="pv-saycard" id="pvSayCard" hidden><textarea id="pvSayText" rows="3" maxlength="500" placeholder="whatever's on your mind…"></textarea><button class="btn" id="pvSaySend" type="button">send →</button><div class="pv-saystatus" id="pvSayStatus"></div></div></div></div></section>
+<div class="pv-saywrap"><button class="pv-saylink" id="pvSayLink" type="button">psst… wanna say something to the person behind this? 😝</button><div class="pv-saycard" id="pvSayCard" hidden><button class="pv-sayclose" id="pvSayClose" type="button" aria-label="Close">×</button><textarea id="pvSayText" rows="3" maxlength="500" placeholder="whatever's on your mind…"></textarea><button class="btn" id="pvSaySend" type="button">send →</button><div class="pv-saystatus" id="pvSayStatus"></div></div></div></div></section>
 
 <section class="page phase2-film" id="p8">
   <div class="film-stage" id="filmStage">
@@ -342,7 +342,12 @@
   var link=document.getElementById('pvSayLink'),card=document.getElementById('pvSayCard');
   if(!link||!card)return;
   var sending=false;
-  link.addEventListener('click',function(){card.hidden=!card.hidden;});
+  function setSayOpen(open){
+    card.hidden=!open;
+    document.body.classList.toggle('pv-saying',open);
+  }
+  link.addEventListener('click',function(){setSayOpen(card.hidden);});
+  document.getElementById('pvSayClose').addEventListener('click',function(){setSayOpen(false);});
   document.getElementById('pvSaySend').addEventListener('click',async function(){
     if(sending)return;
     var text=document.getElementById('pvSayText'),status=document.getElementById('pvSayStatus'),btn=this;
