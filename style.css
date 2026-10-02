@@ -821,3 +821,10 @@ input{width:100%;height:55px;border:1px solid #554c47;background:#171514;color:#
 .crane-sound-hint{color:#ffd9ec;font-size:14px}
 .crane-back{margin-top:4px}
 @media (max-height:760px){.crane-stage{height:140px}.crane-paper{width:92px;height:92px}.crane-svg{width:112px}.crane-title{font-size:38px}.crane-finale-line{font-size:38px}}
+
+/* touch devices: no hover-lift (it sticks on tap and makes buttons visibly jump) */
+@media (hover:none){
+  .btn:hover{transform:none!important;}
+  .const-onward:hover{transform:translateX(-50%)!important;}
+  .lostframe-cta.show:hover{transform:translateX(-50%)!important;}
+}

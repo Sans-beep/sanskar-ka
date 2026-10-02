@@ -1337,7 +1337,9 @@ go=function(n){
   function track(name,data){
     if(!sdbOn())return;
     let idx=0;try{idx=window.sitePageIndex||0;}catch(_){}
-    queue.push({visitor_id:visitorId,session_id:sessionId,name:String(name||'untitled'),page:pageId(idx),data:(data&&typeof data==='object')?data:{}});
+    const d=(data&&typeof data==='object')?Object.assign({},data):{};
+    try{d.source=document.body.classList.contains('preview')?'preview':'main';}catch(_){}
+    queue.push({visitor_id:visitorId,session_id:sessionId,name:String(name||'untitled'),page:pageId(idx),data:d});
     if(queue.length>80)queue.shift();
     flush();
   }
