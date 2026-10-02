@@ -364,7 +364,7 @@ function go(n){
   }else if(oldIndex===2){
     resetBirthdayWeather();
   }
-  if(n===2&&oldIndex===1)startPhase1Song();
+  if(n===2&&oldIndex===1&&isPreviewPage)startPhase1Song();
   const _ll=lyricLayerEl();if(_ll)_ll.dataset.page=n;
   setTimeout(()=>{
     old.classList.remove('active','exit-left','exit-right','enter-left','enter-right');

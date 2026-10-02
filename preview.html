@@ -156,7 +156,6 @@
 <svg class="story-thread" id="storyThread" viewBox="0 0 430 760" preserveAspectRatio="none" aria-hidden="true"><path class="thread-shadow" d="M18 92 C74 132 62 196 29 248 S20 367 76 407 S402 445 402 510 S335 612 389 686"></path><path class="thread-line" d="M18 92 C74 132 62 196 29 248 S20 367 76 407 S402 445 402 510 S335 612 389 686"></path></svg><div class="ambient"><span class="dust a">·</span><span class="dust b">✦</span><span class="dust c">·</span><span class="leaf">⌁</span></div><div class="transition-doodles" id="transitionDoodles"></div></main></div>
 <button class="global-back" id="globalBack" style="display:none" type="button" aria-label="Go back">← back</button><div class="code-reveal" id="codeReveal" aria-hidden="true"><div class="reveal-stack"><div class="reveal-line grant" id="revealGrant">ACCESS GRANTED ♡</div><div class="reveal-line wait" id="revealWait">wait.</div><div class="reveal-line found" id="revealFound">you actually found it.</div><div class="reveal-number" id="revealNumber">19</div><div class="reveal-line reveal-final" id="revealFinal">okay. let’s play.<small>phase one complete</small><button class="reveal-enter" id="enterPhase2">enter the room →</button></div></div></div>
 <audio id="aiseKyun" preload="auto" src="aise-kyun.mp3"></audio>
-<audio id="phase2Song" preload="auto" src="https://github.com/Sans-beep/sanskar-ka/raw/6d5335df968c37f22bde5af04267d72662db5f77/Jaan%20Nisaar%20-%20Lyrical%20Kedarnath%20Arijit%20Singh%20Sushant%20Singh%20Rajput%20Sara%20Ali%20Khan%20Amit%20Trivedi.mp3?v=20260925-4" loop></audio>
 
 <div class="joy" id="joy">okayyy… you found it ♡</div>
 
@@ -171,7 +170,7 @@
     <p style="text-align:right;margin-top:28px" id="letterSig">— Sanskar ♡</p>
   </article>
 </div>
-<script src="script.js?v=20261002-82"></script><audio id="letterSong" preload="auto" src="tune-jo-na-kaha.mp3"></audio><audio id="phase1Song" preload="auto" src="hey-there-delilah.mp3"></audio><div id="lyricLayer" aria-hidden="true"><i class="lyr-doodle ld1">♡</i><span id="lyricLine"></span><i class="lyr-doodle ld2">✦</i></div>
+<script src="script.js?v=20261002-83"></script><audio id="letterSong" preload="auto" src="tune-jo-na-kaha.mp3"></audio><audio id="phase1Song" preload="auto" src="hey-there-delilah.mp3"></audio><div id="lyricLayer" aria-hidden="true"><i class="lyr-doodle ld1">♡</i><span id="lyricLine"></span><i class="lyr-doodle ld2">✦</i></div>
 <!-- preview-only: moon video tease, plays just before the code lock. the moon opens the real Lost Frame. -->
 <div class="moon-tease" id="moonTease" aria-hidden="true">
   <video class="mt-video is-visible" id="mtVideoA" playsinline muted preload="auto" src="https://raw.githubusercontent.com/Sans-beep/sanskar-ka/2d28655d14b456b009c8fc2bcdb7fbaf5f907b77/phase2-reference-moon-no-lyrics.mp4?v=20260925-3"></video>
@@ -184,8 +183,9 @@
 </div>
 <script>
 /* preview-only: the moon tease plays just before the code lock.
-   video only, no interaction — but with the phase-2 song, a seamless
-   dual-video crossfade loop (no loop-seam flicker), and the pink star. */
+   video only, no interaction — Delilah (the phase-1 song, started at p2)
+   carries through it; a seamless dual-video crossfade loop
+   (no loop-seam flicker), and the pink star. */
 (function(){
   if(!document.body.classList.contains('preview'))return;
   var overlay=document.getElementById('moonTease');
@@ -242,12 +242,10 @@
     });
     playEl(activeVid());
     scheduleLoop();
-    if(typeof playPhase2Song==='function'){try{playPhase2Song();}catch(e){}}
   }
   function stopTease(){
     clearTimeout(loopTimer); xfade=false;
     vids.forEach(function(v){try{v.pause();}catch(e){}});
-    if(typeof pausePhase2Song==='function'){try{pausePhase2Song();}catch(e){}}
   }
   go=function(n){
     if(n===7&&!shown){
