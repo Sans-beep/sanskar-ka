@@ -1306,14 +1306,30 @@ go=function(n){
   try{sessionId=sessionStorage.getItem('storydb_sid');}catch(_){}
   if(!sessionId){sessionId='s_'+Math.random().toString(36).slice(2,10);try{sessionStorage.setItem('storydb_sid',sessionId);}catch(_){}}
   const queue=[];
-  let client=null;
-  function ensureClient(){
-    if(client||!sdbOn())return client;
+  let sending=false;
+  /* Direct PostgREST insert — no third-party SDK to fail. keepalive lets
+     events land even if she closes the tab mid-flush. */
+  function postRow(row){
+    const c=sdbCfg();
     try{
-      if(!window.supabase||typeof window.supabase.createClient!=='function')return null;
-      const c=sdbCfg();client=window.supabase.createClient(c.url,c.key);
-    }catch(_){client=null;}
-    return client;
+      return fetch(c.url+'/rest/v1/events',{
+        method:'POST',
+        headers:{apikey:c.key,Authorization:'Bearer '+c.key,'Content-Type':'application/json',Prefer:'return=minimal'},
+        body:JSON.stringify(row),
+        keepalive:true
+      }).then(function(){},function(){});
+    }catch(_){return null;}
+  }
+  function flush(){
+    if(sending)return;
+    const c=sdbCfg();if(!(c.url&&c.key))return;
+    sending=true;
+    (function next(){
+      const q=queue.shift();
+      if(!q){sending=false;return;}
+      const p=postRow(q);
+      if(p&&p.then){p.then(next,next);}else{next();}
+    })();
   }
   function pageId(n){
     try{const ps=document.querySelectorAll('.page');const p=ps[n];return p?(p.id||('idx'+n)):('idx'+n);}catch(_){return 'idx'+n;}
@@ -1321,14 +1337,13 @@ go=function(n){
   function track(name,data){
     if(!sdbOn())return;
     let idx=0;try{idx=window.sitePageIndex||0;}catch(_){}
-    const row={visitor_id:visitorId,session_id:sessionId,name:String(name||'untitled'),page:pageId(idx),data:(data&&typeof data==='object')?data:{}};
-    const c=ensureClient();
-    if(!c){queue.push(row);if(queue.length>80)queue.shift();return;}
-    while(queue.length){const q=queue.shift();try{c.from('events').insert(q).then(()=>{},()=>{});}catch(_){}}
-    try{c.from('events').insert(row).then(()=>{},()=>{});}catch(_){}
+    queue.push({visitor_id:visitorId,session_id:sessionId,name:String(name||'untitled'),page:pageId(idx),data:(data&&typeof data==='object')?data:{}});
+    if(queue.length>80)queue.shift();
+    flush();
   }
   function page(n){track('page-view',{index:n,id:pageId(n)});}
   window.StoryDB={track:track,page:page};
+  window.addEventListener('pagehide',function(){try{flush();}catch(_){}});
 })();
 
 /* ===== Umami analytics: birthday experience instrumentation =====
