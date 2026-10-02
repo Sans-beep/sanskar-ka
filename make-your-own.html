@@ -103,6 +103,13 @@ details.adv .body{padding-top:10px}
         <div class="fld"><label>unsigned upload preset</label><input type="text" id="ccPreset" placeholder="" autocomplete="off"></div>
       </div>
     </div></details>
+    <details class="adv"><summary>advanced: live timeline — watch her journey in real time (optional)</summary><div class="body">
+      <p class="hint">The original records her journey (pages, milestones, crane lines, messages) to a private Supabase database and shows it on a secret live dashboard. For your copy, paste your own Supabase <b>project URL</b> + <b>anon key</b> — or leave blank and the tracker stays silent. Run <b>supabase/schema.sql</b> in your project's SQL editor first.</p>
+      <div class="frow">
+        <div class="fld"><label>supabase project url</label><input type="text" id="sbUrl" placeholder="https://xyz.supabase.co" autocomplete="off"></div>
+        <div class="fld"><label>supabase anon key</label><input type="text" id="sbKey" placeholder="" autocomplete="off"></div>
+      </div>
+    </div></details>
   </section>
 
   <section class="card">
@@ -434,6 +441,8 @@ function readConfig(code){
   const email=$('yourEmail').value.trim();if(email)cfg.sayEmail=email;
   const cc=$('ccCloud').value.trim(),cp=$('ccPreset').value.trim();
   if(cc&&cp)cfg.cloudinary={cloud:cc,preset:cp};
+  const su=$('sbUrl').value.trim(),sk=$('sbKey').value.trim();
+  if(su&&sk)cfg.storydb={url:su,key:sk};
   if(MEDIA.herVideo)cfg.herVideo=MEDIA.herVideo;
   cfg.memories=[];
   for(let k=0;k<7;k++){
@@ -504,6 +513,13 @@ function applyAll(doc,cfg){
     const inl=doc.createElement('script');
     inl.textContent=SCRIPT_JS;
     scr.replaceWith(cfgEl,inl);
+  }
+  /* StoryDB: every copy gets its own keys (or none). The source file's own
+     keys must never leak into a follower's copy — blank = tracker silent. */
+  const scfg=doc.querySelector('script#storydb-cfg');
+  if(scfg){
+    const sdb=(cfg.storydb&&cfg.storydb.url&&cfg.storydb.key)?{url:cfg.storydb.url,key:cfg.storydb.key}:{url:'',key:''};
+    scfg.textContent='window.STORYDB_CONFIG='+JSON.stringify(sdb)+';';
   }
 }
 async function generate(){

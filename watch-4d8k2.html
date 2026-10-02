@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>moonwatch ♡</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{background:#0b0a10;color:#f3e9e2;font-family:Georgia,'Times New Roman',serif;
+    display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+  body::before{content:'';position:fixed;inset:0;pointer-events:none;
+    background:radial-gradient(1.5px 1.5px at 12% 22%,#fff8,transparent),
+               radial-gradient(1px 1px at 68% 8%,#fff6,transparent),
+               radial-gradient(2px 2px at 84% 64%,#fff7,transparent),
+               radial-gradient(1px 1px at 32% 78%,#fff5,transparent),
+               radial-gradient(1.5px 1.5px at 52% 42%,#fff6,transparent)}
+  .card{width:min(560px,100%);background:#14121acc;border:1px solid #ffffff1c;border-radius:22px;
+    padding:34px 30px;backdrop-filter:blur(8px);box-shadow:0 24px 80px #000a;position:relative;z-index:1}
+  h1{font-size:30px;font-weight:400;letter-spacing:.5px;margin-bottom:6px}
+  h1 small{font-size:15px;color:#c9a98f}
+  .sub{color:#a89a90;font-size:14px;font-style:italic;margin-bottom:22px}
+  label{display:block;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#c9a98f;margin:16px 0 6px}
+  input{width:100%;background:#0b0a10;border:1px solid #ffffff2a;border-radius:12px;color:#f3e9e2;
+    font-size:16px;padding:12px 14px;font-family:inherit;outline:none}
+  input:focus{border-color:#e8b4a0}
+  button{width:100%;margin-top:22px;background:linear-gradient(135deg,#e8a2b4,#c98a5e);border:0;border-radius:14px;
+    color:#241a12;font-size:17px;font-weight:700;padding:14px;cursor:pointer;font-family:inherit}
+  button:disabled{opacity:.5;cursor:wait}
+  .err{color:#ff9d9d;font-size:14px;margin-top:12px;min-height:20px;font-style:italic}
+  /* app */
+  #app{display:none;width:min(680px,100%);position:relative;z-index:1}
+  #app.on{display:block}
+  .head{text-align:center;margin-bottom:8px}
+  .live{display:inline-flex;align-items:center;gap:8px;font-size:13px;letter-spacing:3px;text-transform:uppercase;color:#9fe6a8}
+  .live i{width:9px;height:9px;border-radius:50%;background:#5ce37a;box-shadow:0 0 12px #5ce37a;animation:blink 1.6s infinite}
+  @keyframes blink{50%{opacity:.35}}
+  .stats{display:flex;gap:10px;justify-content:center;margin:14px 0 20px;flex-wrap:wrap}
+  .stat{background:#14121acc;border:1px solid #ffffff1c;border-radius:14px;padding:10px 18px;text-align:center}
+  .stat b{display:block;font-size:22px;font-weight:400}
+  .stat span{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#a89a90}
+  #feed{display:flex;flex-direction:column;gap:10px;max-height:62vh;overflow-y:auto;padding-bottom:20px}
+  .ev{background:#14121acc;border:1px solid #ffffff14;border-radius:14px;padding:12px 16px;
+    display:flex;gap:12px;align-items:flex-start;animation:slidein .4s ease}
+  @keyframes slidein{from{opacity:0;transform:translateY(-8px)}}
+  .ev .dot{flex:0 0 8px;width:8px;height:8px;border-radius:50%;background:#e8b4a0;margin-top:6px}
+  .ev.heart .dot{background:#ff8fa3;box-shadow:0 0 10px #ff8fa3}
+  .ev.words .dot{background:#a8c8ff;box-shadow:0 0 10px #a8c8ff}
+  .ev .txt{font-size:15px;line-height:1.45}
+  .ev .txt q{color:#ffd9c9;font-style:italic;quotes:'“' '”'}
+  .ev .when{font-size:11px;color:#8a7d74;margin-top:3px;letter-spacing:1px}
+  .sess{text-align:center;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#6f635b;margin:14px 0 4px}
+  .empty{text-align:center;color:#8a7d74;font-style:italic;padding:40px 0}
+</style>
+</head>
+<body>
+<div class="card" id="loginCard">
+  <h1>moonwatch <small>♡</small></h1>
+  <div class="sub">her journey, as it happens. only your eyes.</div>
+  <label>email</label>
+  <input type="email" id="email" autocomplete="username" placeholder="you@example.com">
+  <label>password</label>
+  <input type="password" id="pass" autocomplete="current-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+  <button id="loginBtn" onclick="doLogin()">open the watch →</button>
+  <div class="err" id="loginErr"></div>
+</div>
+
+<div id="app">
+  <div class="head">
+    <h1>moonwatch <small>♡</small></h1>
+    <div class="live"><i></i>live</div>
+  </div>
+  <div class="stats">
+    <div class="stat"><b id="stVisits">–</b><span>visits</span></div>
+    <div class="stat"><b id="stPages">–</b><span>pages opened</span></div>
+    <div class="stat"><b id="stLast">–</b><span>last active</span></div>
+  </div>
+  <div id="feed"><div class="empty">waiting for her… ♡</div></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* Filled at deploy time. The anon key is public by design — RLS lets it
+   only INSERT rows; this dashboard reads only after you log in. */
+var SB_URL="https://qwhrerxzvswgxeuembhh.supabase.co", SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3aHJlcnh6dnN3Z3hldWVtYmhoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA5NTAwNzksImV4cCI6MjEwNjUyNjA3OX0.iHTFn-lmVFzgDGZcG6znZiOsY-PaS8xhrYvuFLnzcfI";
+var sb=window.supabase.createClient(SB_URL,SB_KEY);
+
+var PAGES={p0:'the intro',p1:'“hey kashish”',p2:'the birthday page',p3:'the throwback',p4:'the delivery',
+  p5:'the chocolate proof',p6:'the letter',p7:'the code lock',p8:'the moon',p9:'the constellation',
+  p10:'“say something”',p11:'the reply address','p-email':'the reply address',p12:'the paper cranes'};
+
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function ago(t){
+  var s=Math.max(0,Math.round((Date.now()-new Date(t).getTime())/1000));
+  if(s<8)return 'just now';
+  if(s<60)return s+'s ago';
+  var m=Math.round(s/60);if(m<60)return m+'m ago';
+  var h=Math.round(m/60);if(h<24)return h+'h ago';
+  return Math.round(h/24)+'d ago';
+}
+function pretty(ev){
+  var d=ev.data||{},cls='',txt='';
+  switch(ev.name){
+    case 'page-view':txt='opened '+(PAGES[d.id]||PAGES[ev.page]||'a page');break;
+    case 'site-loaded':txt='arrived ♡';cls='heart';break;
+    case 'moonlight-complete':txt='finished the moonlight drawing ♡';cls='heart';break;
+    case 'lost-frame-opened':txt='opened the lost frame';break;
+    case 'constellation-complete':txt='found every star ♡';cls='heart';break;
+    case 'memory-found':txt='found a memory star';break;
+    case 'crane-released':txt='released a paper crane';break;
+    case 'crane-line':txt='a crane carries: <q>'+esc(d.line)+'</q>';cls='words';break;
+    case 'cranes-heart':txt='the cranes formed a heart ♡';cls='heart';break;
+    case 'say-yes':txt='said yes to “say something”';break;
+    case 'say-no':txt='said “no pressure” to saying something';break;
+    case 'say-message':txt='wrote you: <q>'+esc(d.message)+'</q>';cls='words';break;
+    case 'email-sent':txt='left an address so you can write back';break;
+    case 'intro-complete':txt='watched the whole intro';break;
+    case 'phase1-song-started':txt='the music started';break;
+    default:
+      if(ev.name==='page-dwell')return null;
+      txt=esc(ev.name.replace(/-/g,' '));break;
+  }
+  return {txt:txt,cls:cls};
+}
+var feed=document.getElementById('feed'),seenSessions={},lastSession=null;
+
+function addEv(ev,top){
+  var p=pretty(ev);if(!p)return;
+  if(ev.session_id!==lastSession){
+    lastSession=ev.session_id;
+    var s=document.createElement('div');s.className='sess';
+    s.textContent=(seenSessions[ev.session_id]?'she came back ♡':'a visit begins');
+    seenSessions[ev.session_id]=1;
+    top?feed.prepend(s):feed.appendChild(s);
+  }
+  var empty=feed.querySelector('.empty');if(empty)empty.remove();
+  var el=document.createElement('div');el.className='ev '+p.cls;
+  el.innerHTML='<span class="dot"></span><div><div class="txt">'+p.txt+'</div><div class="when" data-t="'+ev.created_at+'">'+ago(ev.created_at)+'</div></div>';
+  top?feed.prepend(el):feed.appendChild(el);
+  while(feed.children.length>220)feed.removeChild(feed.lastChild);
+}
+setInterval(function(){
+  feed.querySelectorAll('.when').forEach(function(w){w.textContent=ago(w.getAttribute('data-t'));});
+},15000);
+
+async function doLogin(){
+  var btn=document.getElementById('loginBtn'),err=document.getElementById('loginErr');
+  err.textContent='';btn.disabled=true;btn.textContent='opening…';
+  try{
+    var r=await sb.auth.signInWithPassword({email:document.getElementById('email').value.trim(),
+      password:document.getElementById('pass').value});
+    if(r.error)throw r.error;
+    document.getElementById('loginCard').style.display='none';
+    document.getElementById('app').classList.add('on');
+    startFeed();
+  }catch(e){err.textContent='hmm — '+((e&&e.message)||'that didn\'t work');}
+  btn.disabled=false;btn.textContent='open the watch →';
+}
+async function stats(){
+  try{
+    var r=await sb.from('events').select('visitor_id,session_id,created_at,name').order('created_at',{ascending:false}).limit(2000);
+    if(r.error||!r.data||!r.data.length)return;
+    var sess={},pages=0;
+    r.data.forEach(function(e){sess[e.session_id]=1;if(e.name==='page-view')pages++;});
+    document.getElementById('stVisits').textContent=Object.keys(sess).length;
+    document.getElementById('stPages').textContent=pages;
+    document.getElementById('stLast').textContent=ago(r.data[0].created_at);
+  }catch(e){}
+}
+async function startFeed(){
+  stats();setInterval(stats,30000);
+  try{
+    var r=await sb.from('events').select('*').order('created_at',{ascending:true}).limit(400);
+    (r.data||[]).forEach(function(e){addEv(e,false);});
+    feed.scrollTop=feed.scrollHeight;
+  }catch(e){}
+  sb.channel('her-journey')
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'events'},function(payload){
+      addEv(payload.new,true);stats();
+    })
+    .subscribe();
+}
+</script>
+</body>
+</html>

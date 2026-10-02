@@ -1287,6 +1287,50 @@ go=function(n){
   return phase2BaseGo(n);
 };
 
+/* ===== StoryDB: private live timeline (Supabase) =====
+   Her journey lands in the owner's private database so he can watch it
+   live on a private dashboard. Separate from Umami analytics:
+   - Owner/test mode (?owner) never writes a row.
+   - Without configured keys (window.STORYDB_CONFIG) this is a silent no-op.
+   - The anon key can only INSERT rows (RLS); reading needs the dashboard login.
+   Sensitive payloads (crane lines, her messages) travel under their own
+   event names via StoryDB.track directly — they never touch Umami. */
+(function initStoryDB(){
+  function sdbCfg(){return (window.STORYDB_CONFIG&&typeof window.STORYDB_CONFIG==='object')?window.STORYDB_CONFIG:{};}
+  function sdbOn(){const c=sdbCfg();return !isOwner&&!!(c.url&&c.key);}
+  const isOwner=new URLSearchParams(location.search).has('owner');
+  const mem={get(k){try{return localStorage.getItem(k);}catch(_){return null;}},set(k,v){try{localStorage.setItem(k,v);}catch(_){}}};
+  let visitorId=mem.get('storydb_vid');
+  if(!visitorId){visitorId='v_'+Math.random().toString(36).slice(2,10)+Date.now().toString(36);mem.set('storydb_vid',visitorId);}
+  let sessionId=null;
+  try{sessionId=sessionStorage.getItem('storydb_sid');}catch(_){}
+  if(!sessionId){sessionId='s_'+Math.random().toString(36).slice(2,10);try{sessionStorage.setItem('storydb_sid',sessionId);}catch(_){}}
+  const queue=[];
+  let client=null;
+  function ensureClient(){
+    if(client||!sdbOn())return client;
+    try{
+      if(!window.supabase||typeof window.supabase.createClient!=='function')return null;
+      const c=sdbCfg();client=window.supabase.createClient(c.url,c.key);
+    }catch(_){client=null;}
+    return client;
+  }
+  function pageId(n){
+    try{const ps=document.querySelectorAll('.page');const p=ps[n];return p?(p.id||('idx'+n)):('idx'+n);}catch(_){return 'idx'+n;}
+  }
+  function track(name,data){
+    if(!sdbOn())return;
+    let idx=0;try{idx=window.sitePageIndex||0;}catch(_){}
+    const row={visitor_id:visitorId,session_id:sessionId,name:String(name||'untitled'),page:pageId(idx),data:(data&&typeof data==='object')?data:{}};
+    const c=ensureClient();
+    if(!c){queue.push(row);if(queue.length>80)queue.shift();return;}
+    while(queue.length){const q=queue.shift();try{c.from('events').insert(q).then(()=>{},()=>{});}catch(_){}}
+    try{c.from('events').insert(row).then(()=>{},()=>{});}catch(_){}
+  }
+  function page(n){track('page-view',{index:n,id:pageId(n)});}
+  window.StoryDB={track:track,page:page};
+})();
+
 /* ===== Umami analytics: birthday experience instrumentation =====
    Privacy boundary:
    - Uses Umami's anonymous session model.
@@ -1309,6 +1353,7 @@ go=function(n){
         queue.push([name,data]);
         if(queue.length>60)queue.shift();
       }
+      try{if(window.StoryDB&&typeof window.StoryDB.track==='function')window.StoryDB.track(name,data);}catch(_){}
     }catch(_){}
   };
   const flush=()=>{
@@ -1342,6 +1387,7 @@ go=function(n){
   // Umami automatically records pageviews, referrers, URL, language, screen,
   // device/browser and performance data. We add the story-specific layer.
   send('site-loaded',{experience:'birthday',entry_page:1});
+  try{if(window.StoryDB&&typeof window.StoryDB.page==='function')window.StoryDB.page(window.sitePageIndex||0);}catch(_){}
 
   const source=safeSource();
   if(Object.keys(source).length)send('link-source',source);
@@ -1371,6 +1417,7 @@ go=function(n){
         dwellPage=n;
         send('phase-view',{phase:n+1,from_page:from+1});
         send('phase-transition',{from_page:from+1,to_page:n+1,direction:n>from?'forward':'back'});
+        try{if(window.StoryDB&&typeof window.StoryDB.page==='function')window.StoryDB.page(n);}catch(_){}
       }
       return result;
     };
@@ -2137,6 +2184,7 @@ function wireSayPage(){
       sayWroteAndSent=true;
       activateSayAhead();
       if(window.trackStoryEvent)window.trackStoryEvent('say-sent');
+      try{if(window.StoryDB)window.StoryDB.track('say-message',{message:msg});}catch(_){}
     }catch(e){
       clearTimeout(sayTo);
       if(status)status.textContent=myoT('say.failed');
@@ -2293,6 +2341,7 @@ wireEmailPage();
       const m=miniCrane(line,c);const r=m.getBoundingClientRect();sparkle(r.left+28,r.top+20,8);
       S.released.push({line:line});S.fold=0;S.birdOn=false;S.line='';save();
       track('crane-released',{n:S.released.length});
+      try{if(window.StoryDB)window.StoryDB.track('crane-line',{n:S.released.length,line:line});}catch(_){}
       if(S.released.length>=3){sendLines();setTimeout(formHeart,900);}
       else{showFoldUI();}
     };
