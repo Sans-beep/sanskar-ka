@@ -214,5 +214,5 @@ body.pv-saying #lyricLayer{opacity:0!important;pointer-events:none;}
   cursor:pointer;padding:10px 12px;-webkit-tap-highlight-color:transparent;opacity:.85;
 }
 .mt-back:hover{opacity:1;}
-.mt-saywrap{position:absolute;left:0;right:0;bottom:104px;z-index:4;text-align:center;pointer-events:none;}
+.mt-saywrap{position:absolute;left:0;right:0;top:12.5%;z-index:4;text-align:center;pointer-events:none;}
 .mt-saywrap .pv-saylink{pointer-events:auto;color:#8a6f4d;font-size:19px;}
