@@ -358,7 +358,6 @@ function go(n){
   if(n===12&&window.trackStoryEvent)window.trackStoryEvent('cranes-shown');
   const thread=document.getElementById('storyThread');
   if(thread){thread.classList.remove('play');void thread.offsetWidth;thread.classList.add('play');}
-  if(n===0&&isPreviewPage)startIntro();
   if(n===2){
     startBirthdayWeather();
   }else if(oldIndex===2){
@@ -504,10 +503,11 @@ function stopIntro(){
     snd.hidden=true;
   });
   if(i===0){
-    // Main site opens straight on "Hey Kashish"; the 19s intro timer
-    // plays only in the preview copy.
-    if(isPreviewPage)startIntro();
-    else setCurrentPage(1);
+    // 19s intro retired 2026-10-03 (was preview-only) — every copy now
+    // opens straight on "Hey Kashish", like the main site always did.
+    // startIntro()/finishIntro() stay as dead code; p0 stays in the DOM
+    // so page indices never shift.
+    setCurrentPage(1);
   }
 })();
 function handleNextButton(button){
@@ -524,17 +524,17 @@ document.querySelectorAll('.next').forEach(button=>{
     handleNextButton(button);
   };
 });
-function syncGlobalBack(){const show=i>0&&!phase1Ending&&(isPreviewPage||i>1);globalBack.style.display=show?"flex":"none";globalBack.classList.toggle("show",show);}
+function syncGlobalBack(){const show=i>1&&!phase1Ending;globalBack.style.display=show?"flex":"none";globalBack.classList.toggle("show",show);}
 globalBack.onclick=function(e){
   e.preventDefault();
   e.stopPropagation();
-  if(busy || i===0 || (i===1 && !isPreviewPage))return;
+  if(busy || i<=1)return;
   // the crane page isn't always reached via the email page (she may have
   // tapped "no" and skipped it) — go back to where she actually came from
   if(i===12&&typeof window.cranesBackTarget==='number'){go(window.cranesBackTarget);return;}
   go(i-1);
 };
-setCurrentPage(isPreviewPage?0:1);
+setCurrentPage(1);
 
 function runPhase1Ending(){
   phase1Ending=true;

@@ -8,6 +8,7 @@ body.preview{
 }
 
 /* ---- blurred words: layout stays, meaning doesn't ---- */
+body.preview .top,
 body.preview .kicker,
 body.preview .script,
 body.preview .note,
@@ -70,39 +71,21 @@ body.preview button,
 body.preview input,
 body.preview textarea,
 body.preview .doodle,
-body.preview .top,
-body.preview #introTimer,
 body.preview canvas,
 body.preview .envelope{
   filter:none;
 }
 
-/* ---- the tease badge ---- */
-body.preview::after{
-  content:'a preview ♡ — every word unlocks on your day';
-  position:fixed;
-  bottom:64px;
-  left:50%;
-  transform:translateX(-50%);
-  z-index:99999;
-  pointer-events:none;
-  font-family:Georgia,serif;
-  font-style:italic;
-  font-size:13px;
-  letter-spacing:.4px;
-  color:#f5d98b;
-  background:rgba(10,10,25,.72);
-  border:1px solid rgba(245,217,139,.35);
-  border-radius:999px;
-  padding:8px 16px;
-  white-space:nowrap;
-  backdrop-filter:blur(6px);
-  animation:pvBadgeBreathe 4s ease-in-out infinite;
+/* ---- the lock page is the last stop: fully unblurred ---- */
+body.preview #p7 .top,
+body.preview #p7 .kicker,
+body.preview #p7 .copy,
+body.preview #p7 .tiny{
+  filter:none;
 }
-@keyframes pvBadgeBreathe{
-  0%,100%{box-shadow:0 0 0 rgba(245,217,139,0)}
-  50%{box-shadow:0 0 18px rgba(245,217,139,.28)}
-}
+
+/* ---- retired 19s intro: stays in the DOM for page indices, never renders ---- */
+body.preview #p0{display:none!important;}
 
 /* ---- moon video tease (preview-only, before the code lock) ---- */
 .moon-tease{
@@ -132,13 +115,11 @@ body.preview .moon-tease .mt-video{filter:none;} /* the tease stays sharp */
 
 /* ---- preview-only: birthday countdown on the lock page ---- */
 .pv-countwrap{margin-top:30px;text-align:center;}
-.pv-countline{font-family:Georgia,serif;font-style:italic;font-size:15px;color:#f5d98b;letter-spacing:.4px;margin-bottom:10px;}
-.pv-count{font-size:12px;letter-spacing:.24em;color:#ffe9bd;opacity:.9;font-weight:600;}
+.pv-count{font-family:Caveat,cursive;font-size:32px;line-height:1.2;color:#f5d98b;letter-spacing:.03em;text-shadow:0 2px 16px rgba(0,0,0,.45);white-space:nowrap;}
 
 /* ---- preview-only: birthday countdown inside the moon tease ---- */
 .mt-countwrap{position:absolute;top:6.5%;left:0;right:0;z-index:2;text-align:center;pointer-events:none;}
-.mt-countline{font-family:Georgia,serif;font-style:italic;font-size:15px;color:#6b5a44;letter-spacing:.4px;margin-bottom:8px;}
-.mt-count{font-size:12px;letter-spacing:.24em;color:#6b5a44;opacity:.9;font-weight:600;}
+.mt-count{font-family:Caveat,cursive;font-size:30px;line-height:1.2;color:#7a6248;letter-spacing:.03em;white-space:nowrap;}
 
 /* ---- preview-only: tap the tease moon -> the real Lost Frame ---- */
 .mt-moontap{
@@ -159,7 +140,7 @@ body.preview.lf-over-tease #lostFrame{position:fixed!important;inset:0!important
 /* Phase-1 synced lyrics layer — floats above pages, follows the song clock. */
 #lyricLayer{position:fixed;left:50%;transform:translateX(-50%);bottom:13%;width:92vw;max-width:520px;text-align:center;z-index:25;pointer-events:none;opacity:0;transition:opacity .6s ease}
 #lyricLayer.show{opacity:1}
-#lyricLine{display:inline-block;font-family:Caveat,cursive;font-size:26px;line-height:1.25;color:#fdf3e3;text-shadow:0 2px 14px rgba(0,0,0,.75),0 0 26px rgba(255,190,120,.25);padding:0 10px}
+#lyricLine{display:inline-block;font-family:Caveat,cursive;font-size:24px;line-height:1.25;color:#fdf3e3;text-shadow:0 2px 14px rgba(0,0,0,.75),0 0 26px rgba(255,190,120,.25);padding:0 10px}
 #lyricLine.lyr-in{animation:lyrIn .45s ease both}
 @keyframes lyrIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .lyr-doodle{position:absolute;top:-16px;font-style:normal;font-size:17px;color:#f3c6c2;opacity:.85;animation:lyrFloat 3.4s ease-in-out infinite}
@@ -169,13 +150,40 @@ body.preview.lf-over-tease #lostFrame{position:fixed!important;inset:0!important
 #lyricLayer[data-page="1"]{bottom:19%}
 #lyricLayer[data-page="1"] #lyricLine{font-size:23px}
 #lyricLayer[data-page="2"]{bottom:12%}
-#lyricLayer[data-page="3"]{bottom:16%}
-#lyricLayer[data-page="3"] #lyricLine{font-size:22px}
-#lyricLayer[data-page="4"]{bottom:15%}
-#lyricLayer[data-page="4"] #lyricLine{font-size:22px}
+#lyricLayer[data-page="3"]{top:72px;bottom:auto;}
+#lyricLayer[data-page="3"] #lyricLine{font-size:21px}
+#lyricLayer[data-page="4"]{top:72px;bottom:auto;}
+#lyricLayer[data-page="4"] #lyricLine{font-size:21px}
 #lyricLayer[data-page="5"]{bottom:12%}
 #lyricLayer[data-page="5"] #lyricLine{font-size:21px}
 #lyricLayer[data-page="6"]{bottom:11%}
 #lyricLayer[data-page="6"] #lyricLine{font-size:22px}
 #lyricLayer[data-page="7"]{bottom:11%}
 #lyricLayer[data-page="7"] #lyricLine{font-size:22px}
+
+/* ---- preview-only: p5 becomes a "not yet" tease with a live clock ----
+   The functional upload elements stay in the DOM (script.js needs them)
+   but are never shown; she gets a clock and a line instead. */
+body.preview .pv-upload-hidden{display:none!important;}
+.pv-clock{
+  position:relative;width:148px;height:148px;border-radius:50%;
+  margin:30px auto 24px;
+  background:radial-gradient(circle at 35% 30%,#f8f0e5,#e9dac7 68%,#d9c6ae);
+  border:1px solid rgba(120,100,80,.4);
+  box-shadow:0 18px 42px rgba(0,0,0,.5),inset 0 2px 12px rgba(255,255,255,.55);
+}
+.pv-tick{position:absolute;background:#8a7663;opacity:.75;border-radius:1px;}
+.pv-tick.t12{left:calc(50% - 1px);top:9px;width:2px;height:13px;}
+.pv-tick.t6{left:calc(50% - 1px);bottom:9px;width:2px;height:13px;}
+.pv-tick.t3{top:calc(50% - 1px);right:9px;width:13px;height:2px;}
+.pv-tick.t9{top:calc(50% - 1px);left:9px;width:13px;height:2px;}
+.pv-hand{position:absolute;left:50%;bottom:50%;transform:translateX(-50%);transform-origin:50% 100%;border-radius:3px;}
+.pv-hour{width:6px;height:36px;background:#4a3f35;animation:pvSpin 43200s linear infinite;}
+.pv-min{width:4px;height:52px;background:#5d4f42;animation:pvSpin 3600s linear infinite;}
+.pv-sec{width:2px;height:60px;background:#c9825a;animation:pvSpin 60s linear infinite;}
+.pv-pin{position:absolute;left:50%;top:50%;width:11px;height:11px;border-radius:50%;background:#4a3f35;transform:translate(-50%,-50%);box-shadow:0 0 0 3px rgba(249,240,229,.5);}
+@keyframes pvSpin{to{transform:translateX(-50%) rotate(360deg);}}
+.pv-clock-line{
+  font-family:Caveat,cursive;font-size:31px;line-height:1.3;color:#f3e6d4;
+  text-shadow:0 2px 14px rgba(0,0,0,.55);margin:0 0 26px;
+}
