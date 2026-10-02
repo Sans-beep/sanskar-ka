@@ -614,7 +614,7 @@ const MYO_CLOUD_URL=MYO_CLOUD?('https://api.cloudinary.com/v1_1/'+MYO_CLOUD.clou
 const MYO_CLOUD_PRESET=MYO_CLOUD?MYO_CLOUD.preset:'kashish_birthday';
 p4Next.addEventListener('click',async()=>{if(proofUploaded){setTimeout(()=>go(i+1),0);return}if(!proofFile)return;
 if(MYO&&!MYO_CLOUD){proofUploaded=true;document.getElementById('proofPolaroid').classList.add('verified');uploadStatus.textContent=myoT('upload.believed');setTimeout(()=>go(i+1),900);return;}
-p4Next.disabled=true;uploadStatus.textContent=myoT('upload.sending');const data=new FormData();data.append('file',proofFile);data.append('upload_preset',MYO_CLOUD_PRESET);try{const res=await fetch(MYO_CLOUD_URL,{method:'POST',body:data});if(!res.ok)throw new Error('upload failed');await res.json();proofUploaded=true;document.getElementById('proofPolaroid').classList.add('verified');uploadStatus.textContent=myoT('upload.believed');setTimeout(()=>go(i+1),900)}catch(err){console.error(err);uploadStatus.textContent=myoT('upload.failed');p4Next.disabled=false}});
+p4Next.disabled=true;uploadStatus.textContent=myoT('upload.sending');const data=new FormData();data.append('file',proofFile);data.append('upload_preset',MYO_CLOUD_PRESET);try{const res=await fetch(MYO_CLOUD_URL,{method:'POST',body:data});if(!res.ok)throw new Error('upload failed');await res.json();proofUploaded=true;document.getElementById('proofPolaroid').classList.add('verified');uploadStatus.textContent=myoT('upload.believed');p4Next.disabled=false;setTimeout(()=>go(i+1),900)}catch(err){console.error(err);uploadStatus.textContent=myoT('upload.failed');p4Next.disabled=false}});
 
 
 let secretTaps=0,tapReset;
