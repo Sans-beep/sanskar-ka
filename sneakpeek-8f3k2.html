@@ -15,7 +15,7 @@
 <meta name="twitter:description" content="a little preview — every word unlocks on your day">
 <meta name="twitter:image" content="https://sans-beep.github.io/sanskar-ka/preview-og.jpg">
 <link rel="stylesheet" href="style.css?v=20261002-89">
-<link rel="stylesheet" href="preview.css?v=15">
+<link rel="stylesheet" href="preview.css?v=16">
 </head>
 <body class="preview">
 <div class="shell"><main class="card">
@@ -176,7 +176,7 @@
   <video class="mt-video" id="mtVideoB" playsinline muted preload="auto" aria-hidden="true" src="https://raw.githubusercontent.com/Sans-beep/sanskar-ka/2d28655d14b456b009c8fc2bcdb7fbaf5f907b77/phase2-reference-moon-no-lyrics.mp4?v=20260925-3"></video>
   <div class="mt-star" aria-hidden="true">✦</div>
   <div class="mt-countwrap"><div class="mt-count" id="mtCount">--d : --h : --m : --s</div></div>
-  <div class="mt-saywrap"><button class="pv-saylink" id="pvSayLink" type="button">psst… wanna say something to the person behind this? 😝</button><div class="pv-saycard" id="pvSayCard" hidden><button class="pv-sayclose" id="pvSayClose" type="button" aria-label="Close">×</button><div class="pv-sayask" id="pvSayAsk"><div class="pv-sayq">wanna say something? ♡</div><div class="pv-saybtns"><button class="btn" id="pvSayYes" type="button">yes ♡</button><button class="pv-sayno" id="pvSayNo" type="button">no</button></div></div><div class="pv-saywrite" id="pvSayWrite" hidden><div class="pv-sayq">yay ♡ tell me everything.</div><textarea id="pvSayText" rows="3" maxlength="500" placeholder="whatever's on your mind…"></textarea><button class="btn" id="pvSaySend" type="button">send →</button></div><div class="pv-saystatus" id="pvSayStatus"></div></div></div>
+  <div class="mt-saywrap"><div class="pv-saycard" id="pvSayCard"><div class="pv-sayask" id="pvSayAsk"><div class="pv-sayq">wanna say something? ♡</div><div class="pv-saybtns"><button class="btn" id="pvSayYes" type="button">yes ♡</button><button class="pv-sayno" id="pvSayNo" type="button">no</button></div></div><div class="pv-saywrite" id="pvSayWrite" hidden><div class="pv-sayq">yay ♡ tell me everything.</div><textarea id="pvSayText" rows="3" maxlength="500" placeholder="whatever's on your mind…"></textarea><button class="btn" id="pvSaySend" type="button">send →</button></div><div class="pv-saystatus" id="pvSayStatus"></div></div></div>
   <button class="mt-moontap" id="mtMoonTap" aria-label="tap the moon"></button>
   <button class="mt-back" id="mtBack" type="button">← back</button>
   <button class="btn mt-continue" id="mtContinue">continue &rarr;</button>
@@ -344,63 +344,86 @@
   ub.onclick=function(e){if(e)e.preventDefault();previewUnlock();};
   codeEl.onkeydown=function(e){if(e.key==='Enter'){e.preventDefault();previewUnlock();}};
 })();
-/* preview-only: "say something to the person behind this" — straight to his Gmail.
-   Message bodies never touch analytics; this posts to FormSubmit only. */
+/* preview-only: "say something" on the moon tease — the card is always
+   there; yes fades the ask into the write box in place. Message bodies
+   never touch analytics; this posts to FormSubmit only. */
 (function(){
   if(!document.body.classList.contains('preview'))return;
-  var link=document.getElementById('pvSayLink'),card=document.getElementById('pvSayCard');
-  if(!link||!card)return;
+  var card=document.getElementById('pvSayCard'),overlay=document.getElementById('moonTease');
+  if(!card||!overlay)return;
   var ask=document.getElementById('pvSayAsk'),write=document.getElementById('pvSayWrite'),
       status=document.getElementById('pvSayStatus'),
       yesBtn=document.getElementById('pvSayYes'),noBtn=document.getElementById('pvSayNo'),
       sendBtn=document.getElementById('pvSaySend'),text=document.getElementById('pvSayText');
   if(!ask||!write||!yesBtn||!noBtn||!sendBtn)return;
-  var sending=false,noTimer=null;
-  function setSayOpen(open){
-    card.hidden=!open;
-    document.body.classList.toggle('pv-saying',open);
-    if(open){
-      ask.hidden=false;write.hidden=true;sending=false;
-      if(status)status.textContent='';
-      sendBtn.disabled=false;sendBtn.textContent='send →';
-      if(text){text.disabled=false;text.value='';}
-      if(noTimer){clearTimeout(noTimer);noTimer=null;}
-    }
+  var sending=false,state='ask',timers=[];
+  function later(fn,ms){timers.push(setTimeout(fn,ms));}
+  function clearTimers(){timers.forEach(clearTimeout);timers=[];}
+  function setCardVisible(v){
+    card.style.opacity=v?'1':'0';
+    card.style.visibility=v?'visible':'hidden';
+    card.style.pointerEvents=v?'auto':'none';
   }
-  link.addEventListener('click',function(){setSayOpen(card.hidden);});
-  document.getElementById('pvSayClose').addEventListener('click',function(){setSayOpen(false);});
+  function reset(){
+    clearTimers();sending=false;state='ask';
+    ask.hidden=false;write.hidden=true;
+    ask.classList.remove('pv-fading');write.classList.remove('pv-fading');
+    if(status)status.textContent='';
+    sendBtn.disabled=false;sendBtn.textContent='send \u2192';
+    if(text){text.disabled=false;text.value='';}
+    document.body.classList.remove('pv-saying');
+    setCardVisible(true);
+  }
+  function fadeSwap(fromEl,toEl,done){
+    fromEl.classList.add('pv-fading');
+    later(function(){
+      fromEl.hidden=true;fromEl.classList.remove('pv-fading');
+      toEl.hidden=false;toEl.classList.add('pv-fading');
+      void toEl.offsetWidth;
+      requestAnimationFrame(function(){toEl.classList.remove('pv-fading');});
+      if(done)done();
+    },300);
+  }
   yesBtn.addEventListener('click',function(){
-    ask.hidden=true;write.hidden=false;
-    if(text)text.focus();
+    if(state!=='ask')return;state='write';
+    document.body.classList.add('pv-saying');
+    fadeSwap(ask,write,function(){if(text)text.focus();});
   });
   noBtn.addEventListener('click',function(){
-    if(status)status.textContent='okay ♡ no pressure.';
-    if(noTimer)clearTimeout(noTimer);
-    noTimer=setTimeout(function(){setSayOpen(false);},1200);
+    if(state!=='ask')return;state='done';
+    if(status)status.textContent='okay \u2661 no pressure.';
+    later(function(){setCardVisible(false);},1100);
   });
   sendBtn.addEventListener('click',async function(){
-    if(sending)return;
+    if(sending||state!=='write')return;
     var msg=text?text.value.trim():'';
-    if(!msg){if(status)status.textContent='write something first ♡';return;}
-    sending=true;sendBtn.disabled=true;sendBtn.textContent='sending…';if(status)status.textContent='';
+    if(!msg){if(status)status.textContent='write something first \u2661';return;}
+    sending=true;sendBtn.disabled=true;sendBtn.textContent='sending\u2026';if(status)status.textContent='';
     var email=(typeof SAY_SOMETHING_EMAIL!=='undefined')?SAY_SOMETHING_EMAIL:'beyondsanskar@gmail.com';
     var ctl=new AbortController();var to=setTimeout(function(){ctl.abort();},15000);
     try{
       var r=await fetch('https://formsubmit.co/ajax/'+encodeURIComponent(email),{
         method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},
         signal:ctl.signal,
-        body:JSON.stringify({_subject:'she said something ♡ (preview)',message:msg,page:'preview-lock',ref:Math.random().toString(36).slice(2,10)})
+        body:JSON.stringify({_subject:'she said something \u2661 (preview)',message:msg,page:'preview-lock',ref:Math.random().toString(36).slice(2,10)})
       });
       clearTimeout(to);
       if(!r.ok)throw new Error('send failed: '+r.status);
-      if(status)status.textContent="it'll find its way to me ♡";
-      if(text)text.disabled=true;sendBtn.textContent='sent ♡';
+      state='done';
+      if(status)status.textContent="it'll find its way to me \u2661";
+      if(text)text.disabled=true;sendBtn.textContent='sent \u2661';
+      document.body.classList.remove('pv-saying');
     }catch(e){
       clearTimeout(to);
-      if(status)status.textContent="hmm, that didn't fly — try again?";
-      sendBtn.disabled=false;sendBtn.textContent='send →';sending=false;
+      if(status)status.textContent="hmm, that didn't fly \u2014 try again?";
+      sendBtn.disabled=false;sendBtn.textContent='send \u2192';sending=false;
     }
   });
+  /* the tease opens in both directions — fresh card every time it opens */
+  new MutationObserver(function(){
+    if(overlay.classList.contains('open'))reset();
+  }).observe(overlay,{attributes:true,attributeFilter:['class']});
+  if(overlay.classList.contains('open'))reset();
 })();
 </script>
 </body></html>

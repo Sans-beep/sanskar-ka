@@ -190,26 +190,32 @@ body.preview .pv-upload-hidden{display:none!important;}
 
 /* ---- preview-only: "say something to the person behind this" on the lock page ---- */
 .pv-saywrap{margin-top:24px;text-align:center;}
-.pv-saylink{background:none;border:0;font-family:Caveat,cursive;font-size:21px;color:#c9a86a;cursor:pointer;padding:8px 12px;opacity:.88;-webkit-tap-highlight-color:transparent;}
-.pv-saylink:hover{opacity:1;}
+/* ---- preview-only: "say something" card on the moon tease ----
+   The card sits in the clear white band between the moon tap-zone
+   (ends ~231px) and the video characters (~506px+); the ask fades
+   into the write box in place. Card MUST keep pointer-events:auto:
+   .mt-saywrap is pointer-events:none (full-width strip) so the card
+   re-enables it on itself, otherwise every tap falls through. */
+.mt-saywrap{position:absolute;left:0;right:0;top:28.5%;z-index:4;text-align:center;pointer-events:none;}
 .pv-saycard{
-  position:fixed;left:50%;top:44%;transform:translate(-50%,-50%) translateZ(0);
-  width:min(330px,88vw);z-index:60;margin:0;
+  display:inline-block;pointer-events:auto;
+  width:min(300px,84vw);margin:0;text-align:center;
   background:rgba(255,253,247,.98);border:1px solid rgba(201,168,106,.55);
-  border-radius:18px;padding:26px 18px 16px;
+  border-radius:18px;padding:18px 16px 14px;
   box-shadow:0 14px 36px rgba(120,90,40,.20);
-  will-change:transform;
+  transition:opacity .3s ease;
 }
-.pv-sayq{font-family:Caveat,cursive;font-size:25px;line-height:1.25;color:#6b5b4a;text-align:center;margin:0 0 14px;}
-.pv-saybtns{display:flex;gap:12px;justify-content:center;align-items:center;}
+.pv-sayask,.pv-saywrite{transition:opacity .28s ease;}
+.pv-fading{opacity:0;}
+.pv-sayq{font-family:Caveat,cursive;font-size:23px;line-height:1.25;color:#6b5b4a;text-align:center;margin:0 0 12px;}
+.pv-saybtns{display:flex;gap:10px;justify-content:center;align-items:center;}
 .pv-saycard .btn{margin-top:0;}
-.pv-sayno{background:none;border:1px solid rgba(138,111,77,.5);border-radius:999px;color:#8a6f4d;font-family:Caveat,cursive;font-size:20px;padding:9px 28px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
-.pv-saywrite textarea{width:100%;box-sizing:border-box;background:#fff;border:1px solid rgba(201,168,106,.5);border-radius:12px;color:#5a4a3a;font-family:Caveat,cursive;font-size:19px;line-height:1.35;padding:10px 12px;resize:none;min-height:84px;}
+.pv-sayno{background:none;border:1px solid rgba(138,111,77,.5);border-radius:999px;color:#8a6f4d;font-family:Caveat,cursive;font-size:19px;padding:8px 24px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.pv-saywrite textarea{width:100%;box-sizing:border-box;background:#fff;border:1px solid rgba(201,168,106,.5);border-radius:12px;color:#5a4a3a;font-family:Caveat,cursive;font-size:19px;line-height:1.35;padding:9px 11px;resize:none;min-height:72px;}
 .pv-saywrite textarea:focus{outline:none;border-color:rgba(201,168,106,.9);box-shadow:0 0 0 3px rgba(201,168,106,.18);}
 .pv-saywrite textarea:disabled{opacity:.6;}
-.pv-saywrite .btn{margin-top:12px;width:100%;}
-.pv-sayclose{position:absolute;top:4px;right:8px;background:none;border:0;color:#a08b70;font-size:22px;cursor:pointer;padding:6px 10px;line-height:1;-webkit-tap-highlight-color:transparent;}
-.pv-saystatus{font-family:Caveat,cursive;font-size:19px;color:#a07c3f;min-height:24px;margin-top:10px;text-align:center;}
+.pv-saywrite .btn{margin-top:10px;width:100%;}
+.pv-saystatus{font-family:Caveat,cursive;font-size:18px;color:#a07c3f;min-height:22px;margin-top:8px;text-align:center;}
 /* while she's writing, the lyrics step aside */
 body.pv-saying #lyricLayer{opacity:0!important;pointer-events:none;}
 
@@ -220,5 +226,3 @@ body.pv-saying #lyricLayer{opacity:0!important;pointer-events:none;}
   cursor:pointer;padding:10px 12px;-webkit-tap-highlight-color:transparent;opacity:.85;
 }
 .mt-back:hover{opacity:1;}
-.mt-saywrap{position:absolute;left:0;right:0;top:12.5%;z-index:4;text-align:center;pointer-events:none;}
-.mt-saywrap .pv-saylink{pointer-events:auto;color:#8a6f4d;font-size:19px;}
