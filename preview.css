@@ -193,17 +193,23 @@ body.preview .pv-upload-hidden{display:none!important;}
 .pv-saylink{background:none;border:0;font-family:Caveat,cursive;font-size:21px;color:#c9a86a;cursor:pointer;padding:8px 12px;opacity:.88;-webkit-tap-highlight-color:transparent;}
 .pv-saylink:hover{opacity:1;}
 .pv-saycard{
-  position:fixed;left:50%;bottom:8%;transform:translateX(-50%);
+  position:fixed;left:50%;top:44%;transform:translate(-50%,-50%) translateZ(0);
   width:min(330px,88vw);z-index:60;margin:0;
-  background:rgba(22,19,17,.97);border:1px solid rgba(245,217,139,.32);
-  border-radius:16px;padding:16px 16px 14px;box-shadow:0 24px 60px rgba(0,0,0,.65);
+  background:rgba(255,253,247,.98);border:1px solid rgba(201,168,106,.55);
+  border-radius:18px;padding:26px 18px 16px;
+  box-shadow:0 14px 36px rgba(120,90,40,.20);
+  will-change:transform;
 }
-.pv-saycard textarea{width:100%;box-sizing:border-box;background:rgba(0,0,0,.28);border:1px solid rgba(245,217,139,.22);border-radius:10px;color:#f6ecd9;font-family:Caveat,cursive;font-size:19px;line-height:1.35;padding:10px 12px;resize:vertical;min-height:74px;}
-.pv-saycard textarea:focus{outline:none;border-color:rgba(245,217,139,.55);}
-.pv-saycard textarea:disabled{opacity:.6;}
-.pv-saycard .btn{margin-top:10px;}
-.pv-sayclose{position:absolute;top:6px;right:10px;background:none;border:0;color:#8f7f76;font-size:20px;cursor:pointer;padding:4px 8px;line-height:1;}
-.pv-saystatus{font-family:Caveat,cursive;font-size:18px;color:#e8c98a;min-height:24px;margin-top:8px;}
+.pv-sayq{font-family:Caveat,cursive;font-size:25px;line-height:1.25;color:#6b5b4a;text-align:center;margin:0 0 14px;}
+.pv-saybtns{display:flex;gap:12px;justify-content:center;align-items:center;}
+.pv-saycard .btn{margin-top:0;}
+.pv-sayno{background:none;border:1px solid rgba(138,111,77,.5);border-radius:999px;color:#8a6f4d;font-family:Caveat,cursive;font-size:20px;padding:9px 28px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.pv-saywrite textarea{width:100%;box-sizing:border-box;background:#fff;border:1px solid rgba(201,168,106,.5);border-radius:12px;color:#5a4a3a;font-family:Caveat,cursive;font-size:19px;line-height:1.35;padding:10px 12px;resize:none;min-height:84px;}
+.pv-saywrite textarea:focus{outline:none;border-color:rgba(201,168,106,.9);box-shadow:0 0 0 3px rgba(201,168,106,.18);}
+.pv-saywrite textarea:disabled{opacity:.6;}
+.pv-saywrite .btn{margin-top:12px;width:100%;}
+.pv-sayclose{position:absolute;top:4px;right:8px;background:none;border:0;color:#a08b70;font-size:22px;cursor:pointer;padding:6px 10px;line-height:1;-webkit-tap-highlight-color:transparent;}
+.pv-saystatus{font-family:Caveat,cursive;font-size:19px;color:#a07c3f;min-height:24px;margin-top:10px;text-align:center;}
 /* while she's writing, the lyrics step aside */
 body.pv-saying #lyricLayer{opacity:0!important;pointer-events:none;}
 
