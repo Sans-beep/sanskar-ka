@@ -154,7 +154,8 @@ function pretty(ev){
   return {txt:txt,cls:cls};
 }
 var feed=document.getElementById('feed'),seenSessions={},lastSession=null;
-var srcFilter='all',allEvents=[];
+var srcFilter='all',allEvents=[],seenIds={};
+function markSeen(e){if(e&&e.id)seenIds[e.id]=1;}
 
 function evSource(ev){return (ev.data&&ev.data.source)||'main';}
 function matchSrc(ev){return srcFilter==='all'||evSource(ev)===srcFilter;}
@@ -221,16 +222,32 @@ document.getElementById('srcFilter').addEventListener('click',function(e){
   this.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b);});
   renderFeed();stats();
 });
+/* Poll for rows the live socket may have missed (e.g. table not in the
+   realtime publication, or a dropped channel): every 30s, pull the newest
+   60 and prepend anything we haven't seen. */
+async function pollNew(){
+  try{
+    var r=await sb.from('events').select('*').order('created_at',{ascending:false}).limit(60);
+    if(r.error||!r.data||!r.data.length)return;
+    var fresh=r.data.slice().reverse().filter(function(e){return e&&e.id&&!seenIds[e.id];});
+    if(!fresh.length)return;
+    fresh.forEach(function(e){
+      markSeen(e);allEvents.push(e);if(allEvents.length>600)allEvents.shift();
+      addEv(e,true);
+    });
+  }catch(e){}
+}
 async function startFeed(){
-  stats();setInterval(stats,30000);
+  stats();setInterval(function(){stats();pollNew();},30000);
   try{
     var r=await sb.from('events').select('*').order('created_at',{ascending:false}).limit(400);
     allEvents=(r.data||[]).slice().reverse();
-    allEvents.forEach(function(e){addEv(e,false);});
+    allEvents.forEach(function(e){markSeen(e);addEv(e,false);});
     feed.scrollTop=feed.scrollHeight;
   }catch(e){}
   sb.channel('her-journey')
     .on('postgres_changes',{event:'INSERT',schema:'public',table:'events'},function(payload){
+      markSeen(payload.new);
       allEvents.push(payload.new);if(allEvents.length>600)allEvents.shift();
       addEv(payload.new,true);stats();
     })
