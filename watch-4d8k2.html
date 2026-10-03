@@ -224,8 +224,8 @@ document.getElementById('srcFilter').addEventListener('click',function(e){
 async function startFeed(){
   stats();setInterval(stats,30000);
   try{
-    var r=await sb.from('events').select('*').order('created_at',{ascending:true}).limit(400);
-    allEvents=(r.data||[]).slice();
+    var r=await sb.from('events').select('*').order('created_at',{ascending:false}).limit(400);
+    allEvents=(r.data||[]).slice().reverse();
     allEvents.forEach(function(e){addEv(e,false);});
     feed.scrollTop=feed.scrollHeight;
   }catch(e){}
