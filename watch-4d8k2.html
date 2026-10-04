@@ -86,6 +86,7 @@
   <div class="srcfilter" id="srcFilter">
     <button type="button" data-src="all" class="on">all</button><button type="button" data-src="main">main site</button><button type="button" data-src="preview">preview</button>
   </div>
+  <div style="text-align:center;margin:-6px 0 14px"><button type="button" id="refreshBtn" style="width:auto;margin:0;padding:6px 18px;font-size:12px;font-weight:400;">&#8635; refresh now</button></div>
   <div id="feed"><div class="empty">waiting for her… ♡</div></div>
 </div>
 
@@ -237,8 +238,21 @@ async function pollNew(){
     });
   }catch(e){}
 }
+/* Manual refresh: re-pull the newest 400 rows and re-render the feed. */
+async function refreshFeed(){
+  var btn=document.getElementById('refreshBtn');
+  if(btn){btn.disabled=true;btn.textContent='\u21bb refreshing\u2026';}
+  try{
+    var r=await sb.from('events').select('*').order('created_at',{ascending:false}).limit(400);
+    allEvents=(r.data||[]).slice().reverse();
+    seenIds={};allEvents.forEach(function(e){markSeen(e);});
+    renderFeed();stats();
+  }catch(e){}
+  if(btn){btn.disabled=false;btn.textContent='\u21bb refresh now';}
+}
+document.getElementById('refreshBtn').addEventListener('click',refreshFeed);
 async function startFeed(){
-  stats();setInterval(function(){stats();pollNew();},30000);
+  stats();setInterval(function(){stats();pollNew();},15000);
   try{
     var r=await sb.from('events').select('*').order('created_at',{ascending:false}).limit(400);
     allEvents=(r.data||[]).slice().reverse();
