@@ -177,7 +177,7 @@ function addEv(ev,top){
   var badge=src==='preview'?' <span class="srcbadge pv">preview</span>':'';
   el.innerHTML='<span class="dot"></span><div><div class="txt">'+p.txt+badge+'</div><div class="when" data-t="'+ev.created_at+'">'+whenText(ev.created_at)+'</div></div>';
   top?feed.prepend(el):feed.appendChild(el);
-  while(feed.children.length>220)feed.removeChild(feed.lastChild);
+  while(feed.children.length>220)feed.removeChild(top?feed.lastChild:feed.firstChild);
 }
 setInterval(function(){
   feed.querySelectorAll('.when').forEach(function(w){w.textContent=whenText(w.getAttribute('data-t'));});
