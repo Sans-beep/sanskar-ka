@@ -166,8 +166,9 @@ function addEv(ev,top){
   if(ev.session_id!==lastSession){
     lastSession=ev.session_id;
     var dev=(ev.data&&ev.data.device)||'';
+    var vtag=String(ev.visitor_id||'').replace(/^v_/,'').slice(-4);
     var s=document.createElement('div');s.className='sess';
-    s.textContent=(seenSessions[ev.session_id]?'she came back ♡':'a visit begins')+(dev?' · '+dev:'');
+    s.textContent=(seenSessions[ev.session_id]?'she came back ♡':'a visit begins')+(dev?' · '+dev:'')+(vtag?' · #'+vtag:'');
     seenSessions[ev.session_id]=1;
     top?feed.prepend(s):feed.appendChild(s);
   }

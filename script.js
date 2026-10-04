@@ -1312,7 +1312,21 @@ go=function(n){
     if(sdbDevice)return sdbDevice;
     try{
       const ua=navigator.userAgent||'';
-      sdbDevice=/Mobi|Android|iPhone|iPod/i.test(ua)?'mobile':(/iPad|Tablet/i.test(ua)?'tablet':'desktop');
+      let os='unknown';
+      if(/Android/i.test(ua))os='Android';
+      else if(/iPhone|iPad|iPod/i.test(ua))os='iOS';
+      else if(/Windows/i.test(ua))os='Windows';
+      else if(/Macintosh|Mac OS/i.test(ua))os='macOS';
+      else if(/Linux/i.test(ua))os='Linux';
+      let br='browser';
+      if(/Edg\//i.test(ua))br='Edge';
+      else if(/OPR\//i.test(ua))br='Opera';
+      else if(/SamsungBrowser/i.test(ua))br='Samsung';
+      else if(/Firefox|FxiOS/i.test(ua))br='Firefox';
+      else if(/CriOS/i.test(ua))br='Chrome';
+      else if(/Chrome/i.test(ua))br='Chrome';
+      else if(/Safari/i.test(ua))br='Safari';
+      sdbDevice=os+' \u00b7 '+br;
     }catch(_){sdbDevice='unknown';}
     return sdbDevice;
   }
