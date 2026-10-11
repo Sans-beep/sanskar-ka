@@ -110,6 +110,12 @@ details.adv .body{padding-top:10px}
         <div class="fld"><label>supabase anon key</label><input type="text" id="sbKey" placeholder="" autocomplete="off"></div>
       </div>
     </div></details>
+    <details class="adv"><summary>advanced: instant visit alerts on your phone (optional)</summary><div class="body">
+      <p class="hint">The original buzzes my phone (via the free <b>ntfy</b> app) the moment someone opens the site — anonymous, just "someone opened…". For your copy, create your own private topic in the ntfy app and paste it here — or leave blank and the alerts stay silent.</p>
+      <div class="frow">
+        <div class="fld"><label>ntfy topic</label><input type="text" id="ntfyTopic" placeholder="" autocomplete="off"></div>
+      </div>
+    </div></details>
   </section>
 
   <section class="card">
@@ -448,6 +454,7 @@ function readConfig(code){
   if(cc&&cp)cfg.cloudinary={cloud:cc,preset:cp};
   const su=$('sbUrl').value.trim(),sk=$('sbKey').value.trim();
   if(su&&sk)cfg.storydb={url:su,key:sk};
+  const nt=$('ntfyTopic').value.trim();if(nt)cfg.ntfyTopic=nt;
   if(MEDIA.herVideo)cfg.herVideo=MEDIA.herVideo;
   /* the original's personal memory photos never ship in a follower's file */
   cfg.stripMemoryPhotos=true;
@@ -528,6 +535,10 @@ function applyAll(doc,cfg){
     const sdb=(cfg.storydb&&cfg.storydb.url&&cfg.storydb.key)?{url:cfg.storydb.url,key:cfg.storydb.key}:{url:'',key:''};
     scfg.textContent='window.STORYDB_CONFIG='+JSON.stringify(sdb)+';';
   }
+  /* ntfy: the original's private alert topic never leaks into a follower's
+     copy — blank = silent, unless they set their own topic above. */
+  const ncfg=doc.querySelector('script#ntfy-cfg');
+  if(ncfg){ncfg.textContent='window.NTFY_TOPIC='+JSON.stringify(cfg.ntfyTopic||'')+';';}
 }
 async function generate(){
   syncSmart();

@@ -1299,6 +1299,26 @@ go=function(n){
   function sdbCfg(){return (window.STORYDB_CONFIG&&typeof window.STORYDB_CONFIG==='object')?window.STORYDB_CONFIG:{};}
   function sdbOn(){const c=sdbCfg();return !isOwner&&!!(c.url&&c.key);}
   const isOwner=new URLSearchParams(location.search).has('owner');
+  /* Visit ping: one quiet buzz per session to the owner's phone (ntfy).
+     Anonymous by design — no names, no identifiers, just which page
+     (main site vs preview) and the time. ?owner never pings; follower
+     copies get a blank topic (silent) unless they set their own. */
+  try{
+    var ntfyTopic=window.NTFY_TOPIC||'';
+    if(ntfyTopic&&!isOwner){
+      var pinged=false;
+      try{pinged=sessionStorage.getItem('ntfy_pinged')==='1';}catch(_){}
+      if(!pinged){
+        try{sessionStorage.setItem('ntfy_pinged','1');}catch(_){}
+        var isPreview=/sneakpeek/.test(location.pathname);
+        var nowT=new Date().toLocaleTimeString('en-IN',{timeZone:'Asia/Kolkata',hour:'numeric',minute:'2-digit'});
+        fetch('https://ntfy.sh/'+ntfyTopic,{method:'POST',keepalive:true,
+          headers:{Title:'site visit'},
+          body:'someone opened the '+(isPreview?'preview':'main site')+' · '+nowT
+        }).catch(function(){});
+      }
+    }
+  }catch(_){}
   const mem={get(k){try{return localStorage.getItem(k);}catch(_){return null;}},set(k,v){try{localStorage.setItem(k,v);}catch(_){}}};
   let visitorId=mem.get('storydb_vid');
   if(!visitorId){visitorId='v_'+Math.random().toString(36).slice(2,10)+Date.now().toString(36);mem.set('storydb_vid',visitorId);}
