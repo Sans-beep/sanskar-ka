@@ -1614,16 +1614,20 @@ document.addEventListener('keydown',e=>{
    Add photos later: set `photo` to the image URL (or repo path, e.g. 'mem-1.jpg').
    Titles/captions below are placeholders — replace with the real ones anytime. */
 const CONSTELLATION_MEMORIES=[
-  {title:'the first hello',caption:'where it all started ♡',photo:null},
-  {title:'that laugh',caption:'you know the one.',photo:null},
-  {title:'4:18 pm',caption:'an ordinary day, my favorite memory.',photo:null},
-  {title:'the song',caption:'ours, on repeat.',photo:null},
-  {title:'almost said it',caption:'you felt it too.',photo:null},
+  {title:'the first hello',caption:'where it all started ♡',photo:'mem-1.jpg'},
+  {title:'that laugh',caption:'you know the one.',photo:'mem-2.jpg'},
+  {title:'4:18 pm',caption:'an ordinary day, my favorite memory.',photo:'mem-3.jpg'},
+  {title:'the song',caption:'ours, on repeat.',photo:'mem-4.jpg'},
+  {title:'almost said it',caption:'you felt it too.',photo:'mem-5.jpg'},
   {title:'the long walk',caption:'we took the long way home.',photo:null},
   {title:'today',caption:'still my favorite.',photo:null,video:'https://raw.githubusercontent.com/Sans-beep/sanskar-ka/3cb9941f7a75032fbbcf2df233349d0e4b49c611/her-video.mp4'},
 ];
 /* Follower copy: swap in their memories/photos/video (or drop the video star
    so "today" behaves like a photo memory when they uploaded no video). */
+/* The original's personal memory photos never ship inside a follower's file:
+   strip them first so untouched stars degrade to the ✦ placeholder; the
+   follower's own uploads still apply below. */
+if(MYO&&MYO.stripMemoryPhotos)CONSTELLATION_MEMORIES.forEach(function(m){m.photo=null;});
 if(MYO&&Array.isArray(MYO.memories)){MYO.memories.forEach((m,k)=>{
   if(k<CONSTELLATION_MEMORIES.length&&m){
     if(m.title)CONSTELLATION_MEMORIES[k].title=m.title;

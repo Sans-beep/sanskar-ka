@@ -333,6 +333,11 @@ function buildMediaInputs(){
   bindPhoto('f-throwback','th-throwback',d=>MEDIA.throwback=d);
   const fh=$('framePhotos');for(let k=0;k<8;k++)photoRow(fh,k,'fr',null,MEDIA.frames);
   const mh=$('memPhotos');for(let k=0;k<7;k++)photoRow(mh,k,'mm',null,MEDIA.memPhotos);
+  /* the original's current memory photos show in their slots — upload to replace */
+  for(let k=0;k<7;k++){
+    const ph=MEM_DEF[k]&&MEM_DEF[k].photo;if(!ph||typeof ph!=='string')continue;
+    const t=$('th-mm'+k);if(t){t.src=/^(https?:|data:)/.test(ph)?ph:ABS+ph;t.style.display='block';}
+  }
   bindVideo('f-hervideo','vt-hervideo',d=>MEDIA.herVideo=d);
   bindVideo('f-finalevideo','vt-finalevideo',d=>MEDIA.finaleVideo=d);
   bindPhoto('f-memedog','th-memedog',d=>MEDIA.memeDog=d);
@@ -444,6 +449,8 @@ function readConfig(code){
   const su=$('sbUrl').value.trim(),sk=$('sbKey').value.trim();
   if(su&&sk)cfg.storydb={url:su,key:sk};
   if(MEDIA.herVideo)cfg.herVideo=MEDIA.herVideo;
+  /* the original's personal memory photos never ship in a follower's file */
+  cfg.stripMemoryPhotos=true;
   cfg.memories=[];
   for(let k=0;k<7;k++){
     const tF=FIELDS.find(f=>f.spec.mem===k&&f.spec.part==='title');
