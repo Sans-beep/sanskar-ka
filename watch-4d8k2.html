@@ -252,6 +252,20 @@ async function refreshFeed(){
   if(btn){btn.disabled=false;btn.textContent='\u21bb refresh now';}
 }
 document.getElementById('refreshBtn').addEventListener('click',refreshFeed);
+/* Stay logged in: if Supabase already has a session saved in this browser/app
+   (localStorage survives restarts), skip the login card and go straight in. */
+function enterApp(){
+  if(document.getElementById('app').classList.contains('on'))return;
+  document.getElementById('loginCard').style.display='none';
+  document.getElementById('app').classList.add('on');
+  startFeed();
+}
+sb.auth.getSession().then(function(r){
+  if(r&&r.data&&r.data.session)enterApp();
+});
+sb.auth.onAuthStateChange(function(event){
+  if(event==='SIGNED_IN')enterApp();
+});
 async function startFeed(){
   stats();setInterval(function(){stats();pollNew();},15000);
   try{
